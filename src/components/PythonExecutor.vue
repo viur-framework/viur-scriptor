@@ -93,7 +93,6 @@ export default {
 
 
 		return {
-			baseFile,
 			onchange,
 			executeScript,
 			isLoading,
