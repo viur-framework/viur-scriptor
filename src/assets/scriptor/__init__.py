@@ -7,6 +7,7 @@ from .viur import viur
 from .writer import Writer
 from .csvwriter import CsvWriter
 from .logger import Logging as logging
+from .module import ListModule, SingletonModule, TreeModule
 
 try:
 	from js import console
@@ -22,3 +23,11 @@ def print(*args, **kwargs):
 
 	for arg in args:
 		logging.info(arg)
+
+class prototypes:
+	list = ListModule
+	singleton = SingletonModule
+	tree = TreeModule
+
+
+viur.prototypes = prototypes()

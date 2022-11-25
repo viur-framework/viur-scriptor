@@ -475,8 +475,10 @@ export default {
 
 						dialog.instance.value.show();
 						dialog.title.value = `Do you wanna safe your changes?`;
+            dialog.buttonText.value = "Save";
 
-						dialog.callback = function() {
+
+            dialog.callback = function() {
 							helper.saveCode(props.executor.getCode(), function(){
 								tree.selectItem(element, key);
 
@@ -738,8 +740,8 @@ export default {
 							console.log("Creating plugins directory...");
 							let _resp = await Request.securePost("/vi/script/add/node/"+rootNode.key, {
 								dataObj: {
-									name: "plugins",
-									path: "plugins",
+									name: "importable",
+									path: "importable",
 									plugin: 1,
 									rootNode: false
 								}

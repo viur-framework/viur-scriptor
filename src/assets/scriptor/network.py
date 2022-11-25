@@ -5,85 +5,86 @@ from config import BASE_URL
 
 import json
 
-
 class Request:
-	def __init__(self, method, url, params=None, renderer: str = None):
-		super().__init__()
-		self.status = None
-		self.result = None
+    def __init__(self, method: str, url: str, credentials: bool = False, headers: dict = None, data: dict = None) -> None:
+        self._status = None
+        self._result = None
 
-		self.method = method.upper()
+        self._method = method.upper()
+        self._data = None
+        self._credentials = credentials
 
-		assert self.method in ("POST", "GET")
+        if data:
+            if method == "GET":
+                url += "?" + _urlencode(data)
+            else:
+                self._data = FormData.new()
+                for k, v in data.items():
+                    self._data.append(k, v)
 
-		if not url.startswith("/"):
-			url = "/" + url
+        self._headers = headers
+        self._url = url
+        self._response = None
+
+    async def perform(self):
+        options = {"method": self._method}
+
+        if self._headers:
+            options.update({"headers": to_js(self._headers)})
+        
+        if self._data:
+            options.update({"body": to_js(self._data)})
+
+        if self._credentials:
+            options.update({"credentials": 'include'})
+
+        self._response = await fetch(self._url, **options)
+        self._status = self._response.status
+
+    async def json(self):
+        if not self._response:
+            return None
+
+        return json.loads(await self._response.text())
+
+    async def text(self):
+        return await self._response.text()
+    
+    @property
+    def response(self):
+        return self._response
+
+    @staticmethod
+    async def get(*args, **kwargs):
+        _request = Request("GET", *args, **kwargs)
+        await _request.perform()
+        return _request
 
 
-		self._params = params
+    @staticmethod
+    async def post(*args, **kwargs):
+        _request = Request("POST", *args, **kwargs)
+        await _request.perform()
 
-		if self.method == "GET" and params:
-			url += "?" + _urlencode(params)
-			self.send = None
-		else:
-			self.send = FormData.new()
+        return _request
 
-			if params:
-				for k, v in params.items():
-					self.send.append(k, v)
+    @staticmethod
+    async def put(*args, **kwargs):
+        _request = Request("PUT", *args, **kwargs)
+        await _request.perform()
 
-		prefix = "/vi"
-		if renderer:
-			prefix = renderer
+        return _request
 
-		self.url = self.build_url(prefix + url)
-		console.log(self.url)
+    @staticmethod
+    async def delete(*args, **kwargs):
+        _request = Request("DELETE", *args, **kwargs)
+        await _request.perform()
 
-	@staticmethod
-	def build_url(url):
-		if url and not (url.startswith('http://') or url.startswith('https://') or url.startswith('//')):
-			url = BASE_URL + url
+        return _request
 
-		return url
+    @staticmethod
+    async def patch(*args, **kwargs):
+        _request = Request("PATCH", *args, **kwargs)
+        await _request.perform()
 
-	async def perform(self):
-		if self.method == "GET":
-			console.log("options:", self.build_options(self.method))
-			response = await fetch(self.url, **self.build_options(self.method))
-		else:
-			response = await fetch(self.url, **self.build_options(self.method, self.send))
-		_data = json.loads(await response.text())
-		self.status = response.status
-		self.result = _data
-
-	@staticmethod
-	def build_options(method: str, body = None, headers = None):
-		options = {"method": method,
-				   "credentials": 'include',
-				   "headers": {
-					   "Accept": "application/json, text/plain, */*",
-				   }
-		}
-
-		if headers:
-			options["headers"] = options["headers"] | headers
-
-		if body:
-			options["body"] = to_js(body)
-
-		options["headers"] = to_js(options["headers"])
-
-		return options
-
-	@staticmethod
-	async def get(*args, **kwargs):
-		_request = Request("GET", *args, **kwargs)
-		await _request.perform()
-		return _request.result
-
-	@staticmethod
-	async def post(*args, **kwargs):
-		_request = Request("GET", *args, **kwargs)
-		await _request.perform()
-
-		return _request.result
+        return _request

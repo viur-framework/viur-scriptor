@@ -56,7 +56,7 @@ import sys
 async def pyeval(code, ns):
   names = []
   for name in sys.modules.keys():
-  	if name.startswith("plugins.") or name == "plugins":
+  	if name.startswith("importable.") or name == "importable":
   		names.append(name)
   for name in names:
   	del sys.modules[name]

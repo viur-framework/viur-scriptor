@@ -64,7 +64,7 @@ export default {
 		currentCode.value = lines;
 
 		console.log("currentCode.value", currentCode.value, "initialCode.value", initialCode.value)
-		if (currentCode.value+"\n" != initialCode.value)
+		if (currentCode.value != initialCode.value)
 		{
 			props.onChangeCode(true);
 		}
