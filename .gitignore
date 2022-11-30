@@ -129,7 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-public/scriptor/
+public/static/scriptor/
 scriptor/index.html
 
 stats.html
