@@ -176,6 +176,7 @@ export default {
   padding: .2em;
   transition: all ease .3s;
   cursor: pointer;
+  font-size: .95em;
 
   &:hover{
 	background-color: var(--sl-color-neutral-100);
@@ -183,12 +184,13 @@ export default {
 
 }
 
-.selected {
-  background-color: var(--sl-color-neutral-100);
-}
-
 .selected-file {
-  color: var(--sl-color-green-500);
+  color: @mainColor;
+  font-weight: bold;
+
+  sl-icon{
+  	color: @mainColor;
+  }
 }
 
 .icon{

@@ -16,6 +16,13 @@ console.log( path.join("..","..","deploy",'static',APPNAME,"*"))
 console.log( path.join(__dirname, 'public', "../", 'static', APPNAME, "viur-shoelace"))
 export default defineConfig(({command, mode})=>{
 	let conf = {
+		css: {
+			preprocessorOptions:{
+				less: {
+					additionalData:`@import "./src/style/app.less";`
+				}
+			}
+		},
 		plugins: [
 			visualizer(
 				{

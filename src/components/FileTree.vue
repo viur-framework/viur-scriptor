@@ -1357,7 +1357,7 @@ export default {
   display: flex;
   flex-direction: row;
   background-color: #fff;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .2);
+  border-bottom: 1px solid @mainColor;
   padding: 10px;
 
   sl-button{
@@ -1365,11 +1365,13 @@ export default {
 
 	&::part(base){
 	  aspect-ratio: 1;
-	  font-size: 1.2em;
+	  font-size: 1em;
+	  height: 35px;
 	}
 
 	&::part(label){
 	  padding: 0;
+	  margin-top: -2px;
 	}
   }
 }

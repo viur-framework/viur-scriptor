@@ -1,24 +1,32 @@
 <template>
 
-	<header class="head">
-		<h1 class="header">Script0r</h1>
-
-		<sl-button v-if="executor" @click="saveScript" variant="success" >
-			Save
-
-			<sl-badge v-if="unsaved" pill pulse>1</sl-badge>
-		</sl-button>
-		<sl-button v-if="executor" @click="executor.executeScript" variant="primary" >Run</sl-button>
-	</header>
-
-	<sl-split-panel class="main-split">
+	<sl-split-panel class="main-split" position-in-pixels="200">
 		<div slot="start" class="split-start">
 
-			<FileTree ref="tree" v-if="executor" :executor="executor" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
+			<h1 class="header">Script0r</h1>
+			<sl-tab-group class="tab-group">
+			  <sl-tab slot="nav" panel="files">Datei-Browser</sl-tab>
+			  <sl-tab slot="nav" panel="data">Datenbank-Felder</sl-tab>
+
+			  <sl-tab-panel name="files">
+				  <FileTree ref="tree" v-if="executor" :executor="executor" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
+			  </sl-tab-panel>
+			  <sl-tab-panel name="data">
+				  <sl-details summary="Daten" class="data-detail" v-for="n in 5">
+  					<div class="data" v-for="n in 5">
+						<div class="data-name">Beispiel Daten</div>
+						<div class="data-type">Typ: String</div>
+						<code class="data-code">example.expamle-example</code>
+					</div>
+				  </sl-details>
+
+
+			  </sl-tab-panel>
+			</sl-tab-group>
 
 		</div>
 		<div v-show="manager.isOpen.value" slot="end" class="split-end">
-			<sl-split-panel class="side-split" vertical>
+			<sl-split-panel class="side-split" vertical >
 				<div slot="start" class="split-top">
 					<PythonExecutor :log="logStdout" :onerror="logError" :onrun="clearLog" ref="executor" :onChangeCode="onChangeCode" :manager="manager"/>
 				</div>
@@ -55,6 +63,15 @@
 		</div>
 	</sl-split-panel>
 
+	<footer class="footer">
+
+		<sl-button v-if="executor" size="small" @click="saveScript" variant="white" >
+			Save
+
+			<sl-badge v-if="unsaved" pill pulse>1</sl-badge>
+		</sl-button>
+		<sl-button v-if="executor" size="small" @click="executor.executeScript" variant="primary" >Run</sl-button>
+	</footer>
 
 </template>
 
@@ -224,28 +241,37 @@ export default {
 }
 </script>
 
+
 <style scoped lang="less">
 
-.head{
+.footer{
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 15px;
+  justify-content: flex-end;
+  background-color: @mainColor;
+  padding: 10px;
   z-index: 1;
   position: relative;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .2);
-  min-height: 73px;
-  max-height: 73px;
 
   sl-button{
 	margin-left: 10px;
+
+	&::part(base){
+	  font-size: .95em;
+	  height: 32px;
+	}
   }
 }
 
 .header{
+  width: 100%;
+  background-color: @mainColor;
+  color: #fff;
   margin: 0 auto 0 0;
-  font-family: Miriam, serif;
   font-weight: 700;
+  z-index: 1;
+  padding: 10px 15px 15px 15px;
 }
 
 .log-format {
@@ -253,7 +279,9 @@ export default {
 }
 
 .main-split{
-  height: calc(100% - 73px);
+  height: calc(100% - 50px);
+  --min: 300px;
+  --max: 500px;
 }
 
 .side-split{
@@ -334,4 +362,88 @@ div.cm-content {
 
 }
 
+.tab-group{
+  height: 0;
+  flex: 1;
+
+  &::part(base){
+	height: 100%;
+	border: none;
+  }
+
+  &::part(nav){
+	background-color: @mainColor;
+	border: none;
+  }
+
+  &::part(tabs){
+	border: none;
+  }
+
+  &::part(body){
+	height: 100%;
+	border: none;
+  }
+
+  sl-tab {
+	border: none;
+
+	&::part(base) {
+	  padding: 10px 15px;
+	  color: #fff;
+	  border: none;
+	}
+
+	&[aria-selected="true"]{
+	  background-color: #fff;
+	  &::part(base) {
+		color: @mainColor !important;
+	  }
+	}
+  }
+
+  sl-tab-panel{
+	&::part(base){
+	  padding: 0;
+	}
+  }
+}
+
+.data{
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.data-name{
+  color: @mainColor;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.data-type{
+  margin-bottom: 10px;
+  font-size: .9em;
+}
+
+.data-code{
+  background-color: #f4f4f4;
+  padding: 5px;
+}
+
+.data-detail{
+  &::part(base){
+	overflow: hidden;
+  }
+  &::part(header){
+	padding: 15px;
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25);
+  }
+  &::part(prefix){
+	display: none;
+  }
+  &::part(content){
+	padding: 0;
+  }
+}
 </style>
