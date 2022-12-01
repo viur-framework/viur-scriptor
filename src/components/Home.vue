@@ -6,19 +6,25 @@
 			<h1 class="header">Script0r</h1>
 			<sl-tab-group class="tab-group">
 			  <sl-tab slot="nav" panel="files">Datei-Browser</sl-tab>
-			  <sl-tab slot="nav" panel="data">Datenbank-Felder</sl-tab>
+			  <sl-tab slot="nav" panel="data" @click="selectTab">Datenbank-Felder</sl-tab>
 
 			  <sl-tab-panel name="files">
 				  <FileTree ref="tree" v-if="executor" :executor="executor" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
 			  </sl-tab-panel>
 			  <sl-tab-panel name="data">
-				  <sl-details summary="Daten" class="data-detail" v-for="n in 5">
-  					<div class="data" v-for="n in 5">
-						<div class="data-name">Beispiel Daten</div>
-						<div class="data-type">Typ: String</div>
-						<code class="data-code">example.expamle-example</code>
-					</div>
-				  </sl-details>
+
+          <div v-for="module in modules">
+
+            <div v-if="module.handler.startsWith('tree')">
+              <ModuleDetails :name="module.name" group="node"></ModuleDetails>
+              <ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
+
+            </div>
+            <div v-else>
+              <ModuleDetails :name="module.name"></ModuleDetails>
+
+            </div>
+          </div>
 
 
 			  </sl-tab-panel>
@@ -77,21 +83,22 @@
 
 <script lang="ts">
 
-import {computed, ref, onBeforeMount} from 'vue';
+import {computed, ref, onBeforeMount, onMounted, watch} from 'vue';
 import '@viur/viur-shoelace/dist/components/details-group/details-group.js';
 import FileTree from "./FileTree.vue";
 import PythonExecutor from "./PythonExecutor.vue";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
-import {SlIcon} from "@viur/viur-shoelace";
+import {SlIcon, SlTabPanel} from "@viur/viur-shoelace";
 import {SlButton} from "@viur/viur-shoelace";
 import {usePythonStore} from "../PythonStore";
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-
+import {Request} from "@viur/viur-vue-utils";
+import ModuleDetails from "./ModuleDetails.vue";
 
 export default {
   name: 'Home',
-  components: {PythonExecutor, FileTree, LoadingSpinner, VueJsonPretty},
+  components: {PythonExecutor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails},
   setup() {
 	const executor = ref();
     const log = ref([]);
@@ -219,6 +226,39 @@ export default {
 	  })
 
 
+    const secondTab = ref<SlTabPanel>();
+
+    onMounted(function(){
+      watch(secondTab.value, function(value, oldValue, onCleanup){
+        if (secondTab.value.active) {
+          console.log("Switched to tab A!")
+        }
+      })
+    })
+
+    function selectTab(event: UIEvent) {
+      if (event.target) {
+
+        console.log("Hello!!")
+        console.log("Element is active:", event.target.active, event.target)
+      }
+    }
+    let modules = ref([]);
+
+    onBeforeMount(async function(){
+      let answ = await Request.get(`/vi/config`);
+      let data = await answ.json();
+      for (let index in data.modules) {
+        let moduleEntry = data.modules[index];
+        modules.value.push(
+            {
+              name: moduleEntry.name,
+              handler: moduleEntry.handler
+            }
+        );
+
+      }
+    })
 
 
 	  return {
@@ -235,7 +275,9 @@ export default {
 		tree,
 		isJsonString,
 		isLoading,
-		  getThemeByLevel
+		  getThemeByLevel,
+      selectTab,
+      modules
     }
   }
 }

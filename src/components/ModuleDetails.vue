@@ -1,0 +1,66 @@
+<template>
+  <sl-details :summary="computedName" class="data-detail">
+    <ModuleDetailsEntry v-for="entry in structure" :details="entry"></ModuleDetailsEntry>
+  </sl-details>
+</template>
+
+<script lang="ts">
+import {computed, onBeforeMount, ref} from "vue";
+import {Request} from "@viur/viur-vue-utils";
+import ModuleDetailsEntry from "./ModuleDetailsEntry.vue";
+
+export default {
+  props: {
+    name: {
+      type: String,
+      required: true
+    },
+    group: {
+      type: String,
+      required: false,
+      default: "",
+    },
+  },
+  components: {ModuleDetailsEntry},
+  name: "ModuleDetails",
+  setup(props){
+    let structure = ref<[]>([])
+    onBeforeMount(async function(){
+      let url = `/vi/${props.name.toLowerCase()}/structure`;
+      if (props.group)
+        url += "/" + props.group;
+
+      let answ = await Request.get(url);
+      structure.value = (await answ.json())["structure"];
+    })
+
+
+    let computedName = computed(function(){
+      if (props.group)
+        return `${props.name} (${props.group})`
+
+      return props.name;
+    })
+
+    return {computedName, props, structure}
+  }
+}
+</script>
+
+<style scoped lang="less">
+  .data-detail{
+  &::part(base){
+     overflow: hidden;
+   }
+  &::part(header){
+     padding: 15px;
+     box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25);
+   }
+  &::part(prefix){
+     display: none;
+   }
+  &::part(content){
+     padding: 0;
+   }
+  }
+</style>
