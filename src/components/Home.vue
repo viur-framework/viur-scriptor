@@ -4,6 +4,14 @@
 		<div slot="start" class="split-start">
 
 			<h1 class="header">Script0r</h1>
+
+			<div class="search-wrap">
+				<sl-input size="small"></sl-input>
+				<sl-button size="small">
+					<sl-icon name="search"></sl-icon>
+				</sl-button>
+			</div>
+
 			<sl-tab-group class="tab-group">
 			  <sl-tab slot="nav" panel="files">Datei-Browser</sl-tab>
 			  <sl-tab slot="nav" panel="data" @click="selectTab">Datenbank-Felder</sl-tab>
@@ -488,4 +496,31 @@ div.cm-content {
 	padding: 0;
   }
 }
+
+.search-wrap{
+  width: 100%;
+  background-color: @mainColor;
+  padding: 0 15px 15px 15px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  sl-button{
+	&::part(base){
+	  border-top-left-radius: 0;
+	  border-bottom-left-radius: 0;
+	  aspect-ratio: 1;
+	}
+  }
+
+  sl-input{
+	flex: 1;
+
+	&::part(base){
+	  border-top-right-radius: 0;
+	  border-bottom-right-radius: 0;
+	}
+  }
+}
+
 </style>
