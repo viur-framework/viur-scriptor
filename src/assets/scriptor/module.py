@@ -19,7 +19,7 @@ class BaseModule(object):
 		self._name = value
 
 	async def register_route(self, callback: callable, name: str = None):
-		self._routes[name if name is not None else callback.__name__] = {"function": callable,"instance": None}
+		self._routes[name if name is not None else callback.__name__] = {"function": callback,"instance": None}
 
 	async def register_routes(self, route: object):
 		functions = inspect.getmembers(route.__class__, predicate=inspect.isfunction)

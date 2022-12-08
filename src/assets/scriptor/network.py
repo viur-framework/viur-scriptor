@@ -53,7 +53,10 @@ class Request:
 
     async def text(self):
         return await self._response.text()
-    
+
+    async def blob(self):
+        return await self._response.blob()
+
     @property
     def response(self):
         return self._response
