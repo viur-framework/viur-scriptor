@@ -68,7 +68,8 @@ export default {
 
 			try {
 				props.onrun();
-				pythonStore.py.run(code.value).then(() => {
+        let extraCode = "from scriptor import print, init\nawait init()\n";
+				pythonStore.py.run(extraCode + code.value).then(() => {
 					console.log("Abc")
 					isExecuting.value = false;
 				});

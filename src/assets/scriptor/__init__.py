@@ -1,13 +1,16 @@
+import asyncio
+
 from .utils import get_json_object
 
 
 
 from .network import Request
 from .viur import viur
-from .writer import Writer
-from .csvwriter import CsvWriter
+from .csvwriter import MemoryCsvWriter, FileSystemCsvWriter
 from .logger import Logging as logging
 from .module import ListModule, SingletonModule, TreeModule
+
+from .writer import DirectoryPickerWriter, FilePickerWriter, MemoryWriter
 
 try:
 	from js import console
@@ -31,3 +34,13 @@ class prototypes:
 
 
 viur.prototypes = prototypes()
+
+try:
+	viur.modules
+except AttributeError:
+	viur.modules = []
+
+async def init():
+	resp = await viur.request.get("/config", renderer="vi")
+	viur.modules = resp["modules"]
+	console.log("response = ", resp)

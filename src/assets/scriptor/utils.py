@@ -1,5 +1,5 @@
 import sys
-
+import json
 
 def is_pyodide_context():
 	return sys.platform == 'emscripten' or "pyodide" in sys.modules

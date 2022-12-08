@@ -4,13 +4,19 @@
     <div class="data-name">{{props.details[0]}}</div>
     <div class="data-type">Typ: {{props.details[1].type}}</div>
     <div class="data-type">descr: {{props.details[1].descr}}</div>
-    <code class="data-code">{{props.details[0]}}</code>
+    <code class="data-code">
+      <vue-json-pretty :data="props.details" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
+
+    </code>
 
 
   </div>
 </template>
 
 <script>
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
+
 export default {
   props: {
     details: {
@@ -18,6 +24,7 @@ export default {
       required: true
     }
   },
+  components: {VueJsonPretty},
   name: "ModuleDetailsEntry",
   setup(props) {
 

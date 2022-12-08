@@ -1,7 +1,10 @@
 from urllib.parse import urlencode as _urlencode
-from js import console, fetch, FormData
-from pyodide.ffi import to_js
-from config import BASE_URL
+from .utils import is_pyodide_context
+
+if is_pyodide_context():
+    from js import console, fetch, FormData
+    from pyodide.ffi import to_js
+    from config import BASE_URL
 
 import json
 
@@ -18,9 +21,10 @@ class Request:
             if method == "GET":
                 url += "?" + _urlencode(data)
             else:
-                self._data = FormData.new()
-                for k, v in data.items():
-                    self._data.append(k, v)
+                if is_pyodide_context():
+                    self._data = FormData.new()
+                    for k, v in data.items():
+                        self._data.append(k, v)
 
         self._headers = headers
         self._url = url

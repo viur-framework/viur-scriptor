@@ -1,6 +1,7 @@
 <template>
 
-	<li contenteditable="false">
+
+	<li v-show="canRender" contenteditable="false">
 
 		<div
 				class="title"
@@ -55,6 +56,12 @@ export default {
 		const isFolder = computed(() => {
 			return props.model.parent
 		})
+
+    const canRender = computed(() => {
+      return props.model.renderElement
+    })
+
+    console.log("mymodel", props.model)
 
 		function toggle(event: UIEvent) {
 			console.log("Toggle!!");
@@ -147,7 +154,8 @@ export default {
 
 		return {props, element, toggle, isFolder, dragStart, onDrop, click, titleElement, isOpen:computed(function(){
 				return props.model.state.isOpen;
-			})}
+			}),
+      canRender}
 	}
 }
 

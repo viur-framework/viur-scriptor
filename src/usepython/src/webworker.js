@@ -3,6 +3,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js");
 
 let isPyLoaded = false;
 
+
 function stdout(msg) {
   self.postMessage({ type: "stdout", msg: msg, id: null })
 }
@@ -26,6 +27,21 @@ function err(id, msg) {
 
 function end(id, res) {
   self.postMessage({ type: "end", res: res ?? null, id: id })
+}
+
+let webworkerUtils = {
+	showDirectoryPicker: null,
+	showSaveFilePicker: null,
+	directoryHandle: null,
+	fileHandle: null,
+	events: {},
+	registerEvent: async function(name, callback) {
+		console.log("register func", name, callback)
+		console.log("webworker utils:", callback)
+
+		webworkerUtils.events[name] = callback;//callback.toJs({create_pyproxies: true});
+		console.log("registerEvents:", webworkerUtils.events)
+	}
 }
 
 async function loadPyodideAndPackages(id, pyoPackages, packages, initCode, transformCode) {
@@ -71,6 +87,9 @@ async def pyeval(code, ns):
   if (initCode.length > 0) {
     await pyodide.runPythonAsync(initCode);
   }
+
+  console.log("Loading JS Utils!")
+
   installLog(id, 5, "The python env is loaded")
   isPyLoaded = true;
 }
@@ -90,7 +109,9 @@ async function runScript(python, id) {
 	  //pyodide.PyProxy.new
 	      let empty_dict = await self.pyodide.runPythonAsync("{}");
 
-    let results = await pyodide.globals.get("pyeval")(python, empty_dict)
+		  //let abc = await window.showDirectoryPicker();
+		  console.log("abc!!!");
+    let results = await self.pyodide.globals.get("pyeval")(python, empty_dict)
 	  empty_dict.destroy();
 	 // pyodide.runPythonAsync(`pyeval(${python}, {})`);
 	  //console.log("results", results);
@@ -225,10 +246,36 @@ self.onmessage = async (event) => {
 
 		end(id);
 	}
+	else if (id === "_setDirectoryHandle") {
+		console.log("_setDirectoryHandle", context.handle)
+		//webworkerUtils.directoryHandle = context.handle;
+
+		if (webworkerUtils.events.directoryHandle) {
+			await webworkerUtils.events.directoryHandle(context.handle);
+			webworkerUtils.events.directoryHandle = undefined;
+		}
+	}
+	else if (id === "_setFileHandle") {
+		console.log("_setFileHandle", context.handle, "fileHandle:", webworkerUtils.events.fileHandle)
+
+		if (webworkerUtils.events.fileHandle) {
+			console.log("FileHandle before!")
+
+			await webworkerUtils.events.fileHandle(context.handle);
+
+			console.log("FileHandle callign!")
+
+
+			webworkerUtils.events.fileHandle = undefined;
+		}
+
+	}
   else  {
     // The worker copies the context in its own "memory" (an object mapping name to values)
     for (const key of Object.keys(context)) {
-      self[key] = context[key];
+		//if (key === "showSaveFilePicker" || key === "showDirectoryPicker")
+      	//	continue;
+		self[key] = context[key];
     }
     if (!isPyLoaded) {
       //await loadPyodideAndPackages(id, []);
@@ -236,7 +283,13 @@ self.onmessage = async (event) => {
     }
 	//flushMemory();
 	  //flushMemory();
-    await runScript(python, id)
+
+		console.log("Functions:", context.showSaveFilePicker, " other", context.showDirectoryPicker)
+
+
+		await self.pyodide.registerJsModule("js_utils", webworkerUtils);
+
+		await runScript(python, id)
   }
 
 };

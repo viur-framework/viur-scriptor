@@ -186,6 +186,7 @@ export default {
 						//tree.data.value.state.isOpen.value = !tree.data.value.state.isOpen.value;
 					}
 				},
+        renderElement: true,
 			}),
 
 			// The selected item (in the tree)
@@ -206,6 +207,36 @@ export default {
 					return tree.elements.data.value[key];
 				}
 			},
+
+      search: function(text: string, children = tree.data.value.children){
+
+        let showList = [];
+        for (let child in children) {
+          console.log(children[child].renderElement)
+          if (text) {
+            console.log("label:", children[child].label, "includes: ", children[child].label.includes(text))
+            children[child].renderElement = children[child].label.includes(text);
+            if (children[child].renderElement)
+              showList.push(children[child].parentObject)
+          }
+          else {
+            children[child].renderElement = true;
+          }
+
+          if (children[child].children && children[child].children.length > 0)
+            tree.search(text, children[child].children);
+        }
+
+        for (let index in showList) {
+          let element = showList[index];
+          element.renderElement = true;
+          while (element)
+          {
+            element.renderElement = true;
+            element = element.parentObject;
+          }
+        }
+      },
 
 
 			// helper functions for sorting
@@ -388,6 +419,7 @@ export default {
 								localStorage.setItem(`children.${parent.key}.open`, new_children.state.isOpen.value ? "1" : "0");
 							}
 						},
+            renderElement: true,
 					}
 					if (!parent.state.isOpen.value)
 						parent.state.open();
@@ -569,8 +601,11 @@ export default {
 
 											localStorage.setItem(`children.${parent.key}.open`, new_children.state.isOpen.value ? "1" : "0");
 										}
+
 									},
-								}
+                  renderElement: true,
+
+                }
 
 
 								console.log("parents:", parents, "Abc children: ", new_children)
@@ -614,8 +649,10 @@ export default {
 									tree.data.value.children.push({
 										label: skel.name,
 										key: skel.key,
-										parentObject: tree.data.value
-									});
+										parentObject: tree.data.value,
+                    renderElement: true,
+
+                  });
 								}
 							}
 
@@ -665,8 +702,10 @@ export default {
 												let child = {
 													label: _entry.name,
 													key: _entry.key,
-													parentObject: iter
-												};
+													parentObject: iter,
+                          renderElement: true,
+
+                        };
 												iter.children.push(child)
 
 

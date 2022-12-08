@@ -6,7 +6,7 @@
 			<h1 class="header">Script0r</h1>
 
 			<div class="search-wrap">
-				<sl-input size="small"></sl-input>
+				<sl-input @input="searchText" size="small"></sl-input>
 				<sl-button size="small">
 					<sl-icon name="search"></sl-icon>
 				</sl-button>
@@ -268,6 +268,12 @@ export default {
       }
     })
 
+    function searchText(event: UIEvent){
+      if (tree.value) {
+        tree.value.tree.search(event.target.value);
+      }
+    }
+
 
 	  return {
       log,
@@ -285,7 +291,8 @@ export default {
 		isLoading,
 		  getThemeByLevel,
       selectTab,
-      modules
+      modules,
+      searchText
     }
   }
 }

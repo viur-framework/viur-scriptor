@@ -12,7 +12,7 @@ const usePython = () => {
     error: any;
   }>) => void = (v) => null;
 
-  function _dispatchEvent(id: string, data: Record<string, any>) {
+  async function _dispatchEvent(id: string, data: Record<string, any>) {
     switch (data.type) {
       case "end":
         _callback({ results: data.res, error: null })
@@ -57,16 +57,38 @@ const usePython = () => {
 			})
 			pyLogging.notify();
 			break;
+
+        case "showDirectoryPicker":
+            _pyodideWorker.postMessage({
+                id: "_setDirectoryHandle",
+                python: "",
+                handle: await window.showDirectoryPicker({
+                    mode: "readwrite"
+                })
+            });
+
+
+            break;
+
+        case "showSaveFilePicker":
+            _pyodideWorker.postMessage({
+                id: "_setFileHandle",
+                python: "",
+                handle: await window.showSaveFilePicker()
+            });
+
+
+            break;
       default:
         pyExecState.set(0);
         throw new Error(`Unknown event type ${data.type}`)
     }
   }
 
-  _pyodideWorker.onmessage = (event) => {
+  _pyodideWorker.onmessage = async (event) => {
     const { id, ...data } = event.data;
     //console.log("=> msg in:", id, ":", data);
-    _dispatchEvent(id ?? "", data)
+    await _dispatchEvent(id ?? "", data)
   };
 
   function _processTransformCode(code: string): string {

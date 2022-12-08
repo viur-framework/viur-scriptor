@@ -1,5 +1,8 @@
-from js import self as _self
-from .utils import get_json_object
+from .utils import is_pyodide_context
+
+if is_pyodide_context():
+	from js import self as _self
+
 import json
 
 class Logging():
