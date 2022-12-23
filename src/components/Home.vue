@@ -579,16 +579,16 @@ sl-tab{
       opacity: 1;
     }
 
-    .link-wrap{
-      color: var(--sl-color-primary-500);
+    &::part(base){
+      color: @mainColor;
     }
   }
 
   &[aria-selected="true"]{
     background-color: #fff;
 
-    .link-wrap{
-      color: var(--sl-color-primary-500);
+    &::part(base){
+      color: @mainColor;
     }
   }
 }
