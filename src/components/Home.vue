@@ -40,7 +40,13 @@
 
 		</div>
 		<div v-show="manager.isOpen.value" slot="end" class="split-end">
-			<sl-split-panel class="side-split" vertical >
+			<sl-tab-group class="tabs-closable">
+			  <sl-tab slot="nav" panel="tab-1" closable>Tab 1</sl-tab>
+			  <sl-tab slot="nav" panel="tab-2" closable>Tab 2</sl-tab>
+			  <sl-tab slot="nav" panel="tab-3" closable>Tab 3</sl-tab>
+
+			  <sl-tab-panel name="tab-1">
+				  <sl-split-panel class="side-split" vertical >
 				<div slot="start" class="split-top">
 					<PythonExecutor :log="logStdout" :onerror="logError" :onrun="clearLog" ref="executor" :onChangeCode="onChangeCode" :manager="manager"/>
 				</div>
@@ -74,6 +80,12 @@
 					</div>
 				</div>
 			</sl-split-panel>
+			  </sl-tab-panel>
+			  <sl-tab-panel name="tab-2">This is the second closable tab panel.</sl-tab-panel>
+			  <sl-tab-panel name="tab-3">This is the third closable tab panel.</sl-tab-panel>
+			</sl-tab-group>
+
+
 		</div>
 	</sl-split-panel>
 
@@ -343,6 +355,7 @@ export default {
 
 .side-split{
   height: 100%;
+  background-color: #fff;
 }
 
 .split-start{
@@ -426,6 +439,7 @@ div.cm-content {
   &::part(base){
 	height: 100%;
 	border: none;
+  	background-color: #fff;
   }
 
   &::part(nav){
@@ -527,6 +541,65 @@ div.cm-content {
 	  border-top-right-radius: 0;
 	  border-bottom-right-radius: 0;
 	}
+  }
+}
+
+sl-tab-group{
+  --track-width: 0;
+
+  height: 100%;
+
+  &::part(base){
+	height: 100%;
+	background-color: var(--sl-color-neutral-100);
+  }
+
+  &::part(body){
+	height: 100%;
+	overflow-y: hidden;
+  }
+}
+
+sl-tab{
+
+  &::part(base){
+    display: flex;
+    padding: 5px 12px;
+  }
+
+  &::part(close-button){
+    opacity: .5;
+    font-size: 1.2em;
+    margin: 0 -6px 0 5px;
+    transition: all ease .3s;
+  }
+
+  &:hover{
+    &::part(close-button){
+      opacity: 1;
+    }
+
+    .link-wrap{
+      color: var(--sl-color-primary-500);
+    }
+  }
+
+  &[aria-selected="true"]{
+    background-color: #fff;
+
+    .link-wrap{
+      color: var(--sl-color-primary-500);
+    }
+  }
+}
+
+sl-tab-panel{
+  height: 100%;
+
+  &::part(base){
+	height: 100%;
+	padding: 0;
+	background-color: transparent;
   }
 }
 
