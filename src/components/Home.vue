@@ -21,19 +21,20 @@
 			  </sl-tab-panel>
 			  <sl-tab-panel name="data">
 
-          <div v-for="module in modules">
+			  <div class="data-detail-scroll">
+				  <div v-for="module in modules">
 
-            <div v-if="module.handler.startsWith('tree')">
-              <ModuleDetails :name="module.name" group="node"></ModuleDetails>
-              <ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
+					<div v-if="module.handler.startsWith('tree')">
+					  <ModuleDetails :name="module.name" group="node"></ModuleDetails>
+					  <ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
 
-            </div>
-            <div v-else>
-              <ModuleDetails :name="module.name"></ModuleDetails>
+					</div>
+					<div v-else>
+					  <ModuleDetails :name="module.name"></ModuleDetails>
 
-            </div>
-          </div>
-
+					</div>
+				  </div>
+			  </div>
 
 			  </sl-tab-panel>
 			</sl-tab-group>
@@ -454,6 +455,7 @@ div.cm-content {
   &::part(body){
 	height: 100%;
 	border: none;
+	overflow-y: hidden;
   }
 
   sl-tab {
@@ -474,9 +476,21 @@ div.cm-content {
   }
 
   sl-tab-panel{
+	height: 100%;
+
 	&::part(base){
+	  height: 100%;
 	  padding: 0;
 	}
+
+	&[aria-hidden="true"]{
+	  display: none;
+	}
+  }
+
+  :deep(.fileTree){
+	overflow-y: auto;
+	height: calc(100% - 56px);
   }
 }
 
@@ -544,7 +558,7 @@ div.cm-content {
   }
 }
 
-sl-tab-group{
+.tabs-closable{
   --track-width: 0;
 
   height: 100%;
@@ -558,9 +572,8 @@ sl-tab-group{
 	height: 100%;
 	overflow-y: hidden;
   }
-}
 
-sl-tab{
+  sl-tab{
 
   &::part(base){
     display: flex;
@@ -584,23 +597,33 @@ sl-tab{
     }
   }
 
-  &[aria-selected="true"]{
-    background-color: #fff;
+	&[aria-selected="true"]{
+	  background-color: #fff;
 
-    &::part(base){
-      color: @mainColor;
-    }
+	  &::part(base){
+		color: @mainColor;
+	  }
+	}
   }
-}
 
-sl-tab-panel{
-  height: 100%;
-
-  &::part(base){
+  sl-tab-panel{
 	height: 100%;
-	padding: 0;
-	background-color: transparent;
+
+	&::part(base){
+	  height: 100%;
+	  padding: 0;
+	  background-color: transparent;
+	}
+
+	&[aria-hidden="true"]{
+	  display: none;
+	}
   }
+
 }
 
+.data-detail-scroll{
+  height: 100%;
+  overflow-y: auto;
+}
 </style>

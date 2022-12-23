@@ -49,18 +49,22 @@ export default {
 
 <style scoped lang="less">
   .data-detail{
-  &::part(base){
-     overflow: hidden;
-   }
-  &::part(header){
-     padding: 15px;
-     box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25);
-   }
-  &::part(prefix){
-     display: none;
-   }
-  &::part(content){
-     padding: 0;
-   }
+	  &::part(base){
+		 overflow: hidden;
+		border: none;
+		box-shadow: none;
+		border-radius: 0;
+		font-size: .9em;
+	   }
+	  &::part(header){
+		 padding: 15px;
+		 box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25);
+	   }
+	  &::part(prefix){
+		 display: none;
+	   }
+	  &::part(content){
+		 padding: 0;
+	   }
   }
 </style>
