@@ -14,7 +14,7 @@
 import Home from './components/Home.vue'
 import {Request} from "@viur/viur-vue-utils";
 import {ref, onBeforeMount, inject} from 'vue';
-import {usePythonStore} from "./PythonStore";
+import {usePythonStore} from "./stores/PythonStore";
 import LoadingSpinner from "./components/common/LoadingSpinner.vue";
 
 export default {

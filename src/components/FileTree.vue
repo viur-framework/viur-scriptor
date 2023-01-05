@@ -73,25 +73,25 @@ import {computed, onBeforeMount, onMounted, ref, watch, watchEffect} from "vue";
 import {Request} from "@viur/viur-vue-utils";
 
 import FileTreeItem from "./FileTreeItem.vue";
-import {SlDialog, SlIcon, SlInput, SlMenu} from "@viur/viur-shoelace";
+import {SlDialog, SlIcon, SlInput, SlMenu, SlButton} from "@viur/viur-shoelace";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
 import PythonExecutor from "./PythonExecutor.vue";
 
-import {usePythonStore} from "../PythonStore";
+import {usePythonStore} from "../stores/PythonStore";
+import { useTabStore } from '@/stores/TabStore';
 
 export default {
 	name: "FileTree",
 	components: {FileTreeItem, LoadingSpinner},
 	props: {
-		executor: ref<PythonExecutor>(),
 		onSelectItem: Function,
 		manager: Object,
-		unsaved: ref<boolean>()
 	},
 
 	setup(props){
 
 		let pythonStore = usePythonStore();
+		let tabStore = useTabStore(); 
 
 		let isLoading = ref<boolean>(false);
 		let dialog = {
@@ -476,7 +476,7 @@ export default {
 				tree.removeByKey(key);
 
 				// eslint-disable-next-line vue/no-mutating-props
-				props.unsaved = false;
+				//props.unsaved = false;
 			},
 
 			// Select a item from children (left click)
@@ -501,6 +501,7 @@ export default {
 						return;
 					}
 
+					/*
 					if (props.manager.isUnsaved()) {
 
 						dialog.reset();
@@ -511,13 +512,15 @@ export default {
 
 
             dialog.callback = function() {
-							helper.saveCode(props.executor.getCode(), function(){
-								tree.selectItem(element, key);
+							//helper.saveCode(props.executor.getCode(), function(){
+							//	tree.selectItem(element, key);
 
-							});
+							//});
+
+							
 						}
 						return;
-					}
+					}*/
 				}
 				tree.selectedItem.value = key;
 				if (!skipSave)
@@ -541,14 +544,22 @@ export default {
 							props.manager.showMirror();
 
 							console.log("view", res);
-							console.log("xxx", props.executor);
-							props.executor.onchange(res.values.script);
+							//console.log("xxx", props.executor);
+							//props.executor.onchange(res.values.script);
 
-							if (props.executor.mirror) {
+							/*if (props.executor.mirror) {
 								console.log("update text to", res.values.script);
 
-								props.executor.mirror.updateText(res.values.script);
-							}
+								//props.executor.mirror.updateText(res.values.script);
+							}*/
+
+							//console.log(res.value.script)
+
+							tabStore.addTab(key, res.values.name, res.values.script);
+
+
+							console.log("tabStore.tabMap", tabStore.tabMap); 
+
 							isLoading.value = false;
 
 							if (callback)

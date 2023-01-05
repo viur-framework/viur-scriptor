@@ -14,76 +14,54 @@
 
 			<sl-tab-group class="tab-group">
 			  <sl-tab slot="nav" panel="files">Datei-Browser</sl-tab>
-			  <sl-tab slot="nav" panel="data" @click="selectTab">Datenbank-Felder</sl-tab>
+			  <sl-tab slot="nav" panel="data" >Datenbank-Felder</sl-tab>
 
 			  <sl-tab-panel name="files">
-				  <FileTree ref="tree" v-if="executor" :executor="executor" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
+				  <FileTree ref="tree" :tabGroup="tabGroup" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
 			  </sl-tab-panel>
 			  <sl-tab-panel name="data">
 
-			  <div class="data-detail-scroll">
-				  <div v-for="module in modules">
+				<div class="data-detail-scroll">
+					<div v-for="module in modules">
 
-					<div v-if="module.handler.startsWith('tree')">
-					  <ModuleDetails :name="module.name" group="node"></ModuleDetails>
-					  <ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
+						<div v-if="module.handler.startsWith('tree')">
+						<ModuleDetails :name="module.name" group="node"></ModuleDetails>
+						<ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
 
+						</div>
+						<div v-else>
+						<ModuleDetails :name="module.name"></ModuleDetails>
+
+						</div>
 					</div>
-					<div v-else>
-					  <ModuleDetails :name="module.name"></ModuleDetails>
-
-					</div>
-				  </div>
-			  </div>
+				</div>
 
 			  </sl-tab-panel>
 			</sl-tab-group>
 
 		</div>
-		<div v-show="manager.isOpen.value" slot="end" class="split-end">
-			<sl-tab-group class="tabs-closable">
-			  <sl-tab slot="nav" panel="tab-1" closable>Tab 1</sl-tab>
-			  <sl-tab slot="nav" panel="tab-2" closable>Tab 2</sl-tab>
-			  <sl-tab slot="nav" panel="tab-3" closable>Tab 3</sl-tab>
+		<div slot="end" class="split-end">
+			<sl-tab-group ref="tabGroup" class="tabs-closable">
+				<sl-tab slot="nav" @sl-close="() => closeTab(key)" @click="() => selectTab(key)" closable="true" v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key">{{tab.name}}</sl-tab>
 
-			  <sl-tab-panel name="tab-1">
-				  <sl-split-panel class="side-split" vertical >
-				<div slot="start" class="split-top">
-					<PythonExecutor :log="logStdout" :onerror="logError" :onrun="clearLog" ref="executor" :onChangeCode="onChangeCode" :manager="manager"/>
-				</div>
-				<div slot="end" class="split-bottom">
-					<ul v-if="error.length <= 0" class="logging">
-						<div v-for="entry in log">
-							<div>
-							<li class="alert-print">
-								<sl-alert class="alert-print" :variant="entry.level" open>
-									<sl-icon class="log-child" slot="icon" name="info-circle"></sl-icon>
-									<div v-if="entry.json">
-										<vue-json-pretty :data="entry.value" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
-									</div>
-									<div v-else>
-										<pre class="alert-child log-child log-child-text">
-										<code>
-											{{ entry['value'] }}
-										</code>
-									</pre>
-									</div>
-								</sl-alert>
+				<sl-tab-panel v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key" :name="key">
 
-							</li>
-							</div>
+					<sl-split-panel class="side-split" vertical >
+						<div slot="start" class="split-top">
+							<CodeEditor :keyValue="'' + key"/>
 						</div>
-					</ul>
-					<div v-else class="logging">
-						<sl-alert class="danger-print" variant="danger" open>
-							<pre class="error-format">{{ error }}</pre>
-						</sl-alert>
-					</div>
-				</div>
-			</sl-split-panel>
-			  </sl-tab-panel>
-			  <sl-tab-panel name="tab-2">This is the second closable tab panel.</sl-tab-panel>
-			  <sl-tab-panel name="tab-3">This is the third closable tab panel.</sl-tab-panel>
+						<div slot="end" class="split-bottom">
+							
+							<virtual-list style="height: 360px; overflow-y: auto;"
+							:data-key="'id'"
+							:data-sources="log"
+							:data-component="LogEntry"
+							/>
+	
+						</div>
+					</sl-split-panel>
+				</sl-tab-panel>
+
 			</sl-tab-group>
 
 
@@ -92,17 +70,17 @@
 
 	<footer class="footer">
 
-		<sl-button v-if="executor" size="small" @click="saveScript" variant="white" >
+		<sl-button size="small" @click="saveScript" variant="white" >
 			Save
-
-			<sl-badge v-if="unsaved" pill pulse>1</sl-badge>
 		</sl-button>
-		<sl-button v-if="executor" size="small" @click="executor.executeScript" variant="primary" >Run</sl-button>
+		<sl-button size="small" @click="runScript" variant="primary">Run</sl-button>
 	</footer>
 
 </template>
 
 <script lang="ts">
+
+
 
 import {computed, ref, onBeforeMount, onMounted, watch} from 'vue';
 import '@viur/viur-shoelace/dist/components/details-group/details-group.js';
@@ -111,23 +89,31 @@ import PythonExecutor from "./PythonExecutor.vue";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
 import {SlIcon, SlTabPanel} from "@viur/viur-shoelace";
 import {SlButton} from "@viur/viur-shoelace";
-import {usePythonStore} from "../PythonStore";
+import {usePythonStore} from "../stores/PythonStore";
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import {Request} from "@viur/viur-vue-utils";
 import ModuleDetails from "./ModuleDetails.vue";
+import CodeEditor from "./CodeEditor.vue";
+import { useTabStore } from '@/stores/TabStore';
+import { clear } from 'console';
+import { useVirtualList } from '@vueuse/core'; 
+import VirtualList from 'vue-virtual-scroll-list'
+import LogEntry from './LogEntry.vue'
 
 export default {
   name: 'Home',
-  components: {PythonExecutor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails},
+  components: {CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, VirtualList, LogEntry},
   setup() {
 	const executor = ref();
     const log = ref([]);
 	const error = ref("");
 	const unsaved = ref<boolean>(false);
 	const isLoading = ref<boolean>(false);
+	const counter  = ref<number>(0); 
 	const logStdout = function(value: string){
 		log.value.push({
+			id: counter.value++,
 			type: "print",
 			value: formatString(value),
 			time: Date.now(),
@@ -137,6 +123,7 @@ export default {
 	}
 
 	const pythonStore = usePythonStore();
+	const tabStore = useTabStore(); 
 
 	const clearLog = function(){
 		log.value = [];
@@ -172,8 +159,21 @@ export default {
 		error.value = value;
 	}
 
+
+	onBeforeMount(async () => {
+		await pythonStore.init(null, logError, clearLog);
+	})
+
 	function onChangeCode(value: boolean){
 		unsaved.value = value;
+	}
+
+	function closeTab(key: string) {
+		tabStore.removeTab(key); 
+	}
+
+	function selectTab(key: string) {
+		tabStore.selectTab(key); 
 	}
 
 	let manager = {
@@ -201,6 +201,11 @@ export default {
 	}
 
 	let tree = ref<FileTree>();
+	let tabGroup = ref<tabGroup>();
+
+	onMounted(() => {
+		tabStore.tabGroup = tabGroup.value; 
+	}); 
 
 	function saveScript(){
 		if (!unsaved.value)
@@ -210,6 +215,13 @@ export default {
 			tree.value.helper.saveCode(executor.value.getCode(), function(){
 				unsaved.value = false;
 			});
+		}
+	}	
+	
+	function runScript(){
+		if (tabStore.selectedTab) {
+			let content = tabStore.tabMap[tabStore.selectedTab]; 
+			pythonStore.runScript(content.code); 
 		}
 	}
 
@@ -235,6 +247,8 @@ export default {
 
 
 			  log.value.push({
+					
+				  id: counter.value++,
 				  type: entry.level,
 				  level: computed(()=>{
 					  return getThemeByLevel(entry.level);
@@ -245,6 +259,14 @@ export default {
 			  })
 
 	  })
+
+	  const filteredList = computed(() => log)
+
+	  let {virtList, containerProps, wrapperProps} = useVirtualList(filteredList.value, {
+		itemHeight: 30
+	})
+
+
 
 
     const secondTab = ref<SlTabPanel>();
@@ -257,13 +279,7 @@ export default {
       })
     })
 
-    function selectTab(event: UIEvent) {
-      if (event.target) {
 
-        console.log("Hello!!")
-        console.log("Element is active:", event.target.active, event.target)
-      }
-    }
     let modules = ref([]);
 
     onBeforeMount(async function(){
@@ -289,6 +305,9 @@ export default {
 
 
 	  return {
+		virtList,
+		containerProps,
+		wrapperProps,
       log,
 	  logStdout,
 		logError,
@@ -299,13 +318,17 @@ export default {
 		onChangeCode,
 		manager,
 		saveScript,
+		runScript,
 		tree,
 		isJsonString,
 		isLoading,
 		  getThemeByLevel,
       selectTab,
       modules,
-      searchText
+      searchText,
+	  tabStore,
+	  closeTab,
+	  tabGroup
     }
   }
 }

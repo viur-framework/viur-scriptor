@@ -17,8 +17,9 @@
     "@codemirror/next": "^0.16.0",
     "@codemirror/theme-one-dark": "^6.1.0",
     "@codemirror/view": "^6.2.3",
-    "@viur/viur-shoelace": "^2.0.0-beta.82-viur-11",
+    "@viur/viur-shoelace": "^2.0.0-beta.83-viur-14",
     "@viur/viur-vue-utils": "^0.5.9",
+    "@vueuse/core": "^9.10.0",
     "babel-eslint": "^10.1.0",
     "codemirror": "^6.0.1",
     "core-js": "^3.8.3",
@@ -30,7 +31,8 @@
     "typescript-eslint": "^0.0.1-alpha.0",
     "usepython": "file:src/usepython",
     "vue": "^3.2.13",
-    "vue-json-pretty": "^2.2.3"
+    "vue-json-pretty": "^2.2.3",
+    "vue-virtual-scroll-list": "^2.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

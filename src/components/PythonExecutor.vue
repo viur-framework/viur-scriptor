@@ -11,7 +11,7 @@ import {onBeforeMount, onMounted, ref, watch} from "vue";
 import { usePython } from "usepython";
 import {Request} from "@viur/viur-vue-utils";
 
-import {usePythonStore} from "../PythonStore";
+import {usePythonStore} from "../stores/PythonStore";
 
 export default {
 	name: "PythonExecutor",
@@ -30,7 +30,7 @@ export default {
 		const pythonStore = usePythonStore();
 		const isLoading = ref(true);
 		const isExecuting = ref(false);
-		const mirror = ref<CodeMirrorThing>();
+		const mirror = ref<typeof CodeMirrorThing>();
 
 		async function init() {
 			pythonStore.py.log.listen((val) => {
@@ -68,7 +68,7 @@ export default {
 
 			try {
 				props.onrun();
-        let extraCode = "from scriptor import print, init\nawait init()\n";
+        let extraCode = "from scriptor import print, init as __scriptor__init\nawait __scriptor__init()\n";
 				pythonStore.py.run(extraCode + code.value).then(() => {
 					console.log("Abc")
 					isExecuting.value = false;
