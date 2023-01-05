@@ -51,13 +51,34 @@
 							<CodeEditor :keyValue="'' + key"/>
 						</div>
 						<div slot="end" class="split-bottom">
-							
-							<virtual-list style="height: 360px; overflow-y: auto;"
-							:data-key="'id'"
-							:data-sources="log"
-							:data-component="LogEntry"
-							/>
-	
+
+							<div v-if="error.length <= 0" class="logging">
+							<EasyDataTable
+									:headers="[{ text: 'Log', value: 'log' }]"
+									:items="logItems"
+									:buttons-pagination="true"
+									max-height="500"
+									class="log-data-table"
+							>
+								<template #item-log="{ log }">
+									<div v-if="log.json">
+										<vue-json-pretty :data="log.text" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
+									</div>
+									<div v-else>
+									  <pre class="alert-child log-child log-child-text">
+									  <code>
+										  {{ log.text }}
+									  </code>
+										  </pre>
+									</div>
+								</template>
+							</EasyDataTable>
+							</div>
+							<div v-else class="logging">
+								<sl-alert class="danger-print" variant="danger" open>
+									<pre class="error-format">{{ error }}</pre>
+								</sl-alert>
+							</div>
 						</div>
 					</sl-split-panel>
 				</sl-tab-panel>
@@ -97,20 +118,22 @@ import ModuleDetails from "./ModuleDetails.vue";
 import CodeEditor from "./CodeEditor.vue";
 import { useTabStore } from '@/stores/TabStore';
 import { clear } from 'console';
-import { useVirtualList } from '@vueuse/core'; 
-import VirtualList from 'vue-virtual-scroll-list'
 import LogEntry from './LogEntry.vue'
+import LogTable from './LogTable.vue'
+
+
 
 export default {
   name: 'Home',
-  components: {CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, VirtualList, LogEntry},
+  components: {CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, LogEntry, LogTable},
   setup() {
 	const executor = ref();
-    const log = ref([]);
+	const log = ref([]);
+	const logItems = ref([]);
 	const error = ref("");
 	const unsaved = ref<boolean>(false);
 	const isLoading = ref<boolean>(false);
-	const counter  = ref<number>(0); 
+	const counter  = ref<number>(0);
 	const logStdout = function(value: string){
 		log.value.push({
 			id: counter.value++,
@@ -120,14 +143,37 @@ export default {
 			level: "neutral",
 			json: isJsonString(value),
 		})
+
+		logItems.value.push({
+			log: {
+				id: counter.value++,
+				type: "print",
+				text: formatString(value),
+				time: Date.now(),
+				level: "neutral",
+				json: isJsonString(value),
+			}
+		})
 	}
 
 	const pythonStore = usePythonStore();
-	const tabStore = useTabStore(); 
+	const tabStore = useTabStore();
+
+	const renderLogList = [];
 
 	const clearLog = function(){
 		log.value = [];
+		logItems.value = [];
 		error.value = "";
+	}
+
+	let scrollDown = function(event: UIEvent){
+		if (event.originalEvent.wheelDelta >= 0) {
+			console.log('Scroll up');
+		}
+		else {
+			console.log('Scroll down');
+		}
 	}
 
 	  function isJsonString(str: string) {
@@ -169,11 +215,11 @@ export default {
 	}
 
 	function closeTab(key: string) {
-		tabStore.removeTab(key); 
+		tabStore.removeTab(key);
 	}
 
 	function selectTab(key: string) {
-		tabStore.selectTab(key); 
+		tabStore.selectTab(key);
 	}
 
 	let manager = {
@@ -204,8 +250,8 @@ export default {
 	let tabGroup = ref<tabGroup>();
 
 	onMounted(() => {
-		tabStore.tabGroup = tabGroup.value; 
-	}); 
+		tabStore.tabGroup = tabGroup.value;
+	});
 
 	function saveScript(){
 		if (!unsaved.value)
@@ -216,12 +262,12 @@ export default {
 				unsaved.value = false;
 			});
 		}
-	}	
-	
+	}
+
 	function runScript(){
 		if (tabStore.selectedTab) {
-			let content = tabStore.tabMap[tabStore.selectedTab]; 
-			pythonStore.runScript(content.code); 
+			let content = tabStore.tabMap[tabStore.selectedTab];
+			pythonStore.runScript(content.code);
 		}
 	}
 
@@ -247,7 +293,7 @@ export default {
 
 
 			  log.value.push({
-					
+
 				  id: counter.value++,
 				  type: entry.level,
 				  level: computed(()=>{
@@ -258,16 +304,31 @@ export default {
 				  json: isJsonString(entry.text),
 			  })
 
+		  logItems.value.push({
+			  log: {
+				  id: counter.value++,
+				  type: entry.level,
+				  level: computed(() => {
+					  return getThemeByLevel(entry.level);
+				  }),
+				  text: formatString(entry.text),
+				  time: Date.now(),
+				  json: isJsonString(entry.text),
+			  }
+		  })
+
 	  })
 
-	  const filteredList = computed(() => log)
+	  console.log(log)
 
-	  let {virtList, containerProps, wrapperProps} = useVirtualList(filteredList.value, {
-		itemHeight: 30
-	})
+	  const filteredList = computed(function() {
+		  console.log("my log", log);
+		  return log;
+	  })
+	  //const list = log;
 
 
-
+	 // console.log("list", list, containerProps, wrapperProps)
 
     const secondTab = ref<SlTabPanel>();
 
@@ -287,12 +348,15 @@ export default {
       let data = await answ.json();
       for (let index in data.modules) {
         let moduleEntry = data.modules[index];
-        modules.value.push(
-            {
-              name: moduleEntry.name,
-              handler: moduleEntry.handler
-            }
-        );
+
+
+			modules.value.push(
+			  {
+				name: moduleEntry.name,
+				handler: moduleEntry.handler
+			  });
+
+
 
       }
     })
@@ -304,10 +368,8 @@ export default {
     }
 
 
+
 	  return {
-		virtList,
-		containerProps,
-		wrapperProps,
       log,
 	  logStdout,
 		logError,
@@ -328,7 +390,13 @@ export default {
       searchText,
 	  tabStore,
 	  closeTab,
-	  tabGroup
+	  tabGroup,
+		  scrollDown,
+		  options: {
+			  itemHeight: 25
+		  },
+		  filteredList,
+		  logItems
     }
   }
 }
@@ -407,7 +475,7 @@ export default {
   width: 100%;
   height: 100%;
   list-style-type: None;
-  overflow: auto;
+  overflow: scroll;
   padding: 20px;
   margin: 0;
 
@@ -649,4 +717,17 @@ div.cm-content {
   height: 100%;
   overflow-y: auto;
 }
+
+.log-data-table {
+  height: inherit;
+  .vue3-easy-data-table__main {
+	height: inherit;
+  }
+
+  /deep/ .vue3-easy-data-table__main {
+	height: inherit;
+
+  }
+}
+
 </style>

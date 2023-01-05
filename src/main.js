@@ -19,11 +19,14 @@ import { setBasePath } from '@viur/viur-shoelace/dist/utilities/base-path.js';
 setBasePath('https://cdn.jsdelivr.net/npm/@viur/viur-shoelace@2.0.0-beta.62-viur-1/dist');
 
 import a from './config.js';
+import Vue3EasyDataTable from 'vue3-easy-data-table';
+import 'vue3-easy-data-table/dist/style.css';
 
 console.log(`config: {config}`)
 const app = createApp(App);
 app.config.compilerOptions.isCustomElement = tag => tag.startsWith('sl-');
 app.provide("global", global)
+app.component('EasyDataTable', Vue3EasyDataTable);
 app.use(createPinia())
 app.mount('#app')
 

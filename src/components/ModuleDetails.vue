@@ -1,7 +1,9 @@
 <template>
-  <sl-details :summary="computedName" class="data-detail">
-    <ModuleDetailsEntry v-for="entry in structure" :details="entry"></ModuleDetailsEntry>
-  </sl-details>
+	<div v-if="render">
+	  <sl-details :summary="computedName" class="data-detail">
+		<ModuleDetailsEntry v-for="entry in structure" :details="entry"></ModuleDetailsEntry>
+	  </sl-details>
+	</div>
 </template>
 
 <script lang="ts">
@@ -25,13 +27,21 @@ export default {
   name: "ModuleDetails",
   setup(props){
     let structure = ref<[]>([])
+	  let render = ref<boolean>(false);
     onBeforeMount(async function(){
       let url = `/vi/${props.name.toLowerCase()}/structure`;
       if (props.group)
         url += "/" + props.group;
 
+
+
       let answ = await Request.get(url);
-      structure.value = (await answ.json())["structure"];
+	  if (!answ.ok)
+		  render.value = false;
+	  else {
+		  structure.value = (await answ.json())["structure"];
+		  render.value = true;
+	  }
     })
 
 
@@ -42,7 +52,7 @@ export default {
       return props.name;
     })
 
-    return {computedName, props, structure}
+    return {computedName, props, structure, render}
   }
 }
 </script>
