@@ -2,22 +2,30 @@
 
 
 	<li v-show="canRender" contenteditable="false">
-
 		<div
-				class="title"
+				class="item-inner">
+			<div class="item-inner-wrap"
 				@click="click"
 				ref="element"
 		draggable="true"
 		@dragstart="dragStart"
 		@drop="onDrop">
-			<sl-icon name="chevron-right" v-if="isFolder" class="arrow" @click="toggle" :class="{ isOpen: props.model.state.isOpen }"></sl-icon>
-			<div class="spacer" v-else></div>
-			<sl-icon class="icon" name="folder" v-if="isFolder"></sl-icon>
-			<sl-icon class="icon" name="file" v-else></sl-icon>
+				<sl-icon name="chevron-right" v-if="isFolder" class="arrow" @click="toggle" :class="{ isOpen: props.model.state.isOpen }"></sl-icon>
+				<div class="spacer" v-else></div>
+				<sl-icon class="icon" name="folder" v-if="isFolder"></sl-icon>
+				<sl-icon class="icon" name="file" v-else></sl-icon>
 
-			<div class="title"
-				 ref="titleElement"
-			>{{ model.label }}</div>
+				<div class="title"
+					 ref="titleElement"
+				>{{ model.label }}</div>
+			</div>
+			  <sl-dropdown class="dropdown-selection" distance="5">
+				<sl-icon name="three-dots" slot="trigger"></sl-icon>
+				<sl-menu>
+				  <sl-menu-item class="dropdown-item" value="cut">Umbenennen</sl-menu-item>
+				  <sl-menu-item class="dropdown-item" value="copy">Löschen</sl-menu-item>
+				</sl-menu>
+			  </sl-dropdown>
 		</div>
 		<ul v-show="props.model.state.isOpen" v-if="isFolder" class="fileTree">
 			<!--
@@ -177,19 +185,40 @@ export default {
 }
 
 .title{
+  display: inline-block;
+  padding: .2em;
+  transition: all ease .3s;
+  font-size: .95em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-inner{
   display: flex;
   flex-direction: row;
   align-items: center;
   flex: 1;
   padding: .2em;
-  transition: all ease .3s;
   cursor: pointer;
-  font-size: .95em;
+  width: 100%;
 
   &:hover{
 	background-color: var(--sl-color-neutral-100);
-  }
 
+	.dropdown-selection{
+	  &::part(trigger){
+		opacity: 1;
+	  }
+	}
+  }
+}
+
+.item-inner-wrap{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: calc(100% - 1em);
 }
 
 .selected-file {
@@ -202,6 +231,7 @@ export default {
 }
 
 .icon{
+  flex: 0 0 1em;
   margin-right: .5em;
   color: var(--sl-color-neutral-600);
 }
@@ -220,6 +250,7 @@ export default {
 
 .spacer{
   width: 1em;
+  flex: 0 0 1em;
 }
 
 .textarea {
@@ -241,5 +272,43 @@ export default {
   outline:none;
 }
 
+.dropdown-selection{
+
+  sl-menu{
+	padding: 0;
+  }
+
+  &::part(trigger){
+	opacity: 0;
+	transition: all ease .3s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+  }
+
+}
+
+.dropdown-item{
+	&::part(label){
+	  font-size: .9em;
+	  margin: 0 -1em;
+	}
+
+	&::part(suffix){
+	  display: none;
+	}
+
+	&::part(prefix){
+	  display: none;
+	}
+
+  	&::part(base){
+	  transition: all ease .3s;
+
+	  &:hover{
+		background-color: @mainColor;
+	  }
+	}
+}
 
 </style>
