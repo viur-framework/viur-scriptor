@@ -16,6 +16,7 @@ import {Request} from "@viur/viur-vue-utils";
 import {ref, onBeforeMount, inject} from 'vue';
 import {usePythonStore} from "./stores/PythonStore";
 import LoadingSpinner from "./components/common/LoadingSpinner.vue";
+import { python } from '@codemirror/lang-python';
 
 export default {
   name: 'App',
@@ -34,29 +35,7 @@ export default {
 	  async function init() {
 		  isLoading.value = true;
 
-		  await pythonStore.py.load();
-
-		  let baseUrl: string = "";
-		  if (import.meta.env.VITE_API_URL)
-			  baseUrl = `${import.meta.env.VITE_API_URL}`;
-		  else
-			  baseUrl = `${window.location.origin}`;
-
-		  await pythonStore.py.run(`
-				with open("config.py", "w") as f:
-					f.write("BASE_URL='${baseUrl}'")
-			`)
-
-		  const zipUrl = new URL('./assets/scriptor.zip', import.meta.url).href
-
-		  console.log("zipUrl:", zipUrl);
-
-		  // Loading scriptor library
-		  await pythonStore.py.run(`
-			from pyodide.http import pyfetch
-			response = await pyfetch("${zipUrl}")
-			await response.unpack_archive()
-		 `)
+		  await pythonStore.loadPython();
 
 		  isLoading.value = false;
 	  }

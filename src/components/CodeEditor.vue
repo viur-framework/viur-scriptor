@@ -67,10 +67,6 @@ export default {
 		}
 
 
-
-
-
-
 		onMounted(() => {
 			const value = Object.assign([
 				defaultKeymap,

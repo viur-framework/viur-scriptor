@@ -1,5 +1,5 @@
 
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.22.0/full/pyodide.js");
 
 let isPyLoaded = false;
 
@@ -270,7 +270,20 @@ self.onmessage = async (event) => {
 		}
 
 	}
+  else if (id == "setInterruptBuffer")
+  {
+    self.pyodide.setInterruptBuffer(context.interruptBuffer);
+	//end(id);
+  }
+  else if (id == "interrupt") {
+	self.pyodide.checkInterrupt();
+  }
+  else if (id === "setFS") {
+	self.pyodide.FS = context.fs;
+
+  } 
   else  {
+
     // The worker copies the context in its own "memory" (an object mapping name to values)
     for (const key of Object.keys(context)) {
 		//if (key === "showSaveFilePicker" || key === "showDirectoryPicker")
@@ -289,6 +302,7 @@ self.onmessage = async (event) => {
 
 		await self.pyodide.registerJsModule("js_utils", webworkerUtils);
 
+		
 		await runScript(python, id)
   }
 

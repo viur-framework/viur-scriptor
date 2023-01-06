@@ -3,7 +3,10 @@ import { pyLog, pyLogging, pyExecState, pyInstallLog, isPyExecuting, isPyReadySt
 
 /** The main composable */
 const usePython = () => {
-  const _pyodideWorker = new worker();
+  let _pyodideWorker = new worker(); 
+  let pyodide_fs: any = null; 
+  //let interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+
   let _callback: (value: {
     results: any;
     error: any;
@@ -18,6 +21,8 @@ const usePython = () => {
         _callback({ results: data.res, error: null })
         _callback = (v) => null
         pyExecState.set(0);
+
+        
         break;
       case "err":
         _callback = (v) => null
@@ -79,17 +84,14 @@ const usePython = () => {
 
 
             break;
+            case "filesystem":
+              pyodide_fs = data.msg.fs;
+            break;
       default:
         pyExecState.set(0);
         throw new Error(`Unknown event type ${data.type}`)
     }
   }
-
-  _pyodideWorker.onmessage = async (event) => {
-    const { id, ...data } = event.data;
-    //console.log("=> msg in:", id, ":", data);
-    await _dispatchEvent(id ?? "", data)
-  };
 
   function _processTransformCode(code: string): string {
     if (code.startsWith('\n')) {
@@ -102,17 +104,21 @@ const usePython = () => {
     });
     return buf.join("\n")
   }
-
+  
   /** Load the Python runtime */
   async function load(pyoPackages: Array<string> = [], packages: Array<string> = [], initCode = "", transformCode = ""): Promise<{ results: any, error: any }> {
     let res: { results: any; error: any };
     try {
+
       res = await run("", "_pyinstaller", {
         pyoPackages: pyoPackages,
         packages: packages,
         initCode: initCode,
         transformCode: _processTransformCode(transformCode)
       });
+
+
+
     } catch (e) {
       throw new Error(
         // @ts-ignore
@@ -153,12 +159,19 @@ const usePython = () => {
     });
   }
 
+  let restore = false; 
+
+  let restoreWriteList: Record<string, string>[] = []; 
+
   async function write(path: string, name: string, python: string): Promise<{ results: any, error: any }> {
 	  let context = {
 		  name: name,
 		  path: path,
 
 	  }
+    
+    if (!restore)
+      restoreWriteList.push({path, name, python})
 
     return new Promise((onSuccess) => {
       _callback = onSuccess;
@@ -170,12 +183,18 @@ const usePython = () => {
     });
   }
 
+  let removeFileList: Record<string, string>[] = []; 
+
+
   async function removeFile(path: string, name: string): Promise<{ results: any, error: any }> {
 	  let context = {
 		  name: name,
 		  path: path,
 
 	  }
+
+    if (!restore)
+      removeFileList.push({path, name})
 
     return new Promise((onSuccess) => {
       _callback = onSuccess;
@@ -186,11 +205,16 @@ const usePython = () => {
     });
   }
 
+  let removeDirList: Record<string, string>[] = []; 
+
   async function removeDir(path: string,): Promise<{ results: any, error: any }> {
 	  let context = {
 		  path: path,
 
 	  }
+
+    if (!restore)
+      removeDirList.push({path})
 
     return new Promise((onSuccess) => {
       _callback = onSuccess;
@@ -201,6 +225,8 @@ const usePython = () => {
     });
   }
 
+  let renameFileList: Record<string, string>[] = []; 
+
 	async function renameFile(srcPath: string, srcName: string, dstPath: string, dstName: string): Promise<{ results: any, error: any }> {
 		let context = {
 			srcPath: srcPath,
@@ -209,6 +235,14 @@ const usePython = () => {
 			dstName: dstName,
 
 		}
+
+    if (!restore)
+    renameFileList.push({
+      srcPath,
+      srcName,
+      dstPath,
+      dstName
+    })
 
 		return new Promise((onSuccess) => {
 			_callback = onSuccess;
@@ -219,11 +253,14 @@ const usePython = () => {
 		});
 	}
 
+  let renameDirList: Record<string, string>[] = []; 
+
 	async function renameDir(srcPath: string, dstPath: string,): Promise<{ results: any, error: any }> {
 		let context = {
 			srcPath: srcPath,
 			dstPath: dstPath,
 		}
+
 
 		return new Promise((onSuccess) => {
 			_callback = onSuccess;
@@ -233,6 +270,89 @@ const usePython = () => {
 			});
 		});
 	}
+
+  
+  function interruptExecution() {
+    // 2 stands for SIGINT.
+    _pyodideWorker.postMessage({
+      id: "interrupt"
+    })
+  }
+
+  function bindEventWorker() {
+    _pyodideWorker.onmessage = async (event) => {
+      const { id, ...data } = event.data;
+      //console.log("=> msg in:", id, ":", data);
+      await _dispatchEvent(id ?? "", data)
+    };
+  }
+
+  bindEventWorker();
+
+  function destroyAndCreateWorker() {
+    if (_pyodideWorker) {
+      _pyodideWorker.terminate();
+    }
+
+    isPyReadyState.set(0);
+    pyExecState.set(0);
+
+//    let _pyodideWorker2 = new worker(); 
+
+    _pyodideWorker = new worker(); 
+    bindEventWorker();
+    
+    //_pyodideWorker.postMessage({id: "setFS",
+    //fs: pyodide_fs})
+
+  }
+
+  async function restoreFS() {
+
+    restore = true;
+
+    for (let index in restoreWriteList) {
+      let entry = restoreWriteList[index]; 
+      await write(entry.path, entry.name, entry.python);
+    }
+
+    //restoreWriteList = [];
+
+
+    for (let index in renameDirList) {
+      let entry = renameDirList[index]; 
+      await renameDir(entry.srcPath, entry.dstPath);
+    }
+
+    //renameDirList = [];
+
+    for (let index in renameFileList) {
+      let entry = renameDirList[index]; 
+      await renameFile(entry.srcPath, entry.srcName, entry.dstPath, entry.dstName);
+    }
+
+    //renameFileList = [];
+
+
+    for (let index in removeDirList) {
+      let entry = removeDirList[index]; 
+      await removeDir(entry.path);
+    }
+
+    //removeDirList = [];
+
+    for (let index in removeFileList) {
+      let entry = removeFileList[index]; 
+      await removeFile(entry.path, entry.name);
+    }
+
+    //removeFileList = [];
+
+    restore = false;
+  }
+  
+
+
 
   return {
     load,
@@ -250,7 +370,10 @@ const usePython = () => {
 	  removeFile,
 	  removeDir,
 	  renameFile,
-	  renameDir
+	  renameDir,
+    interruptExecution,
+    destroyAndCreateWorker,
+    restoreFS
 
   }
 }

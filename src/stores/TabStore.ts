@@ -2,15 +2,20 @@ import { ref, computed } from 'vue';
 import { defineStore } from 'pinia'
 import { usePython} from "usepython";
 import { SlTabGroup } from '@viur/viur-shoelace';
+import { usePythonStore } from './PythonStore';
 interface Tab
 {
     name: string,
     code: string,
-    render: Boolean
+    render: Boolean, 
+    log?: Record<string, any>,
+    error?: string
 }; 
 
 
 export const useTabStore = defineStore('tab', () => {
+
+    const pythonStore = usePythonStore(); 
 
 	const tabMap = ref<Record<string, Tab>>({}); 
     const tabGroup = ref<SlTabGroup>(null);
@@ -27,8 +32,16 @@ export const useTabStore = defineStore('tab', () => {
     }
 
     let getTabName = computed((key: string) => {
-        return tabMap.value[key].code; 
+        return tabMap.value[key].name; 
     })
+
+    let getTabCode = (key: string) => {
+        let code = tabMap.value[key].code;
+        if (code.length > 1)
+            code = code.substring(0, code.length - 1);
+
+        return code; 
+    }
 
     let addTab = function(key: string, name: string, code: string) {
 
@@ -47,7 +60,9 @@ export const useTabStore = defineStore('tab', () => {
 
             timeoutEvent.value = setTimeout(() => {
                 tabGroup.value.show(key); 
-                selectedTab.value = key; 
+
+                selectTab(key);
+                
             }, 200); 
 
             console.log("TabGroup SHow: ", key)
@@ -56,8 +71,11 @@ export const useTabStore = defineStore('tab', () => {
 
     function selectTab(key: string) {
         if (key in tabMap.value) {
-            selectedTab.value = key; 
-            console.log("Calling selectTab Tab", selectedTab.value)
+            if (selectedTab.value != key) {
+                selectedTab.value = key; 
+                console.log("Calling selectTab Tab", selectedTab.value);
+            }
+
         }
     }
 
@@ -75,14 +93,10 @@ export const useTabStore = defineStore('tab', () => {
         console.log(tabMap.value); 
 
         selectedTab.value = "";
-        console.log("Removing Key", key)
-
-        console.log("REmove Tab keys left", _keys)
         if (_keys.length > 0) {
             if (nextIndex === -1)
                 nextIndex = _keys.length - 1; 
             selectedTab.value = _keys[0]; 
-            console.log("Select Tab in remove Tab", selectedTab.value)
             let _key = _keys[0]; 
 
             if (timeoutEvent.value)
@@ -91,14 +105,17 @@ export const useTabStore = defineStore('tab', () => {
             timeoutEvent.value  = setTimeout(() => {
                 if (tabGroup.value) {
                     tabGroup.value.show(_key); 
-                    console.log("Tab Group show: ", selectedTab.value)
-                    selectedTab.value = _key; 
+                    selectTab(_key); 
                 }
             }, 250); 
         }
 
-        console.log("Removing selectTab Tab", selectedTab.value)
     }
 
-	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab }
+    const getTab = ((key: string): Tab => {
+        return tabGroup.value[key]; 
+    }); 
+
+
+	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab, getTabCode, getTab }
 })

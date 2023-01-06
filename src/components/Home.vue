@@ -42,7 +42,8 @@
 		</div>
 		<div slot="end" class="split-end">
 			<sl-tab-group ref="tabGroup" class="tabs-closable">
-				<sl-tab slot="nav" @sl-close="() => closeTab(key)" @click="() => selectTab(key)" closable="true" v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key">{{tab.name}}</sl-tab>
+				<sl-tab slot="nav" @sl-close="() => closeTab(key)" @click="() => selectTab(key)" closable="true" v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key">{{tab.name}}
+				</sl-tab>
 
 				<sl-tab-panel v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key" :name="key">
 
@@ -51,34 +52,7 @@
 							<CodeEditor :keyValue="'' + key"/>
 						</div>
 						<div slot="end" class="split-bottom">
-
-							<div v-if="error.length <= 0" class="logging">
-							<EasyDataTable
-									:headers="[{ text: 'Log', value: 'log' }]"
-									:items="logItems"
-									:buttons-pagination="true"
-									max-height="500"
-									class="log-data-table"
-							>
-								<template #item-log="{ log }">
-									<div v-if="log.json">
-										<vue-json-pretty :data="log.text" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
-									</div>
-									<div v-else>
-									  <pre class="alert-child log-child log-child-text">
-									  <code>
-										  {{ log.text }}
-									  </code>
-										  </pre>
-									</div>
-								</template>
-							</EasyDataTable>
-							</div>
-							<div v-else class="logging">
-								<sl-alert class="danger-print" variant="danger" open>
-									<pre class="error-format">{{ error }}</pre>
-								</sl-alert>
-							</div>
+							<CodeTab :keyValue="key"></CodeTab>
 						</div>
 					</sl-split-panel>
 				</sl-tab-panel>
@@ -91,10 +65,19 @@
 
 	<footer class="footer">
 
-		<sl-button size="small" @click="saveScript" variant="white" >
+		
+
+		<sl-badge v-show="pythonStore.isExecuting" variant="success" pulse>{{  pythonStore.runningText }}</sl-badge>
+
+
+		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="saveScript" variant="white" >
 			Save
 		</sl-button>
-		<sl-button size="small" @click="runScript" variant="primary">Run</sl-button>
+		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="runScript" variant="primary">
+			Run
+		
+		</sl-button>
+		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
 	</footer>
 
 </template>
@@ -119,13 +102,13 @@ import CodeEditor from "./CodeEditor.vue";
 import { useTabStore } from '@/stores/TabStore';
 import { clear } from 'console';
 import LogEntry from './LogEntry.vue'
-import LogTable from './LogTable.vue'
+import CodeTab from './CodeTab.vue';
 
 
 
 export default {
   name: 'Home',
-  components: {CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, LogEntry, LogTable},
+  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, LogEntry},
   setup() {
 	const executor = ref();
 	const log = ref([]);
@@ -133,82 +116,13 @@ export default {
 	const error = ref("");
 	const unsaved = ref<boolean>(false);
 	const isLoading = ref<boolean>(false);
-	const counter  = ref<number>(0);
-	const logStdout = function(value: string){
-		log.value.push({
-			id: counter.value++,
-			type: "print",
-			value: formatString(value),
-			time: Date.now(),
-			level: "neutral",
-			json: isJsonString(value),
-		})
-
-		logItems.value.push({
-			log: {
-				id: counter.value++,
-				type: "print",
-				text: formatString(value),
-				time: Date.now(),
-				level: "neutral",
-				json: isJsonString(value),
-			}
-		})
-	}
-
 	const pythonStore = usePythonStore();
 	const tabStore = useTabStore();
 
-	const renderLogList = [];
-
-	const clearLog = function(){
-		log.value = [];
-		logItems.value = [];
-		error.value = "";
-	}
-
-	let scrollDown = function(event: UIEvent){
-		if (event.originalEvent.wheelDelta >= 0) {
-			console.log('Scroll up');
-		}
-		else {
-			console.log('Scroll down');
-		}
-	}
-
-	  function isJsonString(str: string) {
-		  try {
-			  let obj = JSON.parse(str);
-			  if (obj.constructor == Object)
-				  return true;
-			  else
-				  return false;
-
-		  } catch (e) {
-			  return false;
-		  }
-		  return true;
-	  }
-
-	  function formatString(str: string) {
-		if (isJsonString(str)) {
-			let obj = JSON.parse(str);
-			if (obj.constructor == Object)
-				return obj;
-		 }
-
-		  return str;
-	  }
 
 	const logError = function(value: string){
-
 		error.value = value;
 	}
-
-
-	onBeforeMount(async () => {
-		await pythonStore.init(null, logError, clearLog);
-	})
 
 	function onChangeCode(value: boolean){
 		unsaved.value = value;
@@ -254,13 +168,15 @@ export default {
 	});
 
 	function saveScript(){
-		if (!unsaved.value)
-			return;
+		//if (!unsaved.value)
+		//	return;
 
 		if (tree.value){
-			tree.value.helper.saveCode(executor.value.getCode(), function(){
-				unsaved.value = false;
-			});
+			if (tabStore.selectedTab in tabStore.tabMap) {
+				tree.value.helper.saveCode(tabStore.selectedTab, tabStore.getTabCode(tabStore.selectedTab), function(){
+					//unsaved.value = false;
+				});
+			}
 		}
 	}
 
@@ -269,76 +185,12 @@ export default {
 			let content = tabStore.tabMap[tabStore.selectedTab];
 			pythonStore.runScript(content.code);
 		}
+	}	
+	
+	function interruptCode(){
+
+		pythonStore.reloadPyodide();
 	}
-
-	  function getThemeByLevel(level: string) {
-
-		  console.log("level", level);
-		  switch (level)
-		  {
-			  case "debug": return "neutral";
-			  case "error": return "danger";
-			  case "warning": return "warning";
-			  case "info": return "info";
-		  }
-		  return "";
-	  }
-
-	  pythonStore.py.pyLogging.listen((val) => {
-		  console.log("pyloggign: ", val);
-
-
-			  let entry = val[val.length - 1];
-			  console.log(`Pushing Data:${entry.level} value ${entry.text} `)
-
-
-			  log.value.push({
-
-				  id: counter.value++,
-				  type: entry.level,
-				  level: computed(()=>{
-					  return getThemeByLevel(entry.level);
-				  }),
-				  value: formatString(entry.text),
-				  time: Date.now(),
-				  json: isJsonString(entry.text),
-			  })
-
-		  logItems.value.push({
-			  log: {
-				  id: counter.value++,
-				  type: entry.level,
-				  level: computed(() => {
-					  return getThemeByLevel(entry.level);
-				  }),
-				  text: formatString(entry.text),
-				  time: Date.now(),
-				  json: isJsonString(entry.text),
-			  }
-		  })
-
-	  })
-
-	  console.log(log)
-
-	  const filteredList = computed(function() {
-		  console.log("my log", log);
-		  return log;
-	  })
-	  //const list = log;
-
-
-	 // console.log("list", list, containerProps, wrapperProps)
-
-    const secondTab = ref<SlTabPanel>();
-
-    onMounted(function(){
-      watch(secondTab.value, function(value, oldValue, onCleanup){
-        if (secondTab.value.active) {
-          console.log("Switched to tab A!")
-        }
-      })
-    })
 
 
     let modules = ref([]);
@@ -371,10 +223,8 @@ export default {
 
 	  return {
       log,
-	  logStdout,
-		logError,
+	logError,
       executor,
-      clearLog,
 		error,
 		unsaved,
 		onChangeCode,
@@ -382,21 +232,16 @@ export default {
 		saveScript,
 		runScript,
 		tree,
-		isJsonString,
 		isLoading,
-		  getThemeByLevel,
       selectTab,
       modules,
       searchText,
 	  tabStore,
 	  closeTab,
 	  tabGroup,
-		  scrollDown,
-		  options: {
-			  itemHeight: 25
-		  },
-		  filteredList,
-		  logItems
+	  logItems,
+	  interruptCode,
+	  pythonStore
     }
   }
 }

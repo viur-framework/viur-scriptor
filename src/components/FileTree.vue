@@ -62,7 +62,7 @@
 		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper" :elements="tree.elements"></FileTreeItem>
 	</ul>
 
-	<div class="loading-spinner" v-show="isLoading">
+	<div class="loading-spinner" v-show="isLoading || pythonStore.isLoading">
 		<sl-spinner class="vld-overlay"></sl-spinner>
 	</div>
 
@@ -532,7 +532,8 @@ export default {
 					isLoading.value = true;
 					Request.view("script", key, {group: "leaf"}).then((answ: Response) => {
 						answ.json().then(function (res) {
-							props.onSelectItem();
+							if (props.onSelectItem)
+								props.onSelectItem();
 
 
 							tree.selectedItem.value = key;
@@ -1171,10 +1172,10 @@ export default {
 				tree.selectedItem.value = "";
 				tree.create();
 			},
-			saveCode: function(code: string, callback: Function = null){
+			saveCode: function(key: string, code: string, callback: Function = null){
 				console.log( "saved length:", code.split(/\r\n|\r|\n/).length)
 				if (tree.selectedFile.value) {
-					const key = tree.selectedFile.value;
+					//const key = tree.selectedFile.value;
 					isLoading.value = true;
 					Request.edit("script", key, {
 						group: "leaf",
@@ -1185,9 +1186,9 @@ export default {
 						const data = await resp.json();
 						if (data.action === 'editSuccess') {
 							console.log("Saved properly!")
-							if (tree.isPluginItem(tree.selectedFile.value)) {
-								let element = tree.find(tree.selectedFile.value);
-								let path = tree.getPath(tree.selectedFile.value);
+							if (tree.isPluginItem(key)) {
+								let element = tree.find(key);
+								let path = tree.getPath(key);
 								console.log("LOG_SAVE:", "path: ", path, " element.name: ", element.label)
 								await pythonStore.py.write("/" + path, element.label, code);
 							}
@@ -1365,7 +1366,8 @@ export default {
 			dialog,
 			addEntry,
 			editEntry,
-			rootNodeElement
+			rootNodeElement,
+			pythonStore
 		}
 	}
 }

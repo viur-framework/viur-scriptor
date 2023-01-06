@@ -17,7 +17,7 @@
     "@codemirror/next": "^0.16.0",
     "@codemirror/theme-one-dark": "^6.1.0",
     "@codemirror/view": "^6.2.3",
-    "@viur/viur-shoelace": "^2.0.0-beta.83-viur-13",
+    "@viur/viur-shoelace": "^2.0.0-beta.83-viur-14",
     "@viur/viur-vue-utils": "^0.5.9",
     "@vueuse/components": "^9.10.0",
     "@vueuse/core": "^9.10.0",
