@@ -24,13 +24,15 @@
 				<div class="data-detail-scroll">
 					<div v-for="(module, index) in modules" :key="index">
 
-						<div v-if="module.handler.startsWith('tree')">
-						<ModuleDetails :name="module.name" group="node"></ModuleDetails>
-						<ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
-
+						<div v-if="module.handler.startsWith('tree.node') || module.handler.startsWith('hierarchy') ">
+							<ModuleDetails :name="module.name" group="node"></ModuleDetails>
+						</div>
+						<div v-else-if="module.handler.startsWith('tree')">
+							<ModuleDetails :name="module.name" group="node"></ModuleDetails>
+							<ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
 						</div>
 						<div v-else>
-						<ModuleDetails :name="module.name"></ModuleDetails>
+							<ModuleDetails :name="module.name"></ModuleDetails>
 
 						</div>
 					</div>
@@ -202,7 +204,7 @@ export default {
       for (let index in data.modules) {
         let moduleEntry = data.modules[index];
 
-
+		console.log("index", index, "moduleEntry", moduleEntry)
 			modules.value.push(
 			  {
 				name: index,
