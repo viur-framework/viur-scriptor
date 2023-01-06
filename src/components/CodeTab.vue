@@ -35,7 +35,7 @@
     import { useTabStore } from "@/stores/TabStore";
     import VueJsonPretty from 'vue-json-pretty';
     import { usePythonStore } from '@/stores/PythonStore';
-    
+
     const pythonStore = usePythonStore();
 
     interface Props {
@@ -48,13 +48,13 @@
 
     let tabStore = useTabStore();
 
-    let tab = computed(() => tabStore.getTab(props.key)); 
+    let tab = computed(() => tabStore.getTab(props.key));
 
-    const logItems = ref<Record<string, any>[]>([]); 
-    const error = ref<string>(""); 
-    
-    
-    function getThemeByLevel(level: string) 
+    const logItems = ref<Record<string, any>[]>([]);
+    const error = ref<string>("");
+
+
+    function getThemeByLevel(level: string)
     {
         console.log("level", level);
         switch (level)
@@ -67,7 +67,7 @@
         return "";
     }
 
-    function isJsonString(str: string) 
+    function isJsonString(str: string)
     {
         try {
 			  let obj = JSON.parse(str);
@@ -84,7 +84,7 @@
     }
 
 	function formatString(str: string) {
-	    if (isJsonString(str)) 
+	    if (isJsonString(str))
         {
             let obj = JSON.parse(str);
 			if (obj.constructor == Object)
@@ -95,11 +95,11 @@
 	}
 
     pythonStore.py.pyLogging.listen((val) => {
-            if (pythonStore.scriptRunnerTab == props.keyValue) 
+            if (pythonStore.scriptRunnerTab == props.keyValue)
             {
                 let entry = val[val.length - 1];
                 console.log(`Pushing Data:${entry.level} value ${entry.text} `)
-            
+
                 logItems.value.push({
                   log: {
                       type: entry.level,
@@ -163,8 +163,8 @@
   width: 100%;
   height: 100%;
   list-style-type: None;
-  overflow: scroll;
-  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
   margin: 0;
 
   sl-alert{
@@ -194,8 +194,7 @@
   }
 
   /deep/ .vue3-easy-data-table__main {
-	height: inherit;
-
+	height: calc(100% - 2.3em);
   }
 }
 

@@ -58,7 +58,7 @@
 		<sl-button slot="footer" variant="success" @click="dialog.accept">{{ dialog.buttonText.value }}</sl-button>
 	</sl-dialog>
 
-	<ul class="fileTree">
+	<ul class="mainFileTree fileTree">
 		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper" :elements="tree.elements"></FileTreeItem>
 	</ul>
 
@@ -91,7 +91,7 @@ export default {
 	setup(props){
 
 		let pythonStore = usePythonStore();
-		let tabStore = useTabStore(); 
+		let tabStore = useTabStore();
 
 		let isLoading = ref<boolean>(false);
 		let dialog = {
@@ -517,7 +517,7 @@ export default {
 
 							//});
 
-							
+
 						}
 						return;
 					}*/
@@ -559,7 +559,7 @@ export default {
 							tabStore.addTab(key, res.values.name, res.values.script);
 
 
-							console.log("tabStore.tabMap", tabStore.tabMap); 
+							console.log("tabStore.tabMap", tabStore.tabMap);
 
 							isLoading.value = false;
 
@@ -1470,5 +1470,11 @@ sl-dialog{
 
 .last-button{
   margin-right: 0 !important;
+}
+
+.mainFileTree{
+  margin-top: 0;
+  overflow-y: auto;
+  height: calc(100% - 56px);
 }
 </style>

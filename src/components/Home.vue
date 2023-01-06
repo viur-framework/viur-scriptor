@@ -65,7 +65,7 @@
 
 	<footer class="footer">
 
-		
+
 
 		<sl-badge v-show="pythonStore.isExecuting" variant="success" pulse>{{  pythonStore.runningText }}</sl-badge>
 
@@ -75,7 +75,7 @@
 		</sl-button>
 		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="runScript" variant="primary">
 			Run
-		
+
 		</sl-button>
 		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
 	</footer>
@@ -185,8 +185,8 @@ export default {
 			let content = tabStore.tabMap[tabStore.selectedTab];
 			pythonStore.runScript(content.code);
 		}
-	}	
-	
+	}
+
 	function interruptCode(){
 
 		pythonStore.reloadPyodide();
@@ -316,27 +316,6 @@ export default {
 :deep(.cm-editor){
   height: 100%;
 }
-.logging {
-  width: 100%;
-  height: 100%;
-  list-style-type: None;
-  overflow: scroll;
-  padding: 20px;
-  margin: 0;
-
-  sl-alert{
-	margin-bottom: 15px;
-
-	&::part(message){
-		padding: 0 15px 0 5px;
-  	}
-
-	&::part(icon){
-		font-size: 1em;
-	  	padding-left: 15px;
-  	}
-  }
-}
 
 div.cm-content {
   flex-grow: 0;
@@ -422,11 +401,6 @@ div.cm-content {
 	&[aria-hidden="true"]{
 	  display: none;
 	}
-  }
-
-  :deep(.fileTree){
-	overflow-y: auto;
-	height: calc(100% - 56px);
   }
 }
 
