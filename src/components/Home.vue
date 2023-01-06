@@ -205,7 +205,7 @@ export default {
 
 			modules.value.push(
 			  {
-				name: moduleEntry.name,
+				name: index,
 				handler: moduleEntry.handler
 			  });
 
