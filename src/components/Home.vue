@@ -17,12 +17,12 @@
 			  <sl-tab slot="nav" panel="data" >Datenbank-Felder</sl-tab>
 
 			  <sl-tab-panel name="files">
-				  <FileTree ref="tree" :tabGroup="tabGroup" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
+				  <FileTree ref="tree" :tabGroup="tabGroup" :manager="manager" :unsaved="unsaved"/>
 			  </sl-tab-panel>
 			  <sl-tab-panel name="data">
 
 				<div class="data-detail-scroll">
-					<div v-for="module in modules">
+					<div v-for="(module, index) in modules" :key="index">
 
 						<div v-if="module.handler.startsWith('tree')">
 						<ModuleDetails :name="module.name" group="node"></ModuleDetails>
@@ -42,6 +42,7 @@
 		</div>
 		<div slot="end" class="split-end">
 			<sl-tab-group ref="tabGroup" class="tabs-closable">
+
 				<sl-tab slot="nav" @sl-close="() => closeTab(key)" @click="() => selectTab(key)" closable="true" v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key">{{tab.name}}
 				</sl-tab>
 

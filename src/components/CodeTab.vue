@@ -1,4 +1,5 @@
 <template>
+
     <div v-if="error.length <= 0" class="logging">
         <EasyDataTable
 			:headers="[{ text: 'Log', value: 'log' }]"
@@ -20,8 +21,8 @@
                                 <code>{{ log.text }}</code>
                             </pre>
                         </div>
-				</sl-alert>
-			</template>
+				      </sl-alert>
+			    </template>
 		</EasyDataTable>
 	</div>
     <div v-else class="logging">
@@ -193,8 +194,9 @@
 	height: inherit;
   }
 
+
   /deep/ .vue3-easy-data-table__main {
-	height: calc(100% - 2.3em);
+	height: calc(100% - 2.30em);
   }
 }
 

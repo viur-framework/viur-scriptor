@@ -11,6 +11,7 @@ from .logger import Logging as logging
 from .module import ListModule, SingletonModule, TreeModule
 
 from .writer import DirectoryPickerWriter, FilePickerWriter, MemoryWriter
+from .readers import FilePickerReader
 
 try:
 	from js import console

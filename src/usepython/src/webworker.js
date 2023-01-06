@@ -34,6 +34,7 @@ let webworkerUtils = {
 	showSaveFilePicker: null,
 	directoryHandle: null,
 	fileHandle: null,
+	filePickerHandle: null,
 	events: {},
 	registerEvent: async function(name, callback) {
 		console.log("register func", name, callback)
@@ -267,6 +268,22 @@ self.onmessage = async (event) => {
 
 
 			webworkerUtils.events.fileHandle = undefined;
+		}
+
+	}	
+	else if (id === "_setOpenFilePickerHandle") 
+	{
+		console.log("_setOpenFilePickerHandle", context.handle, "fileHandle:", webworkerUtils.events.fileHandle)
+
+		if (webworkerUtils.events.filePickerHandle) {
+			console.log("filePickerHandle before!")
+
+			await webworkerUtils.events.filePickerHandle(context.handle);
+
+			console.log("filePickerHandle calling!")
+
+
+			webworkerUtils.events.filePickerHandle = undefined;
 		}
 
 	}

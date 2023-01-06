@@ -83,6 +83,18 @@ const usePython = () => {
             });
 
 
+            break;        
+            
+          case "showOpenFilePicker":
+            _pyodideWorker.postMessage({
+                id: "_setOpenFilePickerHandle",
+                python: "",
+                handle: await window.showOpenFilePicker({
+                  multiple: false
+                })
+            });
+
+
             break;
             case "filesystem":
               pyodide_fs = data.msg.fs;
