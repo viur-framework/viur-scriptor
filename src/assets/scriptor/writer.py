@@ -110,9 +110,8 @@ if is_pyodide_context():
 			self._file_stream = None
 
 		async def write(self, content: str):
-			self._file_stream.write(
+			await self._file_stream.write(
 				type="write",
-				position=self._offset,
 				data=content 
 			)
 
@@ -122,10 +121,12 @@ if is_pyodide_context():
 		async def write_line(self, content: str):
 			content = content + self.line_terminator
 			# FIX WRITING!!
+
+			encoder = js_eval("new TextEncoder()")
+			
 			await self._file_stream.write(
 				type="write",
-				position=self._offset,
-				data=content 
+				data=encoder.encode(content)
 			)
 
 			self._offset += len(content)
