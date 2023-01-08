@@ -121,7 +121,8 @@ if is_pyodide_context():
 
 		async def write_line(self, content: str):
 			content = content + self.line_terminator
-			self._file_stream.write(
+			# FIX WRITING!!
+			await self._file_stream.write(
 				type="write",
 				position=self._offset,
 				data=content 
