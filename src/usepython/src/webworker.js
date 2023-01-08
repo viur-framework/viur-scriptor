@@ -35,6 +35,8 @@ let webworkerUtils = {
 	directoryHandle: null,
 	fileHandle: null,
 	filePickerHandle: null,
+	runningId: 0,
+	res: {},
 	events: {},
 	registerEvent: async function(name, callback) {
 		console.log("register func", name, callback)
@@ -95,6 +97,15 @@ async def pyeval(code, ns):
   isPyLoaded = true;
 }
 
+function isStillRunning() {
+	let state = false; 
+	for (let key in webworkerUtils.events) {
+		if (webworkerUtils.events[key])
+			state = true;
+	}
+	return state;
+}
+
 async function runScript(python, id) {
   try {
     //console.log("Load imports")
@@ -117,7 +128,22 @@ async function runScript(python, id) {
 	 // pyodide.runPythonAsync(`pyeval(${python}, {})`);
 	  //console.log("results", results);
     //console.log("End")
-    end(id, results)
+	//let isStillRunning =
+
+	if (!isStillRunning())
+    {
+		webworkerUtils.runningId = 0;
+		webworkerUtils.res = {};  
+		end(id, results)
+	}	
+	else
+	{
+		webworkerUtils.runningId = id; 
+		webworkerUtils.res = results; 
+
+	}
+	
+	
   } catch (error) {
     console.log("PY RUN ERR", error)
     err(id, error.message)
@@ -254,7 +280,12 @@ self.onmessage = async (event) => {
 		if (webworkerUtils.events.directoryHandle) {
 			await webworkerUtils.events.directoryHandle(context.handle);
 			webworkerUtils.events.directoryHandle = undefined;
+		
+			if (!isStillRunning()) {
+				end(webworkerUtils.runningId, webworkerUtils.res); 
+			}
 		}
+		
 	}
 	else if (id === "_setFileHandle") {
 		console.log("_setFileHandle", context.handle, "fileHandle:", webworkerUtils.events.fileHandle)
@@ -268,8 +299,11 @@ self.onmessage = async (event) => {
 
 
 			webworkerUtils.events.fileHandle = undefined;
-		}
+			if (!isStillRunning()) {
+				end(webworkerUtils.runningId, webworkerUtils.res); 
+			}
 
+		}
 	}	
 	else if (id === "_setOpenFilePickerHandle") 
 	{
@@ -284,7 +318,12 @@ self.onmessage = async (event) => {
 
 
 			webworkerUtils.events.filePickerHandle = undefined;
+			if (!isStillRunning()) {
+				end(webworkerUtils.runningId, webworkerUtils.res); 
+			}
+
 		}
+
 
 	}
   else if (id == "setInterruptBuffer")
