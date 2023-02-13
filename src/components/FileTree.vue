@@ -53,7 +53,6 @@
 
 
 		<sl-input  :ref="dialog.inputInstance" v-show="dialog.showInput.value" :value="dialog.inputText.value" @input="(event: UIEvent) => dialog.inputText.value = event.target.value"></sl-input>
-		<sl-alert>wdw</sl-alert>
 		<sl-button slot="footer" variant="danger" @click="(event) => dialog.instance.value.hide()">Cancel</sl-button>
 		<sl-button slot="footer" variant="success" @click="dialog.accept">{{ dialog.buttonText.value }}</sl-button>
 	</sl-dialog>
@@ -215,7 +214,7 @@ export default {
           console.log(children[child].renderElement)
           if (text) {
             console.log("label:", children[child].label, "includes: ", children[child].label.includes(text))
-            children[child].renderElement = children[child].label.includes(text);
+            children[child].renderElement = children[child].label.toLowerCase().includes(text.toLowerCase());
             if (children[child].renderElement)
               showList.push(children[child].parentObject)
           }
@@ -230,6 +229,8 @@ export default {
         for (let index in showList) {
           let element = showList[index];
           element.renderElement = true;
+
+		
           while (element)
           {
             element.renderElement = true;
@@ -261,8 +262,6 @@ export default {
 					if (children[child].children && children[child].children.length > 0)
 						tree.sort(children[child].children);
 				}
-
-				console.log("sortTree", tree.data.value)
 			},
 
 			// Helper to find a children by the key in the tree
@@ -500,27 +499,6 @@ export default {
 						tree.selectedFile.value = key;
 						return;
 					}
-
-					/*
-					if (props.manager.isUnsaved()) {
-
-						dialog.reset();
-
-						dialog.instance.value.show();
-						dialog.title.value = `Do you wanna safe your changes?`;
-            dialog.buttonText.value = "Save";
-
-
-            dialog.callback = function() {
-							//helper.saveCode(props.executor.getCode(), function(){
-							//	tree.selectItem(element, key);
-
-							//});
-
-
-						}
-						return;
-					}*/
 				}
 				tree.selectedItem.value = key;
 				if (!skipSave)
@@ -545,17 +523,6 @@ export default {
 							props.manager.showMirror();
 
 							console.log("view", res);
-							//console.log("xxx", props.executor);
-							//props.executor.onchange(res.values.script);
-
-							/*if (props.executor.mirror) {
-								console.log("update text to", res.values.script);
-
-								//props.executor.mirror.updateText(res.values.script);
-							}*/
-
-							//console.log(res.value.script)
-
 							tabStore.addTab(key, res.values.name, res.values.script);
 
 
@@ -596,22 +563,22 @@ export default {
 									state: {
 										isOpen: ref<boolean>(),
 										init: function () {
-											new_children.state.isOpen.value = localStorage.getItem(`children.${parent.key}.open`) == "1";
+											new_children.state.isOpen.value = false;
 										},
 										open: function () {
 											new_children.state.isOpen.value = true;
-											localStorage.setItem(`children.${parent.key}.open`, "1");
+											//localStorage.setItem(`children.${parent.key}.open`, "1");
 
 										},
 										close: function () {
 											new_children.state.isOpen.value = false;
-											localStorage.setItem(`children.${parent.key}.open`, "0");
+											//localStorage.setItem(`children.${parent.key}.open`, "0");
 
 										},
 										toggle: function () {
 											new_children.state.isOpen.value = !new_children.state.isOpen.value;
 
-											localStorage.setItem(`children.${parent.key}.open`, new_children.state.isOpen.value ? "1" : "0");
+											//localStorage.setItem(`children.${parent.key}.open`, new_children.state.isOpen.value ? "1" : "0");
 										}
 
 									},
@@ -813,44 +780,6 @@ export default {
 				});
 
 
-					let selectedItemKey = localStorage.getItem(`selected.item.key`);
-					let selectedFileKey = localStorage.getItem(`selected.file.key`);
-					let count = 30;
-					if (selectedItemKey) {
-						while (tree.find(selectedItemKey) === null) {
-							if (count <= 0) {
-								console.warn("There is no tree entry by key ", selectedItemKey)
-								break;
-							}
-
-							await sleep(100);
-							count -= 1;
-						}
-					}
-
-					if (selectedFileKey && selectedFileKey !== selectedItemKey) {
-						count = 30;
-
-						while (tree.find(selectedFileKey) === null) {
-							if (count <= 0) {
-								console.warn("There is no tree entry by key ", selectedFileKey)
-								break;
-							}
-							await sleep(100);
-							count -= 1;
-
-						}
-					}
-
-					let callback = function () {
-						console.log("Setting item key to ", selectedItemKey)
-						tree.selectItem(tree.elements.get(selectedItemKey), selectedItemKey, true);
-					}
-
-					if (selectedFileKey)
-						tree.selectItem(tree.elements.get(selectedFileKey), selectedFileKey, true, selectedItemKey !== selectedFileKey ? callback : null);
-					else if (selectedItemKey)
-						callback();
 				}
 
 
@@ -861,89 +790,9 @@ export default {
 
 		watch(() => tree.data.value, function(){
 			tree.sort();
-			console.log("changed data in tree.data");
+		},{ deep: true })
 
-			if (tree.selectedItem.value) {
-				let element = tree.find(tree.selectedItem.value);
-				if (!element) {
-					tree.selectedItem.value = "";
-				}
-			}
 
-			if (tree.selectedFile.value) {
-				console.log("Selected File: ", tree.selectedFile.value)
-
-				let element = tree.find(tree.selectedFile.value);
-				if (!element) {
-					tree.selectedFile.value = "";
-					props.manager.hideMirror();
-				}
-				else
-				{
-					props.manager.showMirror();
-				}
-			}
-		},
-			{ deep: true })
-
-		watch (() => tree.selectedItem.value, function(value, oldValue, onCleanup) {
-			console.log("HEllo!")
-			if (oldValue) {
-				let element = tree.elements.get(oldValue);
-				if (element)
-					element.classList.remove("selected");
-			}
-			if (value) {
-				let element = tree.elements.get(value);
-				if (element)
-					element.classList.add("selected");
-			}
-
-		});
-
-		watch (()=>tree.elements.data.value, function(value, oldValue, onCleanup){
-
-				for (let key in oldValue){
-					let elem = tree.elements.data.value[key];
-					if (elem) {
-						elem.classList.remove("selected-file");
-						elem.classList.remove("selected");
-					}
-				}
-
-				for (let key in tree.elements.data.value){
-					let elem = tree.elements.data.value[key];
-					if (elem) {
-						elem.classList.remove("selected-file");
-						elem.classList.remove("selected");
-					}
-				}
-
-				let element = tree.elements.get(tree.selectedFile.value);
-				if (element)
-					element.classList.add("selected-file");
-
-				element = tree.elements.get(tree.selectedItem.value);
-				if (element)
-					element.classList.add("selected");
-			},
-			{deep: true}
-		)
-
-		watch (() => tree.selectedFile.value, function(value, oldValue, onCleanup) {
-			console.log(`Change value from value: ${oldValue} to ${value}`)
-
-			if (oldValue) {
-				let element = tree.elements.get(oldValue);
-				if (element)
-					element.classList?.remove("selected-file");
-			}
-			if (value) {
-				let element = tree.elements.get(value);
-				if (element)
-					element.classList?.add("selected-file");
-			}
-		});
 
 
 		onBeforeMount(async function(){

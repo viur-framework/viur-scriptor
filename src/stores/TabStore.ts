@@ -7,9 +7,12 @@ interface Tab
 {
     name: string,
     code: string,
+    key: string,
     render: Boolean, 
     log?: Record<string, any>,
-    error?: string
+    error?: string,
+    leftNode?: Tab,
+    rightNode?: Tab
 }; 
 
 
@@ -18,6 +21,8 @@ export const useTabStore = defineStore('tab', () => {
     const pythonStore = usePythonStore(); 
 
 	const tabMap = ref<Record<string, Tab>>({}); 
+    const tabList = ref([]); 
+
     const tabGroup = ref<SlTabGroup>(null);
 
     const selectedTab = ref<string>(); 
@@ -43,16 +48,47 @@ export const useTabStore = defineStore('tab', () => {
         return code; 
     }
 
+    let update = function() {
+        tabList.value.forEach(function(item: Tab) {
+            if (item.leftNode)
+                item.leftNode = undefined; 
+            
+            if (item.rightNode)
+                item.rightNode = undefined;
+
+            let index = tabList.value.indexOf(item);
+            if (index-1>=0) {
+                item.leftNode = tabList.value[index-1]; 
+                console.log("Adding index ", index, " leftNode ", index-1);
+
+            }
+            if (index + 1 < tabList.value.length){
+                item.rightNode = tabList.value[index+1]; 
+                console.log("Adding index ", index, " rightNode ", index+1);
+                console.log("Right node = ", item.rightNode); 
+            }
+        });
+    }
+
     let addTab = function(key: string, name: string, code: string) {
+
+        if (tabList.value.includes(tabMap.value[key]))
+            tabList.value = tabList.value.filter(function(item){
+                return item.key !== key;
+            }); 
 
         console.log("Adding code", code)
         tabMap.value[key] = {
             name: name,
             code: code,
-            render: false
+            render: false,
+            key: key,
         }
 
         
+
+        tabList.value.push(tabMap.value[key]);
+        update();
 
         if (tabGroup.value) {
             if (timeoutEvent.value)
@@ -80,15 +116,45 @@ export const useTabStore = defineStore('tab', () => {
     }
 
     function removeTab(key: string) {
+
+        let tabInstance: Tab = tabMap.value[key]; 
+        tabList.value = tabList.value.filter(function(item){
+            return item.key !== key;
+        }); 
+
+        update();
+        
         let _keys = Object.keys(tabMap.value); 
 
-        let nextIndex = 0;
-        if (_keys.indexOf(key) >= _keys.length-1)
-            nextIndex = -1;
+        let nextIndex = -1; 
 
-        
+        let isSelectedTab = false; 
+        if (_keys.indexOf(selectedTab.value) === _keys.indexOf(key))
+        {
+            isSelectedTab = true;
+        }
+
         delete tabMap.value[key]; 
         _keys = Object.keys(tabMap.value); 
+
+        if (tabInstance.leftNode !== undefined) {
+            nextIndex = _keys.indexOf(tabInstance.leftNode.key); 
+            console.log("left node instance:", tabInstance.leftNode); 
+        }
+
+        if (tabInstance.rightNode !== undefined) {
+            console.log("right node instance:", tabInstance.rightNode); 
+            if (nextIndex === -1)
+                nextIndex = _keys.indexOf(tabInstance.rightNode.key);
+        }
+
+        let indexOfTab = _keys.indexOf(selectedTab.value); 
+
+        if (!isSelectedTab && nextIndex !== indexOfTab) {
+            nextIndex = indexOfTab; 
+        }
+
+        console.log("NextIndex: ", nextIndex)
 
         console.log(tabMap.value); 
 
@@ -96,8 +162,8 @@ export const useTabStore = defineStore('tab', () => {
         if (_keys.length > 0) {
             if (nextIndex === -1)
                 nextIndex = _keys.length - 1; 
-            selectedTab.value = _keys[0]; 
-            let _key = _keys[0]; 
+            selectedTab.value = _keys[nextIndex]; 
+            let _key = _keys[nextIndex]; 
 
             if (timeoutEvent.value)
                 clearTimeout(timeoutEvent.value);
