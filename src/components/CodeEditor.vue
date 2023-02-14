@@ -9,7 +9,7 @@ import {EditorView, keymap, drawSelection} from "@codemirror/view"
 import {basicSetup} from "codemirror"
 import {python} from "@codemirror/lang-python"
 import {syntaxHighlighting, defaultHighlightStyle} from "@codemirror/language"
-import {insertTab} from "@codemirror/commands"
+import {indentLess, indentMore, indentWithTab, indentSelection, insertTab, } from "@codemirror/commands"
 import {indentString, indentUnit} from '@codemirror/language'
 import { defaultKeymap } from "@codemirror/next/commands";
 import {EditorState} from "@codemirror/state"
@@ -75,7 +75,8 @@ export default {
 			value.push({
 				key: "Tab",
 				preventDefault: true,
-				run: insertTab,
+				run: insertTab
+				//run: indentLess,
 			});
 
 			view.value = editorFromTextArea(element.value,
@@ -83,8 +84,9 @@ export default {
 							basicSetup,
 							python(),
 							syntaxHighlighting(defaultHighlightStyle),
-							keymap.of(value),
-							indentUnit.of("\t"),
+							//keymap.of(value),
+							keymap.of([indentWithTab]),
+							indentUnit.of("    "),
 							EditorState.tabSize.of(4),
 							drawSelection(),
 							//drawSelection(),
@@ -145,3 +147,4 @@ textarea{
 }
 
 </style>
+
