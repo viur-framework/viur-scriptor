@@ -31,11 +31,12 @@
 		</sl-alert>
     </div>
 </template>
+
 <script setup lang="ts">
-    import { computed, ref, onBeforeMount } from 'vue';
-    import { useTabStore } from "@/stores/TabStore";
-    import VueJsonPretty from 'vue-json-pretty';
-    import { usePythonStore } from '@/stores/PythonStore';
+import { computed, ref, onBeforeMount } from 'vue';
+import { useTabStore } from "@/stores/TabStore";
+import VueJsonPretty from 'vue-json-pretty';
+import { usePythonStore } from '@/stores/PythonStore';
 
     const pythonStore = usePythonStore();
 
@@ -196,7 +197,7 @@
 
 
   /deep/ .vue3-easy-data-table__main {
-	height: calc(100% - 2.30em);
+	  height: calc(100% - 2.30em);
   }
 }
 

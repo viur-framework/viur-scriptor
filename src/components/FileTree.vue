@@ -52,7 +52,7 @@
 		</div>
 
 
-		<sl-input  :ref="dialog.inputInstance" v-show="dialog.showInput.value" :value="dialog.inputText.value" @input="(event: UIEvent) => dialog.inputText.value = event.target.value"></sl-input>
+		<sl-input :ref="dialog.inputInstance" v-show="dialog.showInput.value" :value="dialog.inputText.value" @input="(event: UIEvent) => dialog.inputText.value = event.target.value"></sl-input>
 		<sl-button slot="footer" variant="danger" @click="(event) => dialog.instance.value.hide()">Cancel</sl-button>
 		<sl-button slot="footer" variant="success" @click="dialog.accept">{{ dialog.buttonText.value }}</sl-button>
 	</sl-dialog>
@@ -72,7 +72,6 @@ import {computed, onBeforeMount, onMounted, ref, watch, watchEffect} from "vue";
 import {Request} from "@viur/viur-vue-utils";
 
 import FileTreeItem from "./FileTreeItem.vue";
-import {SlDialog, SlIcon, SlInput, SlMenu, SlButton} from "@viur/viur-shoelace";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
 import PythonExecutor from "./PythonExecutor.vue";
 

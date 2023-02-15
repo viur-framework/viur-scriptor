@@ -81,6 +81,10 @@
 
 		</sl-button>
 		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
+
+		<sl-button size="small" @click="showGeneralLogs" variant="primary">
+			Logs
+		</sl-button>
 	</footer>
 
 </template>
@@ -97,6 +101,7 @@ import LoadingSpinner from "./common/LoadingSpinner.vue";
 import {SlIcon, SlTabPanel} from "@viur/viur-shoelace";
 import {SlButton} from "@viur/viur-shoelace";
 import {usePythonStore} from "../stores/PythonStore";
+import {useMessageStore} from "../stores/message";
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import {Request} from "@viur/viur-vue-utils";
@@ -120,6 +125,7 @@ export default {
 	const unsaved = ref<boolean>(false);
 	const isLoading = ref<boolean>(false);
 	const pythonStore = usePythonStore();
+	const messageStore = useMessageStore();
 	const tabStore = useTabStore();
 
 
@@ -195,6 +201,10 @@ export default {
 		pythonStore.reloadPyodide();
 	}
 
+	function showGeneralLogs() {
+		messageStore.state.opened = !messageStore.state.opened;
+	}
+
 
     let modules = ref([]);
 
@@ -244,6 +254,7 @@ export default {
 	  tabGroup,
 	  logItems,
 	  interruptCode,
+	  showGeneralLogs,
 	  pythonStore
     }
   }

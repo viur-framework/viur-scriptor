@@ -24,6 +24,8 @@
 				<sl-menu>
 				  <sl-menu-item class="dropdown-item" value="cut">Umbenennen</sl-menu-item>
 				  <sl-menu-item class="dropdown-item" value="copy">Löschen</sl-menu-item>
+				  <sl-menu-item class="dropdown-item" value="download">Herunterladen</sl-menu-item>
+
 				</sl-menu>
 			  </sl-dropdown>
 		</div>
@@ -47,7 +49,6 @@
 
 <script lang="ts">
 import {ref, computed, defineProps, onMounted, watch, onBeforeMount} from 'vue'
-import {SlIcon} from "@viur/viur-shoelace";
 
 export default {
 	name: "LoadingSpinner",
