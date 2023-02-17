@@ -21,7 +21,7 @@ class MemoryCsvWriter(MemoryWriter):
 
 		if args:
 			self._writer = csv.DictWriter(
-				self._file,
+				self._content,
 				fieldnames=args,
 				extrasaction="ignore",
 				delimiter=delimiter,
@@ -31,7 +31,7 @@ class MemoryCsvWriter(MemoryWriter):
 			self._writer.writeheader()
 		else:
 			self._writer = csv.writer(
-				self._file,
+				self._content,
 				delimiter=delimiter,
 				dialect="excel",
 				quoting=csv.QUOTE_ALL
@@ -80,6 +80,10 @@ class MemoryCsvWriter(MemoryWriter):
 				self._line_count += 1
 		else:
 			raise NotImplementedError(f"Don't know what to do with {repr(values)}")
+
+
+	def __str__(self):
+		return self._content.getvalue()
 
 class FileSystemCsvWriter(MemoryCsvWriter):
 	"""
