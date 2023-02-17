@@ -53,6 +53,8 @@ export default {
 			  global.user = data.values;
 
 			  await init();
+
+			  messageStore.addMessage("debug", "Text-Nachricht", "Ich bin ein Text"); 
 		  }
 		  catch (error) {
 			  isLoggedIn.value = false;

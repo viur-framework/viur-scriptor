@@ -1,6 +1,4 @@
 <template>
-
-
 	<li v-show="canRender" contenteditable="false">
 		<div
 				class="item-inner">
@@ -21,10 +19,11 @@
 			</div>
 			  <sl-dropdown class="dropdown-selection" distance="5">
 				<sl-icon name="three-dots" slot="trigger"></sl-icon>
-				<sl-menu>
+				<sl-menu @sl-select="selectMenuItem">
 				  <sl-menu-item class="dropdown-item" value="cut">Umbenennen</sl-menu-item>
 				  <sl-menu-item class="dropdown-item" value="copy">Löschen</sl-menu-item>
-				  <sl-menu-item class="dropdown-item" value="download">Herunterladen</sl-menu-item>
+
+				  <sl-menu-item v-if="!isFolder" class="dropdown-item" value="download">Herunterladen</sl-menu-item>
 
 				</sl-menu>
 			  </sl-dropdown>
@@ -49,6 +48,8 @@
 
 <script lang="ts">
 import {ref, computed, defineProps, onMounted, watch, onBeforeMount} from 'vue'
+import { SlMenuItem } from '@viur/viur-shoelace'
+import {Request} from '@viur/viur-vue-utils';
 
 export default {
 	name: "LoadingSpinner",
@@ -160,11 +161,36 @@ export default {
 			}
 		})
 
+		function selectMenuItem(event: UIEvent) {
+			let item: SlMenuItem = event.detail.item;
+
+			if (item.value === "download") {
+				// Download-File
+				Request.view("script", props.model.key, {group:"leaf"}).then(async function(response) {
+					const data = (await response.json()).values;
+					console.log(data);
+					const blob1 = new Blob([data["script"]], { type: "text/plain" });
+
+					const url = window.URL.createObjectURL(blob1);
+					const a = document.createElement('a');
+					a.style.display = 'none';
+					a.href = url;
+					// the filename you want
+					a.download = data["name"];
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+				})
+
+			}
+			console.log(item.value);
+		}
+
 
 		return {props, element, toggle, isFolder, dragStart, onDrop, click, titleElement, isOpen:computed(function(){
 				return props.model.state.isOpen;
 			}),
-      canRender}
+      canRender, selectMenuItem}
 	}
 }
 
