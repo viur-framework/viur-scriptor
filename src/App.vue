@@ -1,6 +1,7 @@
 <template>
 
 	<template v-if="isLoggedIn && !isLoading">
+		<DialogDrawer></DialogDrawer>
 		<MessageDrawer/>
 		<Home></Home>
   	</template>
@@ -18,15 +19,17 @@ import {ref, onBeforeMount, inject} from 'vue';
 import {usePythonStore} from "./stores/PythonStore";
 import {useMessageStore} from "./stores/message";
 import LoadingSpinner from "./components/common/LoadingSpinner.vue";
-import { python } from '@codemirror/lang-python';
 import MessageDrawer from "./components/Messaging/MessageDrawer.vue"; 
+import DialogDrawer from './components/Dialogs/DialogDrawer.vue';
+import { useDialogStore } from './stores/dialogs';
 
 export default {
   name: 'App',
   components: {
 	  Home,
 	  LoadingSpinner,
-	  MessageDrawer
+	  MessageDrawer,
+	  DialogDrawer
   },
 
   setup(){
@@ -35,6 +38,8 @@ export default {
 	  let isLoading = ref<boolean>(true);
 	  let messageStore = useMessageStore(); 
 	  const global = inject("global")
+
+	  const x = useDialogStore(); 
 
 	  let pythonStore = usePythonStore();
 	  async function init() {
@@ -46,6 +51,19 @@ export default {
 	  }
 
 	  onBeforeMount(async () => {
+		x.open(
+		{
+			title:"Hello",
+			text:"",
+			type:"directory",
+			acceptEvent:() => console.log("OK!"),
+			cancelEvent: () => console.log("Cancel"),
+			showInputText: false,
+			buttonText: "Hello",
+			showCancelButton: true,
+	  	}
+	  ); 
+
 		  try {
 			  let resp = await Request.get("/vi/user/view/self");
 			  let data = await resp.json();

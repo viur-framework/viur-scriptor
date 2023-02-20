@@ -22,11 +22,21 @@ import a from './config.js';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
+import { VueI18n } from 'vue-i18n';
+
 console.log(`config: {config}`)
 const app = createApp(App);
 app.config.compilerOptions.isCustomElement = tag => tag.startsWith('sl-');
 app.provide("global", global)
 app.component('EasyDataTable', Vue3EasyDataTable);
+
+const i18n = VueI18n.createI18n({
+    locale: 'de', // set locale
+    fallbackLocale: 'en', // set fallback locale
+    messages, // set locale messages
+    // If you need to specify other options, you can set other options
+    // ...
+})
 app.use(createPinia())
 app.mount('#app')
 
