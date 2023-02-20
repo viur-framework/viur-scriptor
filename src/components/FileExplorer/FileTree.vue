@@ -1,62 +1,4 @@
 <template>
-	<div class="header">
-		<sl-tooltip content="Add new directory">
-			<sl-button variant="success" @click="(event) => addEntry(event, 'node')">
-				<sl-icon name="folder-plus"></sl-icon>
-			</sl-button>
-		</sl-tooltip>
-		<sl-tooltip content="Add new file">
-			<sl-button variant="success" @click="(event) => addEntry(event, 'leaf')">
-				<sl-icon name="add-file"></sl-icon>
-			</sl-button>
-		</sl-tooltip>
-
-		<sl-tooltip content="Change name">
-			<sl-button variant="neutral"  @click="editEntry">
-				<sl-icon name="edit-box"></sl-icon>
-			</sl-button>
-		</sl-tooltip>
-
-		<sl-tooltip content="Delete">
-			<sl-button variant="danger" @click="removeEntry">
-				<sl-icon library="bootstrap" name="trash"></sl-icon>
-			</sl-button>
-		</sl-tooltip>
-
-		<div class="spacer"></div>
-
-		<sl-tooltip content="Reload">
-			<sl-button class="last-button" variant="primary" @click="helper.reload">
-				<sl-icon library="bootstrap" name="arrow-clockwise"></sl-icon>
-			</sl-button>
-		</sl-tooltip>
-	</div>
-
-	<sl-dialog :ref="dialog.instance" :label="dialog.title.value" class="dialog-deny-close">
-
-		<div>
-		{{  dialog.text.value }}
-
-
-
-			<div class="new-folder" v-if="dialog.showInput.value">
-
-				<sl-icon library="bootstrap" :name="dialog.type.value === 'directory' ? 'folder' : 'file-earmark'">
-
-				</sl-icon>
-
-				<div :class="dialog.inputTextColor.value">
-					{{dialog.inputPath.value}}
-				</div>
-			</div>
-		</div>
-
-
-		<sl-input :ref="dialog.inputInstance" v-show="dialog.showInput.value" :value="dialog.inputText.value" @input="(event: UIEvent) => dialog.inputText.value = event.target.value"></sl-input>
-		<sl-button slot="footer" variant="danger" @click="(event) => dialog.instance.value.hide()">Cancel</sl-button>
-		<sl-button slot="footer" variant="success" @click="dialog.accept">{{ dialog.buttonText.value }}</sl-button>
-	</sl-dialog>
-
 	<ul class="mainFileTree fileTree">
 		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper" :elements="tree.elements"></FileTreeItem>
 	</ul>
@@ -72,11 +14,13 @@ import {computed, onBeforeMount, onMounted, ref, watch, watchEffect} from "vue";
 import {Request} from "@viur/viur-vue-utils";
 
 import FileTreeItem from "./FileTreeItem.vue";
-import LoadingSpinner from "./common/LoadingSpinner.vue";
+import LoadingSpinner from "../common/LoadingSpinner.vue";
 import PythonExecutor from "./PythonExecutor.vue";
 
-import {usePythonStore} from "../stores/PythonStore";
+import {usePythonStore} from "@/stores/PythonStore";
 import { useTabStore } from '@/stores/TabStore';
+import {useDialogStore} from "../../stores/dialogs";
+import {useI18n} from "vue-i18n";
 
 export default {
 	name: "FileTree",
@@ -92,71 +36,6 @@ export default {
 		let tabStore = useTabStore();
 
 		let isLoading = ref<boolean>(false);
-		let dialog = {
-			instance: ref<SlDialog>(),
-			inputTextColor: ref(""),
-			text: ref(""),
-			title: ref(""),
-			type: ref(""),
-			mode: ref(""),
-			buttonText: ref(""),
-			showInput: ref<boolean>(false),
-			inputText: ref<string>(""),
-			inputInstance: ref<SlInput>(),
-			inputPath: computed(function(){
-				let path = "";
-				if (tree.selectedItem.value) {
-					let element = tree.find(tree.selectedItem.value);
-					if (element) {
-						let parent = element.parentObject;
-
-						if (dialog.mode.value === "add") {
-							if (element.parent)
-								parent = element;
-						}
-
-						let parents = [];
-						while (parent) {
-							if (parent.rootNode)
-								break;
-
-							parents.push(parent);
-
-							parent = parent.parentObject;
-						}
-
-						parents.reverse();
-						for (let i in parents) {
-							path += parents[i].label + "/";
-						}
-
-
-					}
-					path += dialog.inputText.value;
-				}
-				return path;
-			}),
-			callback: function() {},
-			accept: function() {
-				console.log("accept!");
-				if (dialog.callback !== undefined)
-					dialog.callback();
-
-				dialog.instance.value.hide();
-			},
-
-			reset: function(){
-				dialog.inputTextColor.value = "";
-				dialog.text.value = "";
-				dialog.title.value = "";
-				dialog.type.value = "";
-				dialog.showInput.value = false;
-				dialog.inputText.value = "";
-				dialog.mode.value = "add";
-				dialog.buttonText.value = "Add";
-			}
-		}
-		let rootNodeElement = ref<FileTreeItem>();
 
 
 		let tree = {
@@ -184,13 +63,8 @@ export default {
 						//tree.data.value.state.isOpen.value = !tree.data.value.state.isOpen.value;
 					}
 				},
-        renderElement: true,
+				renderElement: true,
 			}),
-
-			// The selected item (in the tree)
-			// USing keys
-			selectedItem: ref(""),
-			selectedFile: ref(""),
 
 			elements: {
 				data: ref({}),
@@ -229,7 +103,7 @@ export default {
           let element = showList[index];
           element.renderElement = true;
 
-		
+
           while (element)
           {
             element.renderElement = true;
@@ -313,6 +187,36 @@ export default {
 					if (element.parent)
 						parent = element;
 
+					let parents = [];
+					while (parent) {
+						if (parent.rootNode)
+							break;
+
+						parents.push(parent);
+
+						parent = parent.parentObject;
+					}
+
+					parents.reverse();
+					let path = "";
+
+					for (let i in parents) {
+						path += parents[i].label + "/";
+					}
+
+					if (withOwnLabel)
+						path += element.label;
+
+					return path;
+				}
+
+				return null;
+			},
+
+			getMyPath: function (key: string, withOwnLabel: boolean = false) {
+				let element = tree.find(key);
+				if (element) {
+					let parent = element.parentObject;
 					let parents = [];
 					while (parent) {
 						if (parent.rootNode)
@@ -472,16 +376,10 @@ export default {
 			delete: function(key: string) {
 				tree.clearStorageByKey(key);
 				tree.removeByKey(key);
-
-				// eslint-disable-next-line vue/no-mutating-props
-				//props.unsaved = false;
 			},
 
 			// Select a item from children (left click)
 			selectItem: function(element: HTMLDivElement, key: string, skipSave: boolean = false, callback: Function = null) {
-				if (tree.selectedItem.value == key)
-					return;
-
 				console.log("Select ", element, " key", key)
 
 				let _entry = tree.find(key);
@@ -491,17 +389,6 @@ export default {
 					return;
 				}
 
-				if (!_entry.parent){
-
-					if (tree.selectedFile.value === key) {
-						tree.selectedItem.value = key;
-						tree.selectedFile.value = key;
-						return;
-					}
-				}
-				tree.selectedItem.value = key;
-				if (!skipSave)
-					localStorage.setItem(`selected.item.key`, key);
 
 				console.log("Select ", element, " key", key)
 
@@ -511,14 +398,6 @@ export default {
 						answ.json().then(function (res) {
 							if (props.onSelectItem)
 								props.onSelectItem();
-
-
-							tree.selectedItem.value = key;
-							tree.selectedFile.value = key;
-							if (!skipSave) {
-								localStorage.setItem(`selected.item.key`, key);
-								localStorage.setItem(`selected.file.key`, key);
-							}
 							props.manager.showMirror();
 
 							console.log("view", res);
@@ -536,8 +415,6 @@ export default {
 					})
 				}
 
-
-				console.log("selectedItem", tree.selectedItem, "element", element);
 			},
 
 			create: async function () {
@@ -798,6 +675,9 @@ export default {
 			await tree.create();
 		});
 
+		const dialogStore = useDialogStore();
+		const {t} = useI18n();
+
 		let helper = {
 			move: async function(node_key: string, leaf_key: string){
 				let node = tree.find(node_key);
@@ -1014,15 +894,18 @@ export default {
 
 
 			},
-			reload: function (event){
-				event.target.blur();
+			reload: function (){
 				tree.data.value.children = [];
-				tree.selectedItem.value = "";
 				tree.create();
 			},
+			rename: function (key: string){
+			},
+
+			getMyPath: tree.getMyPath,
+			getPath: tree.getPath,
 			saveCode: function(key: string, code: string, callback: Function = null){
 				console.log( "saved length:", code.split(/\r\n|\r|\n/).length)
-				if (tree.selectedFile.value) {
+				if (true) {
 					//const key = tree.selectedFile.value;
 					isLoading.value = true;
 					Request.edit("script", key, {
@@ -1058,163 +941,12 @@ export default {
 			},
 		};
 
-		let removeEntry = function (event: Event){
-			event.target.blur();
-
-			let element = tree.find(tree.selectedItem.value);
-
-			if (!element)
-				return;
-
-			if (element.rootNode)
-				return;
-
-			dialog.reset();
-
-			dialog.instance.value.show();
-			dialog.title.value = `Do you really want to delete the selected ${element.parent ? "folder" : "file"}?`;
-			dialog.buttonText.value = "Delete";
-
-			let path = "";
-			let parent = element.parentObject;
-			let parents = []
-			while (parent) {
-				if (parent.rootNode)
-					break;
-
-				//path += parent.label + "/";
-				parents.push(parent);
-
-				parent = parent.parentObject;
-			}
-
-			parents.reverse();
-
-			for (let i in parents) {
-				path += parents[i].label + "/";
-			}
-
-			path += element.label;
-			dialog.text.value = `${path}`;
-
-			dialog.callback = function() {
-				if (tree.selectedItem.value) {
-					helper.remove(tree.selectedItem.value)
-				}
-			}
-		};
-
-		let addEntry = function (event: Event, type: string) {
-			event.target.blur();
-
-			if (!tree.selectedItem.value)
-				return;
-
-			let element = tree.find(tree.selectedItem.value);
-
-			if (!element)
-				return;
-
-			let parent = element;
-			if (!element.parent)
-				parent = element.parentObject;
-
-			// If there is no parent the rootNode will be the parent
-			if (parent === undefined) {
-				parent = tree.data.value;
-			}
-
-			dialog.reset();
-			dialog.instance.value.show();
-			dialog.title.value = `Add new ${type === 'node' ? 'directory' : 'file'}`;
-			dialog.text.value = `Enter a name:`;
-			dialog.showInput.value = true;
-			dialog.inputText.value = "";
-			dialog.type.value = type === 'node' ? "directory" : "file";
-
-
-			dialog.callback = function() {
-				console.log(`Adding to parent ${parent}`)
-				console.log("parent:", parent);
-				console.log("text:", dialog.inputText);
-				console.log("inputPath", dialog.inputPath.value)
-
-				helper.add(parent.key, type, dialog.inputText.value, dialog.inputPath.value)
-
-			}
-		}
-
-		let editEntry = function (event: Event) {
-			event.target.blur();
-
-			if (!tree.selectedItem.value)
-				return;
-
-			let element = tree.find(tree.selectedItem.value);
-
-			if (!element)
-				return;
-
-			if (element.rootNode)
-				return;
-
-			dialog.reset();
-			dialog.instance.value.show();
-			dialog.title.value = `Edit ${element.parent ? 'directory' : 'file'}`;
-			dialog.text.value = `Enter a new name:`;
-			dialog.showInput.value = true;
-			dialog.inputText.value = element.label;
-			dialog.mode.value = "edit";
-			dialog.type.value = element.parent ? "directory" : "file";
-			dialog.buttonText.value = "Edit";
-
-
-
-			dialog.callback = function() {
-				console.log("parent:", parent);
-				console.log("text:", dialog.inputText);
-				helper.edit(element.key, element.parent ? 'node' : 'leaf', dialog.inputText.value, dialog.inputPath.value)
-
-			}
-		}
-
-		let regexp = new RegExp("^[a-zA-Z0-9äöüÄÖÜ_-]*$");
-		let regexp_filename = new RegExp("^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$");
-
-		watch(() => dialog.inputText.value, (first, second) => {
-			let reg = regexp;
-			if (dialog.type.value !== "directory") {
-				reg = regexp_filename;
-				console.log("USing regexp_file_name: ", regexp_filename);
-			}
-
-			if (dialog.inputText.value) {
-				console.log("inputText changed!", dialog.inputText.value)
-
-				if (reg.test(dialog.inputText.value)) {
-					console.log("IS okay!")
-					dialog.inputTextColor.value = "valid-text";
-					dialog.inputInstance.value.classList.add("valid-text");
-
-				} else {
-					console.log("IS not okay!")
-					dialog.inputTextColor.value = "invalid-text";
-
-					dialog.inputInstance.value.classList.add("invalid-text");
-				}
-			}
-		});
 
 
 		return {
 			tree,
 			isLoading,
 			helper,
-			removeEntry,
-			dialog,
-			addEntry,
-			editEntry,
-			rootNodeElement,
 			pythonStore
 		}
 	}

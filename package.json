@@ -32,7 +32,7 @@
     "typescript-eslint": "^0.0.1-alpha.0",
     "usepython": "file:src/usepython",
     "vue": "^3.2.13",
-    "vue-i18n": "^9.2.2",
+    "vue-i18n": "^9.3.0-beta.16",
     "vue-json-pretty": "^2.2.3",
     "vue-virtual-scroll-list": "^2.3.4",
     "vue3-easy-data-table": "^1.5.24"

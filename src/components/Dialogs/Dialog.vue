@@ -2,7 +2,7 @@
     <sl-dialog ref="dialog" :label="data.title" class="dialog-deny-close" @sl-after-hide="destroyDialog">
 
         <div>
-            {{  data.text }}
+            <div v-if="data.text">{{  data.text }}</div>
             <div class="new-folder">
                 <sl-icon library="bootstrap" :name="data.type === 'directory' ? 'folder' : 'file-earmark'"></sl-icon>
                 <div :class="inputTextColorClass">
@@ -23,7 +23,6 @@
 
 <script setup lang="ts">
 import { useDialogStore, DialogInterface } from "@/stores/dialogs";
-import { SlDialog, SlInput } from "@viur/viur-shoelace";
 import { ref, onMounted, watch, computed } from  "vue";
 
 
@@ -49,7 +48,7 @@ export interface Props {
 
 // "^[a-zA-Z0-9äöüÄÖÜ_-]*$"
 function defaultHide() {
-    dialog.value.hide(); 
+    dialog.value.hide();
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -57,17 +56,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 if (!props.data.prefix) {
-    props.data.prefix = ""; 
+    props.data.prefix = "";
 }
 
 console.log(`Props id: ${props.data.id}`)
 
-const dialog = ref<SlDialog>();
-const inputText = ref<string>(""); 
-const inputTextColorClass = ref<string>(""); 
+const dialog = ref<HTMLDivElement>();
+const inputText = ref<string>(props.data.initialText ? props.data.initialText : "");
+const inputTextColorClass = ref<string>("");
 
 onMounted(() => {
-    dialog.value.show(); 
+    dialog.value.show();
 })
 
 watch(inputText, (a, b) => {
@@ -77,23 +76,23 @@ watch(inputText, (a, b) => {
 
 const dialogStore = useDialogStore();
 function destroyDialog() {
-    dialogStore.close(props.data.id); 
+    dialogStore.close(props.data.id);
 }
 
 const previewText = computed(function() {
     if (!props.data.showInputText)
-        return props.data.prefix; 
+        return props.data.prefix;
 
-    return props.data.prefix + inputText.value; 
-}); 
+    return props.data.prefix + inputText.value;
+});
 
 if (props.data.regexStringExpression) {
-    const regex = new RegExp(props.data.regexStringExpression); 
+    const regex = new RegExp(props.data.regexStringExpression);
     watch(previewText, () => {
 
-        const text = props.data.prefix + inputText.value; 
+        const text = props.data.prefix + inputText.value;
 
-        if (regex.test(text)) {
+        if (regex.test(inputText.value)) {
             //dialog.value.
             inputTextColorClass.value = "valid-text";
         }
@@ -108,11 +107,16 @@ function accept() {
     if (props.data.closeOnAccept) {
         dialog.value.hide();
     }
-    
+
     destroyDialog();
 
     if (props.data.acceptEvent) {
-        props.data.acceptEvent();
+		try {
+			props.data.acceptEvent(inputText.value);
+		}
+		catch (e) {
+			props.data.acceptEvent();
+		}
     }
 }
 

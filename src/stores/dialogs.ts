@@ -16,13 +16,14 @@ export interface DialogInterface {
     prefix: string;
     regexStringExpression?: string;
     closeOnAccept?: boolean;
-    
+	initialText: string;
+
 }
 
 export const useDialogStore = defineStore("dialogStore", () => {
 
-    const dialogContainer = ref<Record<number, DialogInterface>>({}); 
-    const idGen = ref<number>(0); 
+    const dialogContainer = ref<Record<number, DialogInterface>>({});
+    const idGen = ref<number>(0);
 
     function open(data:DialogInterface) {
         data.id = ++idGen.value;
@@ -30,7 +31,7 @@ export const useDialogStore = defineStore("dialogStore", () => {
     }
 
     function close(id: number) {
-        delete dialogContainer.value[id]; 
+        delete dialogContainer.value[id];
     }
 
 

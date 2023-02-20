@@ -18,11 +18,13 @@ import "@viur/viur-shoelace/dist/components/icon/icon.styles";
 import { setBasePath } from '@viur/viur-shoelace/dist/utilities/base-path.js';
 setBasePath('https://cdn.jsdelivr.net/npm/@viur/viur-shoelace@2.0.0-beta.62-viur-1/dist');
 
-import a from './config.js';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
-import { VueI18n } from 'vue-i18n';
+import { createI18n } from 'vue-i18n';
+
+import en from "./translations/en"
+import de from "./translations/de"
 
 console.log(`config: {config}`)
 const app = createApp(App);
@@ -30,13 +32,16 @@ app.config.compilerOptions.isCustomElement = tag => tag.startsWith('sl-');
 app.provide("global", global)
 app.component('EasyDataTable', Vue3EasyDataTable);
 
-const i18n = VueI18n.createI18n({
+
+const i18n = createI18n({
+	legacy: false,
     locale: 'de', // set locale
     fallbackLocale: 'en', // set fallback locale
-    messages, // set locale messages
-    // If you need to specify other options, you can set other options
-    // ...
+	messages: {"en": en, "de": de}
 })
+
 app.use(createPinia())
+app.use(i18n);
+
 app.mount('#app')
 

@@ -74,16 +74,18 @@
 
 
 		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="saveScript" variant="white" >
-			Save
+			{{ t("safe") }}
+
 		</sl-button>
 		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="runScript" variant="primary">
-			Run
+			{{ t("run") }}
+
 
 		</sl-button>
 		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
 
 		<sl-button size="small" @click="showGeneralLogs" variant="primary">
-			Logs
+			{{ t("logs") }}
 		</sl-button>
 	</footer>
 
@@ -95,11 +97,9 @@
 
 import {computed, ref, onBeforeMount, onMounted, watch} from 'vue';
 import '@viur/viur-shoelace/dist/components/details-group/details-group.js';
-import FileTree from "./FileTree.vue";
+import FileTree from "./FileExplorer/FileTree.vue";
 import PythonExecutor from "./PythonExecutor.vue";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
-import {SlIcon, SlTabPanel} from "@viur/viur-shoelace";
-import {SlButton} from "@viur/viur-shoelace";
 import {usePythonStore} from "../stores/PythonStore";
 import {useMessageStore} from "../stores/message";
 import VueJsonPretty from 'vue-json-pretty';
@@ -109,14 +109,13 @@ import ModuleDetails from "./ModuleDetails.vue";
 import CodeEditor from "./CodeEditor.vue";
 import { useTabStore } from '@/stores/TabStore';
 import { clear } from 'console';
-import LogEntry from './LogEntry.vue'
 import CodeTab from './CodeTab.vue';
-
+import {useI18n} from "vue-i18n";
 
 
 export default {
   name: 'Home',
-  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, LogEntry},
+  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails},
   setup() {
 	const executor = ref();
 	const log = ref([]);
@@ -127,6 +126,8 @@ export default {
 	const pythonStore = usePythonStore();
 	const messageStore = useMessageStore();
 	const tabStore = useTabStore();
+
+	const { t } = useI18n() // call `useI18n`, and spread `t` from  `useI18n` returning
 
 
 	const logError = function(value: string){
@@ -255,7 +256,8 @@ export default {
 	  logItems,
 	  interruptCode,
 	  showGeneralLogs,
-	  pythonStore
+	  pythonStore,
+		  t
     }
   }
 }

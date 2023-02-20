@@ -14,16 +14,52 @@
 				<sl-icon class="icon" name="file" v-else></sl-icon>
 
 				<div class="title"
-					 ref="titleElement"
-				>{{ model.label }}</div>
+					 ref="titleElement">
+					{{ model.label }}
+				</div>
 			</div>
 			  <sl-dropdown class="dropdown-selection" distance="5">
 				<sl-icon name="three-dots" slot="trigger"></sl-icon>
 				<sl-menu @sl-select="selectMenuItem">
-				  <sl-menu-item class="dropdown-item" value="cut">Umbenennen</sl-menu-item>
-				  <sl-menu-item class="dropdown-item" value="copy">Löschen</sl-menu-item>
 
-				  <sl-menu-item v-if="!isFolder" class="dropdown-item" value="download">Herunterladen</sl-menu-item>
+					<sl-menu-item v-if="props.model.rootNode" class="dropdown-item-new" value="reload">
+						<sl-icon slot="prefix" library="bootstrap" name="arrow-clockwise"></sl-icon>
+
+						Neuladen
+
+					</sl-menu-item>
+
+					<sl-menu-item v-if="isFolder" class="dropdown-item-new" value="add-directory">
+						<sl-icon slot="prefix" name="folder-plus"></sl-icon>
+
+						Ordner hinzufügen
+					</sl-menu-item>
+
+					<sl-menu-item v-if="isFolder" class="dropdown-item-new" value="add-file">
+						<sl-icon slot="prefix" name="add-file"></sl-icon>
+
+						Datei hinzufügen
+					</sl-menu-item>
+
+					<sl-menu-item v-if="!props.model.rootNode" class="dropdown-item-new" value="rename">
+						<sl-icon slot="prefix" name="edit-box"></sl-icon>
+
+						Umbenennen
+
+					</sl-menu-item>
+
+					<sl-menu-item v-if="!isFolder" class="dropdown-item-new" value="download">
+						<sl-icon slot="prefix" name="download"></sl-icon>
+
+						Herunterladen
+					</sl-menu-item>
+
+					<sl-menu-item v-if="!props.model.rootNode" class="dropdown-item-new" value="delete">
+						<sl-icon slot="prefix" library="bootstrap" name="trash"></sl-icon>
+
+						Löschen
+					</sl-menu-item>
+
 
 				</sl-menu>
 			  </sl-dropdown>
@@ -48,8 +84,9 @@
 
 <script lang="ts">
 import {ref, computed, defineProps, onMounted, watch, onBeforeMount} from 'vue'
-import { SlMenuItem } from '@viur/viur-shoelace'
 import {Request} from '@viur/viur-vue-utils';
+import {useDialogStore} from "../../stores/dialogs";
+import {useI18n} from "vue-i18n";
 
 export default {
 	name: "LoadingSpinner",
@@ -161,6 +198,9 @@ export default {
 			}
 		})
 
+		const dialogStore = useDialogStore();
+		const {t} = useI18n();
+
 		function selectMenuItem(event: UIEvent) {
 			let item: SlMenuItem = event.detail.item;
 
@@ -180,8 +220,81 @@ export default {
 					document.body.appendChild(a);
 					a.click();
 					window.URL.revokeObjectURL(url);
+				}).catch((e) => {
+
 				})
 
+			}
+			else if (item.value === "rename") {
+				/* open a picker */
+				// change name
+
+				const path = props.helper.getMyPath(props.model.key);
+
+				dialogStore.open({
+					title:t("dialog.change.name." + (isFolder.value ? "directory" : "file") ),
+					text:"",
+					type:isFolder.value ? "directory" : "file",
+					acceptEvent: (text) => props.helper.edit(props.model.key, isFolder.value ? "node" : "leaf", text, ""),
+					showInputText: true,
+					prefix: path.split("/").length <= 1 ? "" : path,
+					buttonText: t("safe"),
+					showCancelButton: false,
+					initialText: props.model.label,
+					regexStringExpression: isFolder.value ? "^[a-zA-Z0-9äöüÄÖÜ_-]*$" : "^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$",
+				});
+
+
+			}
+			else if (item.value === "delete") {
+				dialogStore.open({
+					title:t("dialog.delete.name." + (isFolder.value ? "directory" : "file") ),
+					text:t("dialog.delete.file"),
+					type:isFolder.value ? "directory" : "file",
+					acceptEvent: (text) => props.helper.remove(props.model.key),
+					showInputText: false,
+					prefix: props.helper.getPath(props.model.key, true),
+					buttonText: t("delete"),
+					showCancelButton: false,
+				});
+			}
+			else if (item.value === "add-file") {
+				dialogStore.open({
+					title:t("dialog.create.name.file"),
+					text:"",
+					type:"file",
+					acceptEvent: (text) => props.helper.add(props.model.key, "leaf", text, ""),
+					showInputText: true,
+					prefix: props.helper.getPath(props.model.key, false),
+					buttonText: t("create"),
+					showCancelButton: false,
+					regexStringExpression: "^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$",
+				});
+			}
+			else if (item.value === "add-directory") {
+				dialogStore.open({
+					title:t("dialog.create.name.directory"),
+					text:"",
+					type:"directory",
+					acceptEvent: (text) => props.helper.add(props.model.key, "node", text, ""),
+					showInputText: true,
+					prefix: props.helper.getPath(props.model.key, false),
+					buttonText: t("create"),
+					showCancelButton: false,
+					regexStringExpression: "^[a-zA-Z0-9äöüÄÖÜ_-]*$",
+				});
+			}
+			else if (item.value === "reload") {
+				dialogStore.open({
+					title:t("dialog.reload" ),
+					text:t("dialog.reload.description"),
+					type:isFolder.value ? "directory" : "file",
+					acceptEvent: (text) => props.helper.reload(),
+					showInputText: false,
+					prefix: "",
+					buttonText: t("reload"),
+					showCancelButton: false,
+				});
 			}
 			console.log(item.value);
 		}
@@ -313,6 +426,25 @@ export default {
 	justify-content: center;
   }
 
+}
+
+.dropdown-item-new {
+  &::part(label){
+	margin-left: 0.1em;
+	margin-top: 0.2em;
+  }
+
+  &::part(checked-icon) {
+	display: none;
+  }
+
+  &::part(base){
+	transition: all ease .3s;
+
+	&:hover{
+	  background-color: @mainColor;
+	}
+  }
 }
 
 .dropdown-item{

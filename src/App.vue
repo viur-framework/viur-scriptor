@@ -19,7 +19,7 @@ import {ref, onBeforeMount, inject} from 'vue';
 import {usePythonStore} from "./stores/PythonStore";
 import {useMessageStore} from "./stores/message";
 import LoadingSpinner from "./components/common/LoadingSpinner.vue";
-import MessageDrawer from "./components/Messaging/MessageDrawer.vue"; 
+import MessageDrawer from "./components/Messaging/MessageDrawer.vue";
 import DialogDrawer from './components/Dialogs/DialogDrawer.vue';
 import { useDialogStore } from './stores/dialogs';
 
@@ -36,10 +36,10 @@ export default {
 
 	  let isLoggedIn = ref<boolean>(false);
 	  let isLoading = ref<boolean>(true);
-	  let messageStore = useMessageStore(); 
+	  let messageStore = useMessageStore();
 	  const global = inject("global")
 
-	  const x = useDialogStore(); 
+	  const x = useDialogStore();
 
 	  let pythonStore = usePythonStore();
 	  async function init() {
@@ -56,13 +56,13 @@ export default {
 			title:"Hello",
 			text:"",
 			type:"directory",
-			acceptEvent:() => console.log("OK!"),
+			acceptEvent: (text) => console.log(text),
 			cancelEvent: () => console.log("Cancel"),
 			showInputText: false,
 			buttonText: "Hello",
 			showCancelButton: true,
 	  	}
-	  ); 
+	  );
 
 		  try {
 			  let resp = await Request.get("/vi/user/view/self");
@@ -72,7 +72,7 @@ export default {
 
 			  await init();
 
-			  messageStore.addMessage("debug", "Text-Nachricht", "Ich bin ein Text"); 
+			  messageStore.addMessage("debug", "Text-Nachricht", "Ich bin ein Text");
 		  }
 		  catch (error) {
 			  isLoggedIn.value = false;
