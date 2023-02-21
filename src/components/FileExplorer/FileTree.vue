@@ -1,11 +1,9 @@
 <template>
+
 	<ul class="mainFileTree fileTree">
 		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper"></FileTreeItem>
 	</ul>
 
-	<div class="loading-spinner" v-show="isLoading || pythonStore.isLoading">
-		<sl-spinner class="vld-overlay"></sl-spinner>
-	</div>
 
 </template>
 
@@ -21,6 +19,8 @@ import {usePythonStore} from "@/stores/PythonStore";
 import { useTabStore } from '@/stores/TabStore';
 import {useDialogStore} from "../../stores/dialogs";
 import {useI18n} from "vue-i18n";
+import {useGlobalStore} from "../../stores/global";
+import {useMessageStore} from "../../stores/message";
 
 export default {
 	name: "FileTree",
@@ -36,7 +36,7 @@ export default {
 		let tabStore = useTabStore();
 
 		let isLoading = ref<boolean>(false);
-
+		const globalStore = useGlobalStore();
 
 		let tree = {
 			// Tree structure
@@ -380,26 +380,34 @@ export default {
 				console.log("Select ", element, " key", key)
 
 				if (!_entry.parent) {
-					isLoading.value = true;
-					Request.view("script", key, {group: "leaf"}).then((answ: Response) => {
-						answ.json().then(function (res) {
-							if (props.onSelectItem)
-								props.onSelectItem();
-							props.manager.showMirror();
+					globalStore.setLoading(true);
 
-							console.log("view", res);
-							tabStore.addTab(key, res.values.name, res.values.script);
+					if (tabStore.openTab(key)) {
+						globalStore.setLoading(false);
+					} else {
+						Request.view("script", key, {group: "leaf"}).then((answ: Response) => {
+							answ.json().then(function (res) {
+								if (props.onSelectItem)
+									props.onSelectItem();
+								props.manager.showMirror();
+
+								console.log("view", res);
+								tabStore.addTab(key, res.values.name, res.values.script);
 
 
-							console.log("tabStore.tabMap", tabStore.tabMap);
+								console.log("tabStore.tabMap", tabStore.tabMap);
 
-							isLoading.value = false;
+								globalStore.setLoading(false);
 
-							if (callback)
-								callback();
+								if (callback)
+									callback();
 
-						});
-					})
+							});
+						}).catch((e) => {
+							globalStore.setLoading(false);
+							messageStore.addMessage("error", t("tree.select.item.title"), t("tree.select.item.description", {file: _entry.label}));
+						})
+					}
 				}
 
 			},
@@ -665,6 +673,8 @@ export default {
 		const dialogStore = useDialogStore();
 		const {t} = useI18n();
 
+		const messageStore = useMessageStore();
+
 		let helper = {
 			move: async function(node_key: string, leaf_key: string){
 				let node = tree.find(node_key);
@@ -685,7 +695,7 @@ export default {
 					return;
 				}
 
-				isLoading.value = true;
+				globalStore.setLoading(true);
 
 				//Request.securePost("/vi/script/move",
 
@@ -719,24 +729,32 @@ export default {
 							let path = tree.getPath(leaf_key)
 							await pythonStore.py.write("/" + path, "/" + leaf.label, resp.values.script);
 						}
+
+						messageStore.addMessage("success", t("tree.action.move.success.title"), "")
 					}
 					else
 					{
 						console.error(`Failed to edit key: ${leaf.key} parententry: ${node.key}`);
+						messageStore.addMessage("error", t("tree.action.move.failed.title"), "")
 
 					}
-					isLoading.value = false;
+					globalStore.setLoading(false);
+
+					//isLoading.value = false;
 
 				}).catch(err => {
 					console.error("Error on edit: ", err);
-					isLoading.value = false;
+					globalStore.setLoading(false);
+					messageStore.addMessage("error", t("tree.action.move.failed.title"), "")
+
+					//isLoading.value = false;
 				});
 
 			},
 			// type = "leaf"|"node"
 			clone: function (fileKey: string, parentKey: string, name: string){
 
-				isLoading.value = true;
+				globalStore.setLoading(true);
 
 				Request.view("script", fileKey, {
 					group: "leaf"
@@ -744,9 +762,12 @@ export default {
 					let data = await res.json();
 					const code = data.values.script.length  <= 0 ? "#### scriptor ####" : data.values.script;
 					await this.add(parentKey, "leaf", name, "", code);
+					messageStore.addMessage("success", t("tree.action.clone.success.title"), "")
 
 				}).catch((e) => {
-					isLoading.value = false;
+					messageStore.addMessage("error", t("tree.action.clone.failed.title"), "")
+
+					globalStore.setLoading(false);
 					console.log(e);
 				})
 
@@ -756,9 +777,7 @@ export default {
 
 			add: function (parentKey: string, type: string, name: string, path: string, code: string = "#### scriptor ####"){
 
-				isLoading.value = true;
-
-
+				globalStore.setLoading(true);
 				Request.securePost(`/vi/script/add/${type}/${parentKey}`, {
 					dataObj: {
 						__mode__: "add",
@@ -779,15 +798,24 @@ export default {
 							let element = tree.find(data.values.key);
 							await pythonStore.py.write("/"+path, element.label, data.values.script);
 						}
+						messageStore.addMessage("success", t("tree.action.add.success.title"), "")
+
+					}
+					else {
+						messageStore.addMessage("error", t("tree.action.add.failed.title"), "")
+
 					}
 
-
-					isLoading.value = false;
+					globalStore.setLoading(false);
+				}).catch((e) => {
+					messageStore.addMessage("error", t("tree.action.add.failed.title"), "")
+					globalStore.setLoading(false);
 				});
 			},
 			edit: function (key: string, type: string, name: string, path: string){
 
-				isLoading.value = true;
+				globalStore.setLoading(true);
+
 
 
 				Request.edit(`script`, key, {
@@ -802,6 +830,7 @@ export default {
 					let data = await res.json();
 
 					if (data.action === "editSuccess") {
+
 						let path = tree.getPath(data.values.key);
 						let element = tree.find(data.values.key);
 						if (tree.isPluginItem(data.values.key)) {
@@ -844,10 +873,20 @@ export default {
 							}
 						}
 
+						messageStore.addMessage("success", t("tree.action.edit.success.title"), "")
+
+
+					}
+					else {
+						messageStore.addMessage("error", t("tree.action.edit.failed.title"), "")
+
 					}
 
+					globalStore.setLoading(false);
+				}).catch((e) => {
+					globalStore.setLoading(false);
 
-					isLoading.value = false;
+					messageStore.addMessage("error", t("tree.action.edit.failed.title"), "");
 				});
 			},
 			remove: function(key: string){
@@ -860,7 +899,8 @@ export default {
 				if (entry.rootNode)
 					return;
 
-				isLoading.value = true;
+				globalStore.setLoading(true);
+
 
 				Request.delete("script", key, {
 					group: entry.parent ? "node" : "leaf"
@@ -893,10 +933,19 @@ export default {
 						}
 
 						tree.delete(key);
+						messageStore.addMessage("success", t("tree.action.delete.success.title"), "");
+
+					}
+					else {
+						messageStore.addMessage("error", t("tree.action.delete.failed.title"), "");
 
 					}
 
-					isLoading.value = false;
+					globalStore.setLoading(false);
+
+				}).catch((e) => {
+					globalStore.setLoading(false);
+					messageStore.addMessage("error", t("tree.action.delete.failed.title"), "");
 				});
 
 
@@ -912,39 +961,43 @@ export default {
 			getPath: tree.getPath,
 			saveCode: function(key: string, code: string, callback: Function = null){
 				console.log( "saved length:", code.split(/\r\n|\r|\n/).length)
-				if (true) {
-					//const key = tree.selectedFile.value;
-					isLoading.value = true;
-					Request.edit("script", key, {
-						group: "leaf",
-						dataObj: {
-							"script": code
+				 //const key = tree.selectedFile.value;
+				globalStore.setLoading(true);
+				Request.edit("script", key, {
+					group: "leaf",
+					dataObj: {
+						"script": code
+					}
+				}).then(async (resp) => {
+					const data = await resp.json();
+					if (data.action === 'editSuccess') {
+						console.log("Saved properly!")
+						if (tree.isPluginItem(key)) {
+							let element = tree.find(key);
+							let path = tree.getPath(key);
+							console.log("LOG_SAVE:", "path: ", path, " element.name: ", element.label)
+							await pythonStore.py.write("/" + path, element.label, code);
 						}
-					}).then(async (resp) => {
-						const data = await resp.json();
-						if (data.action === 'editSuccess') {
-							console.log("Saved properly!")
-							if (tree.isPluginItem(key)) {
-								let element = tree.find(key);
-								let path = tree.getPath(key);
-								console.log("LOG_SAVE:", "path: ", path, " element.name: ", element.label)
-								await pythonStore.py.write("/" + path, element.label, code);
-							}
-							props.manager.save();
-						}
-						isLoading.value = false;
+						props.manager.save();
+					}
+					globalStore.setLoading(false);
 
-						if (data.action === 'editSuccess') {
-							if (callback)
-								callback();
-						}
+					if (data.action === 'editSuccess') {
+						if (callback)
+							callback();
 
-					} )
-				}
-				else
-				{
-					console.error("There is no selected file.");
-				}
+						messageStore.addMessage("success", t("tree.action.save.success.title"), "");
+
+					}
+					else {
+						messageStore.addMessage("error", t("tree.action.save.failed.title"), "");
+					}
+
+				}).catch((e) => {
+					globalStore.setLoading(false);
+					messageStore.addMessage("error", t("tree.action.save.failed.title"), "");
+
+				})
 			},
 		};
 
@@ -952,9 +1005,9 @@ export default {
 
 		return {
 			tree,
-			isLoading,
 			helper,
-			pythonStore
+			pythonStore,
+			globalStore
 		}
 	}
 }

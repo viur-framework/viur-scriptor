@@ -4,7 +4,13 @@
 		<DialogDrawer></DialogDrawer>
 		<MessageDrawer/>
 		<Home></Home>
+
+		<div class="loading-spinner" v-show="globalStore.isLoading">
+			<sl-spinner class="vld-overlay"></sl-spinner>
+		</div>
+
   	</template>
+
 
 </template>
 
@@ -23,6 +29,7 @@ import MessageDrawer from "./components/Messaging/MessageDrawer.vue";
 import DialogDrawer from './components/Dialogs/DialogDrawer.vue';
 import { useDialogStore } from './stores/dialogs';
 import {useI18n} from "vue-i18n";
+import {useGlobalStore} from "./stores/global";
 export default {
   name: 'App',
   components: {
@@ -34,6 +41,7 @@ export default {
 
   setup(){
 
+	  const globalStore = useGlobalStore();
 	  let isLoggedIn = ref<boolean>(false);
 	  let isLoading = ref<boolean>(true);
 	  let messageStore = useMessageStore();
@@ -69,11 +77,23 @@ export default {
 		  }
 	  });
 
-	  return {isLoggedIn, isLoading}
+	  return {isLoggedIn, isLoading, globalStore}
   }
 }
 </script>
 
 <style scoped>
-
+.loading-spinner{
+	z-index: 9999;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(255, 255, 255, .7);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1.8em;
+}
 </style>

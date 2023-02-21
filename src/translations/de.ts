@@ -52,6 +52,71 @@ export default {
 		text: {
 			login: "Du bist nicht einloggt! Bitte logge dich zuerst ein um dem Scriptor benutzen zu können."
 		}
+	},
+	// tree.action.move.success.title
+	tree: {
+		action: {
+			move: {
+				success: {
+					title: "Der Eintrag wurde erfolgreich verschoben."
+				},
+				failed: {
+					title: "Beim verschieben des Eintrag ist etwas schief gelaufen."
+				}
+			},
+			clone: {
+				success: {
+					title: "Der Eintrag wurde erfolgreich dupliziert."
+				},
+
+				failed: {
+					title: "Beim Klonen des Eintrag ist etwas schief gelaufen."
+				}
+			},
+			add: {
+				success: {
+					title: "Der Eintrag wurde erfolgreich erstellt."
+				},
+
+				failed: {
+					title: "Beim erstellen des Eintrag ist etwas schief gelaufen."
+				}
+			},
+			edit: {
+				success: {
+					title: "Der Eintrag wurde erfolgreich umbenannt."
+				},
+
+				failed: {
+					title: "Beim ändern des Eintrag ist ein Fehler aufgetreten."
+				}
+			},
+			delete: {
+				success: {
+					title: "Der Eintrag wurde erfolgreich gelöscht."
+				},
+
+				failed: {
+					title: "Beim Löschen des Eintrag ist ein Fehler aufgetreten."
+				}
+			},
+			save: {
+				success: {
+					title: "Der Eintrag wurde erfolgreich gespeichert."
+				},
+
+				failed: {
+					title: "Beim Speichern des Eintrag ist ein Fehler aufgetreten."
+				}
+			},
+			// tree.select.item.title
+			select: {
+				item: {
+					title: "Beim Öffnen der Datei ist etwas schief gelaufen.",
+					description: "Die Datei {file} konnte nicht geöffnet werden."
+				}
+			}
+		}
 	}
 }
 

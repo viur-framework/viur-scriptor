@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'; 
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia'
 import { usePython} from "usepython";
 import { SlTabGroup } from '@viur/viur-shoelace';
@@ -8,28 +8,28 @@ interface Tab
     name: string,
     code: string,
     key: string,
-    render: Boolean, 
+    render: Boolean,
     log?: Record<string, any>,
     error?: string,
     leftNode?: Tab,
     rightNode?: Tab
-}; 
+};
 
 
 export const useTabStore = defineStore('tab', () => {
 
-    const pythonStore = usePythonStore(); 
+    const pythonStore = usePythonStore();
 
-	const tabMap = ref<Record<string, Tab>>({}); 
-    const tabList = ref([]); 
+	const tabMap = ref<Record<string, Tab>>({});
+    const tabList = ref([]);
 
     const tabGroup = ref<SlTabGroup>(null);
 
-    const selectedTab = ref<string>(); 
-    const timeoutEvent = ref<NodeJS.Timeout>(); 
+    const selectedTab = ref<string>();
+    const timeoutEvent = ref<NodeJS.Timeout>();
 
     function updateCode(key: string, code: string) {
-        tabMap.value[key].code = code; 
+        tabMap.value[key].code = code;
     }
 
     function updateName(key: string, name: string) {
@@ -37,7 +37,7 @@ export const useTabStore = defineStore('tab', () => {
     }
 
     let getTabName = computed((key: string) => {
-        return tabMap.value[key].name; 
+        return tabMap.value[key].name;
     })
 
     let getTabCode = (key: string) => {
@@ -45,27 +45,27 @@ export const useTabStore = defineStore('tab', () => {
         if (code.length > 1)
             code = code.substring(0, code.length - 1);
 
-        return code; 
+        return code;
     }
 
     let update = function() {
         tabList.value.forEach(function(item: Tab) {
             if (item.leftNode)
-                item.leftNode = undefined; 
-            
+                item.leftNode = undefined;
+
             if (item.rightNode)
                 item.rightNode = undefined;
 
             let index = tabList.value.indexOf(item);
             if (index-1>=0) {
-                item.leftNode = tabList.value[index-1]; 
+                item.leftNode = tabList.value[index-1];
                 console.log("Adding index ", index, " leftNode ", index-1);
 
             }
             if (index + 1 < tabList.value.length){
-                item.rightNode = tabList.value[index+1]; 
+                item.rightNode = tabList.value[index+1];
                 console.log("Adding index ", index, " rightNode ", index+1);
-                console.log("Right node = ", item.rightNode); 
+                console.log("Right node = ", item.rightNode);
             }
         });
     }
@@ -75,7 +75,7 @@ export const useTabStore = defineStore('tab', () => {
         if (tabList.value.includes(tabMap.value[key]))
             tabList.value = tabList.value.filter(function(item){
                 return item.key !== key;
-            }); 
+            });
 
         console.log("Adding code", code)
         tabMap.value[key] = {
@@ -85,21 +85,21 @@ export const useTabStore = defineStore('tab', () => {
             key: key,
         }
 
-        
+
 
         tabList.value.push(tabMap.value[key]);
         update();
 
         if (tabGroup.value) {
             if (timeoutEvent.value)
-                clearTimeout(timeoutEvent.value); 
+                clearTimeout(timeoutEvent.value);
 
             timeoutEvent.value = setTimeout(() => {
-                tabGroup.value.show(key); 
+                tabGroup.value.show(key);
 
                 selectTab(key);
-                
-            }, 200); 
+
+            }, 200);
 
             console.log("TabGroup SHow: ", key)
         }
@@ -108,80 +108,103 @@ export const useTabStore = defineStore('tab', () => {
     function selectTab(key: string) {
         if (key in tabMap.value) {
             if (selectedTab.value != key) {
-                selectedTab.value = key; 
+                selectedTab.value = key;
                 console.log("Calling selectTab Tab", selectedTab.value);
             }
 
         }
     }
 
+	function openTab(key: string) {
+		if (tabMap.value[key]) {
+			//const tab = tabMap.value[key];
+			if (tabGroup.value) {
+				if (timeoutEvent.value)
+					clearTimeout(timeoutEvent.value);
+
+				timeoutEvent.value = setTimeout(() => {
+					tabGroup.value.show(key);
+
+					selectTab(key);
+
+				}, 200);
+
+				console.log("TabGroup SHow: ", key)
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
     function removeTab(key: string) {
 
-        let tabInstance: Tab = tabMap.value[key]; 
+        let tabInstance: Tab = tabMap.value[key];
         tabList.value = tabList.value.filter(function(item){
             return item.key !== key;
-        }); 
+        });
 
         update();
-        
-        let _keys = Object.keys(tabMap.value); 
 
-        let nextIndex = -1; 
+        let _keys = Object.keys(tabMap.value);
 
-        let isSelectedTab = false; 
+        let nextIndex = -1;
+
+        let isSelectedTab = false;
         if (_keys.indexOf(selectedTab.value) === _keys.indexOf(key))
         {
             isSelectedTab = true;
         }
 
-        delete tabMap.value[key]; 
-        _keys = Object.keys(tabMap.value); 
+        delete tabMap.value[key];
+        _keys = Object.keys(tabMap.value);
 
         if (tabInstance.leftNode !== undefined) {
-            nextIndex = _keys.indexOf(tabInstance.leftNode.key); 
-            console.log("left node instance:", tabInstance.leftNode); 
+            nextIndex = _keys.indexOf(tabInstance.leftNode.key);
+            console.log("left node instance:", tabInstance.leftNode);
         }
 
         if (tabInstance.rightNode !== undefined) {
-            console.log("right node instance:", tabInstance.rightNode); 
+            console.log("right node instance:", tabInstance.rightNode);
             if (nextIndex === -1)
                 nextIndex = _keys.indexOf(tabInstance.rightNode.key);
         }
 
-        let indexOfTab = _keys.indexOf(selectedTab.value); 
+        let indexOfTab = _keys.indexOf(selectedTab.value);
 
         if (!isSelectedTab && nextIndex !== indexOfTab) {
-            nextIndex = indexOfTab; 
+            nextIndex = indexOfTab;
         }
 
         console.log("NextIndex: ", nextIndex)
 
-        console.log(tabMap.value); 
+        console.log(tabMap.value);
 
         selectedTab.value = "";
         if (_keys.length > 0) {
             if (nextIndex === -1)
-                nextIndex = _keys.length - 1; 
-            selectedTab.value = _keys[nextIndex]; 
-            let _key = _keys[nextIndex]; 
+                nextIndex = _keys.length - 1;
+            selectedTab.value = _keys[nextIndex];
+            let _key = _keys[nextIndex];
 
             if (timeoutEvent.value)
                 clearTimeout(timeoutEvent.value);
-            
+
             timeoutEvent.value  = setTimeout(() => {
                 if (tabGroup.value) {
-                    tabGroup.value.show(_key); 
-                    selectTab(_key); 
+                    tabGroup.value.show(_key);
+                    selectTab(_key);
                 }
-            }, 250); 
+            }, 250);
         }
 
     }
 
     const getTab = ((key: string): Tab => {
-        return tabGroup.value[key]; 
-    }); 
+        return tabGroup.value[key];
+    });
 
 
-	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab, getTabCode, getTab }
+	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab, getTabCode, getTab, openTab }
 })
