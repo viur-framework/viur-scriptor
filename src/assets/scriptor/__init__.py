@@ -22,11 +22,10 @@ except ModuleNotFoundError:
 import json
 import copy
 
-def print(*args, **kwargs):
-	console.log("my own print!")
 
-	for arg in args:
-		logging.info(arg)
+def print(*args, **kwargs):
+	logging.info(*args, **kwargs)
+
 
 class prototypes:
 	list = ListModule

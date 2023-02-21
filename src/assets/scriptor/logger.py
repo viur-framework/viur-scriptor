@@ -8,54 +8,36 @@ import json
 class Logging():
 
 	@staticmethod
-	def debug(text: str):
-		if not isinstance(text, str):
-			if isinstance(text, (dict, list)):
-				try:
-					text = json.dumps(text)
-				except:
-					text = str(text)
-			else:
-				text = str(text)
+	def format_text(*args, **kwargs):
+		jsonify = False
+		if any([isinstance(arg, (dict, list)) for arg in args]):
+			jsonify = True
 
+		text = ""
+		if jsonify:
+			try:
+				text = json.dumps(args)
+			except:
+				text = ""
 
-		_self.postMessage(type="log", text=text, level="debug")
+		if not text:
+			delimiter = kwargs.get("sep", " ")
+			text = f"{delimiter}".join([str(arg) for arg in args])
 
-	@staticmethod
-	def info(text: str):
-		if not isinstance(text, str):
-			if isinstance(text, (dict, list)):
-				try:
-					text = json.dumps(text)
-				except:
-					text = str(text)
-			else:
-				text = str(text)
-
-		_self.postMessage(type="log", text=text, level="info")
+		return text
 
 	@staticmethod
-	def warning(text: str):
-		if not isinstance(text, str):
-			if isinstance(text, (dict, list)):
-				try:
-					text = json.dumps(text)
-				except:
-					text = str(text)
-			else:
-				text = str(text)
-
-		_self.postMessage(type="log", text=text, level="warning")
+	def debug(*args, **kwargs):
+		_self.postMessage(type="log", text=Logging.format_text(*args, **kwargs), level="debug")
 
 	@staticmethod
-	def error(text: str):
-		if isinstance(text, dict):
-			if isinstance(text, (dict, list)):
-				try:
-					text = json.dumps(text)
-				except:
-					text = str(text)
-			else:
-				text = str(text)
+	def info(*args, **kwargs):
+		_self.postMessage(type="log", text=Logging.format_text(*args, **kwargs), level="info")
 
-		_self.postMessage(type="log", text=text, level="error")
+	@staticmethod
+	def warning(*args, **kwargs):
+		_self.postMessage(type="log", text=Logging.format_text(*args, **kwargs), level="warning")
+
+	@staticmethod
+	def error(*args, **kwargs):
+		_self.postMessage(type="log", text=Logging.format_text(*args, **kwargs), level="error")

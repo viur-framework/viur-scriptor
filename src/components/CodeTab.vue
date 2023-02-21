@@ -72,7 +72,7 @@ import { usePythonStore } from '@/stores/PythonStore';
     {
         try {
 			  let obj = JSON.parse(str);
-			  if (obj.constructor == Object)
+			  if (obj.constructor === Object || obj.constructor === Array)
 				  return true;
 			  else
 				  return false;
@@ -88,8 +88,9 @@ import { usePythonStore } from '@/stores/PythonStore';
 	    if (isJsonString(str))
         {
             let obj = JSON.parse(str);
-			if (obj.constructor == Object)
-                return obj;
+			if (obj.constructor === Object || obj.constructor === Array)
+
+				return obj;
 		}
 
 		return str;
