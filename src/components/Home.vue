@@ -4,148 +4,146 @@
 		<div slot="start" class="split-start">
 
 			<h1 class="header">Script0r</h1>
+
+			<div class="search-wrap">
+				<sl-input @input="searchText" size="small"></sl-input>
+				<sl-button size="small">
+					<sl-icon name="search"></sl-icon>
+				</sl-button>
+			</div>
+
 			<sl-tab-group class="tab-group">
 			  <sl-tab slot="nav" panel="files">Datei-Browser</sl-tab>
-			  <sl-tab slot="nav" panel="data">Datenbank-Felder</sl-tab>
+			  <sl-tab slot="nav" panel="data" >Datenbank-Felder</sl-tab>
 
 			  <sl-tab-panel name="files">
-				  <FileTree ref="tree" v-if="executor" :executor="executor" :on-select-item="clearLog" :manager="manager" :unsaved="unsaved"/>
+				  <FileTree ref="tree" :tabGroup="tabGroup" :manager="manager" :unsaved="unsaved"/>
 			  </sl-tab-panel>
 			  <sl-tab-panel name="data">
-				  <sl-details summary="Daten" class="data-detail" v-for="n in 5">
-  					<div class="data" v-for="n in 5">
-						<div class="data-name">Beispiel Daten</div>
-						<div class="data-type">Typ: String</div>
-						<code class="data-code">example.expamle-example</code>
-					</div>
-				  </sl-details>
 
+				<div class="data-detail-scroll">
+					<div v-for="(module, index) in modules" :key="index">
+
+						<div v-if="module.handler.startsWith('tree.node') || module.handler.startsWith('hierarchy') ">
+							<ModuleDetails :name="module.name" group="node"></ModuleDetails>
+						</div>
+						<div v-else-if="module.handler.startsWith('tree')">
+							<ModuleDetails :name="module.name" group="node"></ModuleDetails>
+							<ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
+						</div>
+						<div v-else>
+							<ModuleDetails :name="module.name"></ModuleDetails>
+
+						</div>
+					</div>
+				</div>
 
 			  </sl-tab-panel>
 			</sl-tab-group>
 
 		</div>
-		<div v-show="manager.isOpen.value" slot="end" class="split-end">
-			<sl-split-panel class="side-split" vertical position-in-pixels="500">
-				<div slot="start" class="split-top">
-					<PythonExecutor :log="logStdout" :onerror="logError" :onrun="clearLog" ref="executor" :onChangeCode="onChangeCode" :manager="manager"/>
-				</div>
-				<div slot="end" class="split-bottom">
-					<ul v-if="error.length <= 0" class="logging">
-						<div v-for="entry in log">
-							<div>
-							<li class="alert-print">
-								<sl-alert class="alert-print" :variant="entry.level" open>
-									<sl-icon class="log-child" slot="icon" name="info-circle"></sl-icon>
-									<div v-if="entry.json">
-										<vue-json-pretty :data="entry.value" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
-									</div>
-									<div v-else>
-										<pre class="alert-child log-child log-child-text">
-										<code>
-											{{ entry['value'] }}
-										</code>
-									</pre>
-									</div>
-								</sl-alert>
+		<div slot="end" class="split-end">
+			<sl-tab-group ref="tabGroup" class="tabs-closable">
 
-							</li>
-							</div>
+				<sl-tab slot="nav" @sl-close="() => closeTab(key)" @click="() => selectTab(key)" closable="true" v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key">{{tab.name}}
+				</sl-tab>
+
+				<sl-tab-panel v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key" :name="key">
+
+					<sl-split-panel class="side-split" vertical >
+						<div slot="start" class="split-top">
+							<CodeEditor :keyValue="'' + key"/>
 						</div>
-					</ul>
-					<div v-else class="logging">
-						<sl-alert class="danger-print" variant="danger" open>
-							<pre class="error-format">{{ error }}</pre>
-						</sl-alert>
-					</div>
-				</div>
-			</sl-split-panel>
+						<div slot="end" class="split-bottom">
+							<CodeTab :keyValue="key"></CodeTab>
+						</div>
+					</sl-split-panel>
+				</sl-tab-panel>
+
+			</sl-tab-group>
+
+
 		</div>
 	</sl-split-panel>
 
 	<footer class="footer">
 
-		<sl-button v-if="executor" size="small" @click="saveScript" variant="white" >
-			Save
 
-			<sl-badge v-if="unsaved" pill pulse>1</sl-badge>
+
+		<sl-badge v-show="pythonStore.isExecuting" variant="success" pulse>{{  pythonStore.runningText }}</sl-badge>
+
+
+		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="saveScript" variant="white" >
+			{{ t("safe") }}
+
 		</sl-button>
-		<sl-button v-if="executor" size="small" @click="executor.executeScript" variant="primary" >Run</sl-button>
+		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="runScript" variant="primary">
+			{{ t("run") }}
+
+
+		</sl-button>
+		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
+
+		<sl-button size="small" @click="showGeneralLogs" variant="primary">
+			{{ t("logs") }}
+		</sl-button>
 	</footer>
 
 </template>
 
 <script lang="ts">
 
-import {computed, ref, onBeforeMount} from 'vue';
+
+
+import {computed, ref, onBeforeMount, onMounted, watch} from 'vue';
 import '@viur/viur-shoelace/dist/components/details-group/details-group.js';
-import FileTree from "./FileTree.vue";
+import FileTree from "./FileExplorer/FileTree.vue";
 import PythonExecutor from "./PythonExecutor.vue";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
-import {SlIcon} from "@viur/viur-shoelace";
-import {SlButton} from "@viur/viur-shoelace";
-import {usePythonStore} from "../PythonStore";
+import {usePythonStore} from "../stores/PythonStore";
+import {useMessageStore} from "../stores/message";
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
+import {Request} from "@viur/viur-vue-utils";
+import ModuleDetails from "./ModuleDetails.vue";
+import CodeEditor from "./CodeEditor.vue";
+import { useTabStore } from '@/stores/TabStore';
+import { clear } from 'console';
+import CodeTab from './CodeTab.vue';
+import {useI18n} from "vue-i18n";
 
 
 export default {
   name: 'Home',
-  components: {PythonExecutor, FileTree, LoadingSpinner, VueJsonPretty},
+  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails},
   setup() {
 	const executor = ref();
-    const log = ref([]);
+	const log = ref([]);
+	const logItems = ref([]);
 	const error = ref("");
 	const unsaved = ref<boolean>(false);
 	const isLoading = ref<boolean>(false);
-	const logStdout = function(value: string){
-		log.value.push({
-			type: "print",
-			value: formatString(value),
-			time: Date.now(),
-			level: "neutral",
-			json: isJsonString(value),
-		})
-	}
-
 	const pythonStore = usePythonStore();
+	const messageStore = useMessageStore();
+	const tabStore = useTabStore();
 
-	const clearLog = function(){
-		log.value = [];
-		error.value = "";
-	}
+	const { t } = useI18n() // call `useI18n`, and spread `t` from  `useI18n` returning
 
-	  function isJsonString(str: string) {
-		  try {
-			  let obj = JSON.parse(str);
-			  if (obj.constructor == Object)
-				  return true;
-			  else
-				  return false;
-
-		  } catch (e) {
-			  return false;
-		  }
-		  return true;
-	  }
-
-	  function formatString(str: string) {
-		if (isJsonString(str)) {
-			let obj = JSON.parse(str);
-			if (obj.constructor == Object)
-				return obj;
-		 }
-
-		  return str;
-	  }
 
 	const logError = function(value: string){
-
 		error.value = value;
 	}
 
 	function onChangeCode(value: boolean){
 		unsaved.value = value;
+	}
+
+	function closeTab(key: string) {
+		tabStore.removeTab(key);
+	}
+
+	function selectTab(key: string) {
+		tabStore.selectTab(key);
 	}
 
 	let manager = {
@@ -173,73 +171,98 @@ export default {
 	}
 
 	let tree = ref<FileTree>();
+	let tabGroup = ref<tabGroup>();
+
+	onMounted(() => {
+		tabStore.tabGroup = tabGroup.value;
+	});
 
 	function saveScript(){
-		if (!unsaved.value)
-			return;
+		//if (!unsaved.value)
+		//	return;
 
 		if (tree.value){
-			tree.value.helper.saveCode(executor.value.getCode(), function(){
-				unsaved.value = false;
-			});
+			if (tabStore.selectedTab in tabStore.tabMap) {
+				tree.value.helper.saveCode(tabStore.selectedTab, tabStore.getTabCode(tabStore.selectedTab), function(){
+					//unsaved.value = false;
+				});
+			}
 		}
 	}
 
-	  function getThemeByLevel(level: string) {
+	function runScript(){
+		if (tabStore.selectedTab) {
+			let content = tabStore.tabMap[tabStore.selectedTab];
+			pythonStore.runScript(content.code);
+		}
+	}
 
-		  console.log("level", level);
-		  switch (level)
-		  {
-			  case "debug": return "neutral";
-			  case "error": return "danger";
-			  case "warning": return "warning";
-			  case "info": return "info";
-		  }
-		  return "";
-	  }
+	function interruptCode(){
 
-	  pythonStore.py.pyLogging.listen((val) => {
-		  console.log("pyloggign: ", val);
+		pythonStore.reloadPyodide();
+	}
 
-
-			  let entry = val[val.length - 1];
-			  console.log(`Pushing Data:${entry.level} value ${entry.text} `)
+	function showGeneralLogs() {
+		messageStore.state.opened = !messageStore.state.opened;
+	}
 
 
-			  log.value.push({
-				  type: entry.level,
-				  level: computed(()=>{
-					  return getThemeByLevel(entry.level);
-				  }),
-				  value: formatString(entry.text),
-				  time: Date.now(),
-				  json: isJsonString(entry.text),
-			  })
+    let modules = ref([]);
 
-	  })
+    onBeforeMount(async function(){
+      let answ = await Request.get(`/vi/config`);
+      let data = await answ.json();
+      for (let index in data.modules) {
+        let moduleEntry = data.modules[index];
 
+		console.log("index", index, "moduleEntry", moduleEntry)
+			modules.value.push(
+			  {
+				name: index,
+				handler: moduleEntry.handler
+			  });
+
+
+
+      }
+    })
+
+    function searchText(event: UIEvent){
+      if (tree.value) {
+        tree.value.tree.search(event.target.value);
+      }
+    }
 
 
 
 	  return {
       log,
-	  logStdout,
-		logError,
+	logError,
       executor,
-      clearLog,
 		error,
 		unsaved,
 		onChangeCode,
 		manager,
 		saveScript,
+		runScript,
 		tree,
-		isJsonString,
 		isLoading,
-		  getThemeByLevel
+      selectTab,
+      modules,
+      searchText,
+	  tabStore,
+	  closeTab,
+	  tabGroup,
+	  logItems,
+	  interruptCode,
+	  showGeneralLogs,
+	  pythonStore,
+		  t
     }
   }
 }
 </script>
+
 
 <style scoped lang="less">
 
@@ -285,6 +308,7 @@ export default {
 
 .side-split{
   height: 100%;
+  background-color: #fff;
 }
 
 .split-start{
@@ -307,27 +331,6 @@ export default {
 
 :deep(.cm-editor){
   height: 100%;
-}
-.logging {
-  width: 100%;
-  height: 100%;
-  list-style-type: None;
-  overflow: auto;
-  padding: 20px;
-  margin: 0;
-
-  sl-alert{
-	margin-bottom: 15px;
-
-	&::part(message){
-		padding: 0 15px 0 5px;
-  	}
-
-	&::part(icon){
-		font-size: 1em;
-	  	padding-left: 15px;
-  	}
-  }
 }
 
 div.cm-content {
@@ -362,17 +365,13 @@ div.cm-content {
 }
 
 .tab-group{
-  display: flex;
-  flex-direction: column;
+  height: 0;
   flex: 1;
-  height: 1px;
 
   &::part(base){
+	height: 100%;
 	border: none;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	height: 1px;
+  	background-color: #fff;
   }
 
   &::part(nav){
@@ -385,11 +384,9 @@ div.cm-content {
   }
 
   &::part(body){
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	height: 1px;
+	height: 100%;
 	border: none;
+	overflow-y: hidden;
   }
 
   sl-tab {
@@ -410,31 +407,15 @@ div.cm-content {
   }
 
   sl-tab-panel{
-	flex-direction: column;
-	flex: 1;
-	height: 1px;
+	height: 100%;
 
 	&::part(base){
-	  flex-direction: column;
-	  flex: 1;
-	  height: 1px;
+	  height: 100%;
 	  padding: 0;
-	}
-
-	&[aria-hidden="false"]{
-	  display: flex;
-
-	  &::part(base){
-	  	display: flex;
-	  }
 	}
 
 	&[aria-hidden="true"]{
 	  display: none;
-
-	  &::part(base){
-	  	display: none;
-	  }
 	}
   }
 }
@@ -453,21 +434,17 @@ div.cm-content {
 
 .data-type{
   margin-bottom: 10px;
+  font-size: .9em;
 }
 
 .data-code{
   background-color: #f4f4f4;
   padding: 5px;
-  font-size: 1.1em;
 }
 
 .data-detail{
   &::part(base){
 	overflow: hidden;
-	border-radius: 0;
-	border: none;
-	border-bottom: 1px solid var(--sl-color-neutral-300);
-  	font-size: .9em;
   }
   &::part(header){
 	padding: 15px;
@@ -480,4 +457,112 @@ div.cm-content {
 	padding: 0;
   }
 }
+
+.search-wrap{
+  width: 100%;
+  background-color: @mainColor;
+  padding: 0 15px 15px 15px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  sl-button{
+	&::part(base){
+	  border-top-left-radius: 0;
+	  border-bottom-left-radius: 0;
+	  aspect-ratio: 1;
+	}
+  }
+
+  sl-input{
+	flex: 1;
+
+	&::part(base){
+	  border-top-right-radius: 0;
+	  border-bottom-right-radius: 0;
+	}
+  }
+}
+
+.tabs-closable{
+  --track-width: 0;
+
+  height: 100%;
+
+  &::part(base){
+	height: 100%;
+	background-color: var(--sl-color-neutral-100);
+  }
+
+  &::part(body){
+	height: 100%;
+	overflow-y: hidden;
+  }
+
+  sl-tab{
+
+  &::part(base){
+    display: flex;
+    padding: 5px 12px;
+  }
+
+  &::part(close-button){
+    opacity: .5;
+    font-size: 1.2em;
+    margin: 0 -6px 0 5px;
+    transition: all ease .3s;
+  }
+
+  &:hover{
+    &::part(close-button){
+      opacity: 1;
+    }
+
+    &::part(base){
+      color: @mainColor;
+    }
+  }
+
+	&[aria-selected="true"]{
+	  background-color: #fff;
+
+	  &::part(base){
+		color: @mainColor;
+	  }
+	}
+  }
+
+  sl-tab-panel{
+	height: 100%;
+
+	&::part(base){
+	  height: 100%;
+	  padding: 0;
+	  background-color: transparent;
+	}
+
+	&[aria-hidden="true"]{
+	  display: none;
+	}
+  }
+
+}
+
+.data-detail-scroll{
+  height: 100%;
+  overflow-y: auto;
+}
+
+.log-data-table {
+  height: inherit;
+  .vue3-easy-data-table__main {
+	height: inherit;
+  }
+
+  /deep/ .vue3-easy-data-table__main {
+	height: inherit;
+
+  }
+}
+
 </style>
