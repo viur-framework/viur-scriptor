@@ -24,6 +24,34 @@ export default {
 		}
 	},
 	yes: "Ja",
-	delete: "Löschen"
+	delete: "Löschen",
+	reload: "Neuladen",
+	actions: {
+		add: {
+			directory: "Ordner hinzufügen",
+			file: "Datei hinzufügen",
+		},
+		rename: "Umbenennen",
+		download: "Herunterladen",
+		duplicate: "Duplizieren",
+		delete: "Löschen"
+
+	},
+	tab: {
+		file: {
+			"browser": "Datei-Browser",
+		},
+		database: {
+			fields: "Datenbank-Felder"
+		}
+	},
+	error: {
+		title: {
+			login: "Etwas ist beim einloggen schief gelaufen!",
+		},
+		text: {
+			login: "Du bist nicht einloggt! Bitte logge dich zuerst ein um dem Scriptor benutzen zu können."
+		}
+	}
 }
 

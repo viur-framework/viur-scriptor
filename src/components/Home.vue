@@ -13,8 +13,14 @@
 			</div>
 
 			<sl-tab-group class="tab-group">
-			  <sl-tab slot="nav" panel="files">Datei-Browser</sl-tab>
-			  <sl-tab slot="nav" panel="data" >Datenbank-Felder</sl-tab>
+			  <sl-tab slot="nav" panel="files">
+				  {{ t("tab.file.browser") }}
+
+			  </sl-tab>
+			  <sl-tab slot="nav" panel="data" >
+				  {{ t("tab.database.fields") }}
+
+			  </sl-tab>
 
 			  <sl-tab-panel name="files">
 				  <FileTree ref="tree" :tabGroup="tabGroup" :manager="manager" :unsaved="unsaved"/>

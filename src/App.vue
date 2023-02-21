@@ -22,7 +22,7 @@ import LoadingSpinner from "./components/common/LoadingSpinner.vue";
 import MessageDrawer from "./components/Messaging/MessageDrawer.vue";
 import DialogDrawer from './components/Dialogs/DialogDrawer.vue';
 import { useDialogStore } from './stores/dialogs';
-
+import {useI18n} from "vue-i18n";
 export default {
   name: 'App',
   components: {
@@ -41,6 +41,8 @@ export default {
 
 	  const x = useDialogStore();
 
+	  const {t} = useI18n();
+
 	  let pythonStore = usePythonStore();
 	  async function init() {
 		  isLoading.value = true;
@@ -51,19 +53,6 @@ export default {
 	  }
 
 	  onBeforeMount(async () => {
-		x.open(
-		{
-			title:"Hello",
-			text:"",
-			type:"directory",
-			acceptEvent: (text) => console.log(text),
-			cancelEvent: () => console.log("Cancel"),
-			showInputText: false,
-			buttonText: "Hello",
-			showCancelButton: true,
-	  	}
-	  );
-
 		  try {
 			  let resp = await Request.get("/vi/user/view/self");
 			  let data = await resp.json();
@@ -72,10 +61,11 @@ export default {
 
 			  await init();
 
-			  messageStore.addMessage("debug", "Text-Nachricht", "Ich bin ein Text");
+			  //messageStore.addMessage("debug", "Text-Nachricht", "Ich bin ein Text");
 		  }
 		  catch (error) {
 			  isLoggedIn.value = false;
+			  messageStore.addMessage("error", t("error.title.login"), t("error.text.login"));
 		  }
 	  });
 

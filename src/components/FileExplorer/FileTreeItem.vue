@@ -26,45 +26,50 @@
 					<sl-menu-item v-if="props.model.rootNode" class="dropdown-item-new" value="reload">
 						<sl-icon slot="prefix" library="bootstrap" name="arrow-clockwise"></sl-icon>
 
-						Neuladen
+						{{ t('reload') }}
 
 					</sl-menu-item>
 
 					<sl-menu-item v-if="isFolder" class="dropdown-item-new" value="add-directory">
 						<sl-icon slot="prefix" name="folder-plus"></sl-icon>
 
-						Ordner hinzufügen
+						{{ t('actions.add.directory') }}
+
 					</sl-menu-item>
 
 					<sl-menu-item v-if="isFolder" class="dropdown-item-new" value="add-file">
 						<sl-icon slot="prefix" name="add-file"></sl-icon>
 
-						Datei hinzufügen
+						{{ t('actions.add.file') }}
+
 					</sl-menu-item>
 
 					<sl-menu-item v-if="!props.model.rootNode" class="dropdown-item-new" value="rename">
 						<sl-icon slot="prefix" name="edit-box"></sl-icon>
 
-						Umbenennen
+						{{ t('actions.rename') }}
 
 					</sl-menu-item>
 
 					<sl-menu-item v-if="!isFolder" class="dropdown-item-new" value="download">
 						<sl-icon slot="prefix" name="download"></sl-icon>
 
-						Herunterladen
+						{{ t('actions.download') }}
+
 					</sl-menu-item>
 
 					<sl-menu-item v-if="!isFolder" class="dropdown-item-new" value="duplicate">
 						<sl-icon slot="prefix" name="clone"></sl-icon>
 
-						Duplizieren
+						{{ t('actions.duplicate') }}
+
 					</sl-menu-item>
 
 					<sl-menu-item v-if="!props.model.rootNode" class="dropdown-item-new" value="delete">
 						<sl-icon slot="prefix" library="bootstrap" name="trash"></sl-icon>
 
-						Löschen
+						{{ t('actions.delete') }}
+
 					</sl-menu-item>
 
 
@@ -328,7 +333,8 @@ export default {
 			}),
       canRender, selectMenuItem, dragLeave, classList, classNames: computed(function(){
 		  		return classList.value.join(" ");
-			})}
+			}),
+		t}
 	}
 }
 
