@@ -1,17 +1,18 @@
 <template>
-	<CodeMirrorThing :onchange="onchange" :onChangeCode="props.onChangeCode" ref="mirror"/>
+	<CodeMirrorThing :onchange="onchange" :onChangeCode="props.onChangeCode" :text="baseFile" ref="mirror"/>
   	<LoadingSpinner :show="isExecuting"></LoadingSpinner>
 </template>
 
 <script lang="ts">
 import CodeMirrorThing from "./CodeMirrorWrapper.vue";
 import LoadingSpinner from "./common/LoadingSpinner.vue";
+import baseFile from '../assets/base.py?raw';
 import scripterFile from '../assets/scripter.py?raw';
 import {onBeforeMount, onMounted, ref, watch} from "vue";
 import { usePython } from "usepython";
 import {Request} from "@viur/viur-vue-utils";
 
-import {usePythonStore} from "../stores/PythonStore";
+import {usePythonStore} from "../PythonStore";
 
 export default {
 	name: "PythonExecutor",
@@ -26,11 +27,14 @@ export default {
 		onChangeCode: Function,
 	},
 	setup(props){
-		const code = ref("");
+		const code = ref(baseFile);
 		const pythonStore = usePythonStore();
 		const isLoading = ref(true);
 		const isExecuting = ref(false);
-		const mirror = ref<typeof CodeMirrorThing>();
+		const mirror = ref<CodeMirrorThing>();
+
+		const imgUrl = new URL('./../assets/base.py', import.meta.url).href
+		console.log("img url:", imgUrl);
 
 		async function init() {
 			pythonStore.py.log.listen((val) => {
@@ -68,8 +72,7 @@ export default {
 
 			try {
 				props.onrun();
-        let extraCode = "from scriptor import print, init as __scriptor__init\nawait __scriptor__init()\n";
-				pythonStore.py.run(extraCode + code.value).then(() => {
+				pythonStore.py.run(code.value).then(() => {
 					console.log("Abc")
 					isExecuting.value = false;
 				});
@@ -94,6 +97,7 @@ export default {
 
 
 		return {
+			baseFile,
 			onchange,
 			executeScript,
 			isLoading,
