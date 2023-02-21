@@ -2,11 +2,12 @@
 	<li v-show="canRender" contenteditable="false">
 		<div
 				class="item-inner">
-			<div class="item-inner-wrap"
+			<div :class="classNames"
 				@click="click"
 				ref="element"
 		draggable="true"
 		@dragstart="dragStart"
+		@dragleave="dragLeave"
 		@drop="onDrop">
 				<sl-icon name="chevron-right" v-if="isFolder" class="arrow" @click="toggle" :class="{ isOpen: props.model.state.isOpen }"></sl-icon>
 				<div class="spacer" v-else></div>
@@ -107,6 +108,7 @@ export default {
     const canRender = computed(() => {
       return props.model.renderElement
     })
+		const classList = ref<[]>(["item-inner-wrap"]);
 
     console.log("mymodel", props.model)
 
@@ -139,6 +141,14 @@ export default {
 			console.log("key: ", props.model.key)
 		}
 
+		function dragLeave(event) {
+			if (classList.value.includes("accept-drop"))
+				classList.value = classList.value.filter(e => e !== "accept-drop");
+
+
+			console.log("dragLeave: ", props.model.key)
+		}
+
 		function onDrop(event) {
 			const key = event.dataTransfer.getData('key')
 			if (key !== props.model.key)
@@ -156,9 +166,15 @@ export default {
 
 				element.value.ondragover = (event) => {
 					event.preventDefault();
+					if (!classList.value.includes("accept-drop"))
+						classList.value.push("accept-drop");
+					console.log("ondragover: classList", classList);
+
 				}
 				element.value.ondragenter = (event) => {
 					event.preventDefault();
+					console.log("ondragenter: classList", classList);
+
 				}
 			}
 		}
@@ -303,7 +319,9 @@ export default {
 		return {props, element, toggle, isFolder, dragStart, onDrop, click, titleElement, isOpen:computed(function(){
 				return props.model.state.isOpen;
 			}),
-      canRender, selectMenuItem}
+      canRender, selectMenuItem, dragLeave, classList, classNames: computed(function(){
+		  		return classList.value.join(" ");
+			})}
 	}
 }
 
@@ -468,6 +486,15 @@ export default {
 		background-color: @mainColor;
 	  }
 	}
+}
+
+.accept-drop {
+  color: @mainColor;
+  font-weight: bold;
+
+  sl-icon{
+	color: @mainColor;
+  }
 }
 
 </style>
