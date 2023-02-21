@@ -5,7 +5,6 @@
 			:headers="[{ text: 'Log', value: 'log' }]"
 			:items="logItems"
 			:buttons-pagination="true"
-			max-height="500"
 			class="log-data-table"
         >
             <template #item-log="{ log }">
@@ -190,14 +189,14 @@ import { usePythonStore } from '@/stores/PythonStore';
 
 
 .log-data-table {
-  height: inherit;
+  height: 100%;
   .vue3-easy-data-table__main {
-	height: inherit;
+	height: 100%;
   }
-
 
   /deep/ .vue3-easy-data-table__main {
 	  height: calc(100% - 2.30em);
+		min-height: auto;
   }
 }
 

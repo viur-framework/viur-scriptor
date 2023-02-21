@@ -971,11 +971,34 @@ export default {
 
 .fileTree{
   width: 100%;
-  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  height: 1px;
+  flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 2px 5px 5px 5px;
   margin: 0;
   list-style: none;
+
+   &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--sl-color-neutral-300);
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-button {
+        height: 6px;
+    }
 }
 
 .menu {
@@ -1052,9 +1075,4 @@ sl-dialog{
   margin-right: 0 !important;
 }
 
-.mainFileTree{
-  margin-top: 0;
-  overflow-y: auto;
-  height: calc(100% - 56px);
-}
 </style>

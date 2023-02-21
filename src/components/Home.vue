@@ -300,10 +300,15 @@ export default {
   color: green;
 }
 
-.main-split{
-  height: calc(100% - 50px);
+.main-split {
+  height: calc(100vh - 50px);
   --min: 300px;
   --max: 500px;
+
+  &::part(panel){
+	display: flex;
+	flex-direction: column;
+  }
 }
 
 .side-split{
@@ -312,21 +317,23 @@ export default {
 }
 
 .split-start{
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .split-end{
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
 .split-top{
-  height: 100%;
+  overflow-y: auto;
 }
 
 .split-bottom{
-  height: 100%;
+  overflow-y: auto;
 }
 
 :deep(.cm-editor){
@@ -365,13 +372,18 @@ div.cm-content {
 }
 
 .tab-group{
-  height: 0;
+  display: flex;
+  flex-direction: column;
+  height: 1px;
   flex: 1;
 
   &::part(base){
-	height: 100%;
 	border: none;
   	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+	height: 1px;
+	flex: 1;
   }
 
   &::part(nav){
@@ -384,9 +396,11 @@ div.cm-content {
   }
 
   &::part(body){
-	height: 100%;
 	border: none;
-	overflow-y: hidden;
+	display: flex;
+	flex-direction: column;
+	height: 1px;
+	flex: 1;
   }
 
   sl-tab {
@@ -396,6 +410,7 @@ div.cm-content {
 	  padding: 10px 15px;
 	  color: #fff;
 	  border: none;
+	  overflow-y: hidden;
 	}
 
 	&[aria-selected="true"]{
@@ -407,11 +422,17 @@ div.cm-content {
   }
 
   sl-tab-panel{
-	height: 100%;
+	display: flex;
+	flex-direction: column;
+	height: 1px;
+	flex: 1;
 
 	&::part(base){
-	  height: 100%;
 	  padding: 0;
+	  display: flex;
+	  flex-direction: column;
+	  height: 1px;
+	  flex: 1;
 	}
 
 	&[aria-hidden="true"]{
