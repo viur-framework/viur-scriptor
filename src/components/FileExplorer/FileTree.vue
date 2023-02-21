@@ -1,6 +1,6 @@
 <template>
 	<ul class="mainFileTree fileTree">
-		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper" :elements="tree.elements"></FileTreeItem>
+		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper"></FileTreeItem>
 	</ul>
 
 	<div class="loading-spinner" v-show="isLoading || pythonStore.isLoading">
@@ -66,19 +66,6 @@ export default {
 				renderElement: true,
 			}),
 
-			elements: {
-				data: ref({}),
-				set: function(key: string, element: HTMLDivElement){
-					console.log("key", key, " setting to ", element)
-					if (key.length <= 0)
-						return;
-
-					tree.elements.data.value[key] = element;
-				},
-				get: function (key: string){
-					return tree.elements.data.value[key];
-				}
-			},
 
       search: function(text: string, children = tree.data.value.children){
 
@@ -747,7 +734,27 @@ export default {
 
 			},
 			// type = "leaf"|"node"
-			add: function (parentKey: string, type: string, name: string, path: string){
+			clone: function (fileKey: string, parentKey: string, name: string){
+
+				isLoading.value = true;
+
+				Request.view("script", fileKey, {
+					group: "leaf"
+				}).then (async (res) => {
+					let data = await res.json();
+					const code = data.values.script.length  <= 0 ? "#### scriptor ####" : data.values.script;
+					await this.add(parentKey, "leaf", name, "", code);
+
+				}).catch((e) => {
+					isLoading.value = false;
+					console.log(e);
+				})
+
+
+
+			},
+
+			add: function (parentKey: string, type: string, name: string, path: string, code: string = "#### scriptor ####"){
 
 				isLoading.value = true;
 
@@ -757,7 +764,7 @@ export default {
 						__mode__: "add",
 						name: name,
 						rootNode: false,
-						script: "#### scriptor ####",
+						script: code,
 						path: path
 					}
 				}).then(async (res) => {

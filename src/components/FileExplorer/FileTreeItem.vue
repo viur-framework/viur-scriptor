@@ -55,6 +55,12 @@
 						Herunterladen
 					</sl-menu-item>
 
+					<sl-menu-item v-if="!isFolder" class="dropdown-item-new" value="duplicate">
+						<sl-icon slot="prefix" name="clone"></sl-icon>
+
+						Duplizieren
+					</sl-menu-item>
+
 					<sl-menu-item v-if="!props.model.rootNode" class="dropdown-item-new" value="delete">
 						<sl-icon slot="prefix" library="bootstrap" name="trash"></sl-icon>
 
@@ -75,7 +81,6 @@
 					v-for="model in model.children"
 					:model="model"
 					:onselect="onselect"
-					:elements="props.elements"
 					:helper="helper">
 			</FileTreeItem>
 		</ul>
@@ -94,8 +99,7 @@ export default {
 	props: {
 		model: Object,
 		onselect: Function,
-		helper: Object,
-		elements: Object
+		helper: Object
 	},
 	setup(props) {
 		const isOpen = ref(false)
@@ -144,12 +148,12 @@ export default {
 		function dragLeave(event) {
 			if (classList.value.includes("accept-drop"))
 				classList.value = classList.value.filter(e => e !== "accept-drop");
-
-
-			console.log("dragLeave: ", props.model.key)
 		}
 
 		function onDrop(event) {
+			if (classList.value.includes("accept-drop"))
+				classList.value = classList.value.filter(e => e !== "accept-drop");
+
 			const key = event.dataTransfer.getData('key')
 			if (key !== props.model.key)
 			{
@@ -157,24 +161,22 @@ export default {
 				console.log("recv key", key);
 			}
 		}
-		console.log("props.model:", props.model)
-
 
 		function update() {
 			if (props.model.parent) {
 				//	console.log("is parent", props.model.parent)
 
 				element.value.ondragover = (event) => {
+					console.log("on drag over", event.dataTransfer.getData('key'));
+					if (event.dataTransfer.getData('key') !== props.model.key) {
+						if (!classList.value.includes("accept-drop"))
+							classList.value.push("accept-drop");
+					}
 					event.preventDefault();
-					if (!classList.value.includes("accept-drop"))
-						classList.value.push("accept-drop");
-					console.log("ondragover: classList", classList);
 
 				}
 				element.value.ondragenter = (event) => {
 					event.preventDefault();
-					console.log("ondragenter: classList", classList);
-
 				}
 			}
 		}
@@ -182,20 +184,10 @@ export default {
 		onMounted(() => {
 			update();
 
-			props.elements.set(props.model.key, element);
-		});
-
-		watch(() => element.value, (first, second) => {
-			props.elements.set(props.model.key, element);
-		});
-
-		watch(() => props.model.key, (first, second) => {
-			props.elements.set(props.model.key, element);
 		});
 
 		watch(() => props.model, (first, second) => {
 			update();
-
 		});
 
 		watch(() => props.model.parent, (first, second) => {
@@ -310,6 +302,21 @@ export default {
 					prefix: "",
 					buttonText: t("reload"),
 					showCancelButton: false,
+				});
+			}
+			else if (item.value === "duplicate") {
+				dialogStore.open({
+					title:t("dialog.create.name.file"),
+					text:"",
+					type:"file",
+					acceptEvent: (text) => props.helper.clone(props.model.key, props.model.parentObject.key, text),
+					showInputText: true,
+					prefix: props.helper.getPath(props.model.key, false),
+					buttonText: t("duplicate"),
+					showCancelButton: false,
+					regexStringExpression: "^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$",
+					initialText: props.model.label,
+
 				});
 			}
 			console.log(item.value);
