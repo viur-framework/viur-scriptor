@@ -14,6 +14,8 @@ import "@viur/viur-shoelace/dist/components/dropdown/dropdown.js";
 import "@viur/viur-shoelace/dist/components/menu/menu.js";
 import "@viur/viur-shoelace/dist/components/icon/icon.js";
 import "@viur/viur-shoelace/dist/components/icon/icon.styles";
+import "@viur/viur-shoelace/dist/components/card/card.styles";
+
 // plugin-style
 import { setBasePath } from '@viur/viur-shoelace/dist/utilities/base-path.js';
 setBasePath('https://cdn.jsdelivr.net/npm/@viur/viur-shoelace@2.0.0-beta.62-viur-1/dist');
@@ -22,6 +24,7 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
 import { createI18n } from 'vue-i18n';
+import router from "./router/index"
 
 import en from "./translations/en"
 import de from "./translations/de"
@@ -40,8 +43,10 @@ const i18n = createI18n({
 	messages: {"en": en, "de": de}
 })
 
-app.use(createPinia())
+app.use(createPinia());
 app.use(i18n);
+app.use(router);
+
 
 app.mount('#app')
 

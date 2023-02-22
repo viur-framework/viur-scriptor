@@ -15,11 +15,12 @@
                     <div v-if="log.json">
                         <vue-json-pretty :data="log.text" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
                     </div>
-                        <div v-else>
-                            <pre class="alert-child log-child log-child-text">
+                        
+                    <div v-else>
+                          <pre class="alert-child log-child log-child-text">
                                 <code>{{ log.text }}</code>
-                            </pre>
-                        </div>
+                          </pre>
+                    </div>
 				      </sl-alert>
 			    </template>
 		</EasyDataTable>
@@ -70,26 +71,24 @@ import { usePythonStore } from '@/stores/PythonStore';
 
     function isJsonString(str: string)
     {
-        try {
-			  let obj = JSON.parse(str);
-			  if (obj.constructor === Object || obj.constructor === Array)
-				  return true;
-			  else
-				  return false;
+      try {
+          let obj = JSON.parse(str);
+          if (obj.constructor === Object || obj.constructor === Array)
+            return true;
+          else
+            return false;
 
-		} catch (e) {
-			  return false;
-		}
+      } catch (e) {
+          return false;
+      }
 
-		return true;
+		  return true;
     }
 
 	function formatString(str: string) {
-	    if (isJsonString(str))
-        {
-            let obj = JSON.parse(str);
-			if (obj.constructor === Object || obj.constructor === Array)
-
+	  if (isJsonString(str))
+    {
+        let obj = JSON.parse(str);
 				return obj;
 		}
 
@@ -104,7 +103,7 @@ import { usePythonStore } from '@/stores/PythonStore';
 
                 logItems.value.push({
                   log: {
-                      type: entry.level,
+                      type: "syslog",
                       level: computed(() => {
                           return getThemeByLevel(entry.level);
                       }),

@@ -3,7 +3,7 @@
 	<template v-if="isLoggedIn && !isLoading">
 		<DialogDrawer></DialogDrawer>
 		<MessageDrawer/>
-		<Home></Home>
+		<RouterView/>
 
 		<div class="loading-spinner" v-show="globalStore.isLoading">
 			<sl-spinner class="vld-overlay"></sl-spinner>
