@@ -4,10 +4,7 @@
 
                     
             <sl-details summary="Alert" open>
-
-
-                    <Alert :text="'Das ist eine Nachricht!'"></Alert>
-
+                <Alert :text="'Das ist eine Nachricht!'"></Alert>
             </sl-details>
         </div>
         <div class="row">

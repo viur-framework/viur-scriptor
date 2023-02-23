@@ -29,22 +29,15 @@ function end(id, res) {
   self.postMessage({ type: "end", res: res ?? null, id: id })
 }
 
-let webworkerUtils = {
-	showDirectoryPicker: null,
-	showSaveFilePicker: null,
-	directoryHandle: null,
-	fileHandle: null,
-	filePickerHandle: null,
-	runningId: 0,
-	res: {},
-	events: {},
-	registerEvent: async function(name, callback) {
-		console.log("register func", name, callback)
-		console.log("webworker utils:", callback)
-
-		webworkerUtils.events[name] = callback;//callback.toJs({create_pyproxies: true});
-		console.log("registerEvents:", webworkerUtils.events)
-	}
+let manager = {
+	allocId: 0, 
+	currentProcessId: 0, 
+	tasks: {},
+	resultValue: null,
+	intervalEvent: null,
+	sleep: async function sleep(time) {
+		return new Promise((resolve, _) => setTimeout(resolve, time))
+	  }
 }
 
 async function loadPyodideAndPackages(id, pyoPackages, packages, initCode, transformCode) {
@@ -91,73 +84,57 @@ async def pyeval(code, ns):
     await pyodide.runPythonAsync(initCode);
   }
 
-  console.log("Loading JS Utils!")
-
   installLog(id, 5, "The python env is loaded")
   isPyLoaded = true;
-}
-
-function isStillRunning() {
-	let state = false; 
-	for (let key in webworkerUtils.events) {
-		if (webworkerUtils.events[key])
-			state = true;
-	}
-	return state;
 }
 
 async function runScript(python, id) {
   try {
     //console.log("Load imports")
     await self.pyodide.loadPackagesFromImports(python);
-    //console.log("Run py async")
-    //let results = await self.pyodide.runPythonAsync(python);
-	  //pyodide.globals.clear();
-	  //console.log(pyodide.globals);
+	let empty_dict = await self.pyodide.runPythonAsync("{}");
+	console.log("abc!!!");
+	//let results = await self.pyodide.globals.get("pyeval")(python, empty_dict)
+	//empty_dict.destroy();
 
-	  //let results = pyodide.runPythonAsync(`exec(${python}, {})`)
-	 // let results = await pyodide.runPythonAsync(python);
-
-	  //pyodide.PyProxy.new
-	      let empty_dict = await self.pyodide.runPythonAsync("{}");
-
-		  //let abc = await window.showDirectoryPicker();
-		  console.log("abc!!!");
-    let results = await self.pyodide.globals.get("pyeval")(python, empty_dict)
-	  empty_dict.destroy();
-	 // pyodide.runPythonAsync(`pyeval(${python}, {})`);
-	  //console.log("results", results);
-    //console.log("End")
-	//let isStillRunning =
-
-	if (!isStillRunning())
-    {
-		webworkerUtils.runningId = 0;
-		webworkerUtils.res = {};  
-		end(id, results)
-	}	
-	else
-	{
-		webworkerUtils.runningId = id; 
-		webworkerUtils.res = results; 
-
+	manager.currentProcessId = ++manager.allocId; 
+	console.log("Ich bin hier!!!"); 
+	manager.tasks[manager.currentProcessId] = {
+		"promise": self.pyodide.globals.get("pyeval")(python, empty_dict),
+		"dict": empty_dict,
+		"done": false,
 	}
-	
-	
+
+	let processId = manager.currentProcessId; 
+
+	manager.tasks[processId]["promise"].then(() => {
+		manager.tasks[processId]["done"] = true;
+		manager.tasks[processId]["dict"].destroy();
+		console.log("Task done!"); 
+		end(id); 
+
+	}).catch((error) => {
+		manager.tasks[processId]["done"] = true;
+		manager.tasks[processId]["dict"].destroy();
+		console.log("PY RUN ERR", error)
+		delete manager.tasks[processId]; 
+
+		err(id, error.message)
+	})
+
+	console.log("End of file!"); 
+
   } catch (error) {
     console.log("PY RUN ERR", error)
     err(id, error.message)
   }
 }
-
-function flushMemory() {
-  // destroy all user defined variables in the interpreter
-  let dict = pyodide.pyimport("dict");
-  pyodide.runPython("", dict());
-}
-
+self.onmessageerror = e => {
+	console.error(e);
+  }
 self.onmessage = async (event) => {
   const { id, python, ...context } = event.data;
+  console.log("Recv message ", id, " python: ", python, " context:", context);
 	if (id === "_pyinstaller") {
 		await loadPyodideAndPackages(id, context.pyoPackages, context.packages, context.initCode, context.transformCode);
 		end(id)
@@ -326,19 +303,14 @@ self.onmessage = async (event) => {
 
 
 	}
-  else if (id == "setInterruptBuffer")
-  {
-    self.pyodide.setInterruptBuffer(context.interruptBuffer);
-	//end(id);
-  }
-  else if (id == "interrupt") {
-	self.pyodide.checkInterrupt();
-  }
-  else if (id === "setFS") {
-	self.pyodide.FS = context.fs;
+  else if (id === "_sendDialogSignal") {
+	
+	manager.resultValue = context.data; 
+	console.log("_sendDialogSignal recv", manager.resultValue); 
+	end(id); 
 
-  } 
-  else  {
+}
+  else {
 
     // The worker copies the context in its own "memory" (an object mapping name to values)
     for (const key of Object.keys(context)) {
@@ -350,15 +322,14 @@ self.onmessage = async (event) => {
       //await loadPyodideAndPackages(id, []);
       throw new Error("Python is not loaded")
     }
-	//flushMemory();
-	  //flushMemory();
 
 		console.log("Functions:", context.showSaveFilePicker, " other", context.showDirectoryPicker)
 
+		manager.resultValue = null; 
 
-		await self.pyodide.registerJsModule("js_utils", webworkerUtils);
+		await self.pyodide.registerJsModule("manager", manager);
 
-		
+		//end(id); 
 		await runScript(python, id)
   }
 

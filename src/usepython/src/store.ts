@@ -10,6 +10,7 @@ const pyLog = map<PyLog>({
 });
 
 const pyLogging = atom<Array<Object>>([]);
+const pyDialogs = atom<Array<Object>>([]);
 
 const pyInstallLog = map<PyInstallLog>({
   stage: 0,
@@ -27,4 +28,4 @@ const isPyExecuting = computed(pyExecState, all => {
 const isPyReady = computed(isPyReadyState, all => {
   return all === 1
 })
-export { pyLog, isPyExecuting, pyExecState, pyInstallLog, isPyReadyState, isPyReady, pyLogging }
+export { pyLog, pyDialogs, isPyExecuting, pyExecState, pyInstallLog, isPyReadyState, isPyReady, pyLogging }

@@ -1,10 +1,9 @@
 import worker from 'web-worker:./webworker.js';
-import { pyLog, pyLogging, pyExecState, pyInstallLog, isPyExecuting, isPyReadyState, isPyReady } from "./store";
+import { pyLog, pyLogging, pyDialogs, pyExecState, pyInstallLog, isPyExecuting, isPyReadyState, isPyReady } from "./store";
 
 /** The main composable */
 const usePython = () => {
   let _pyodideWorker = new worker(); 
-  let pyodide_fs: any = null; 
   //let interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
 
   let _callback: (value: {
@@ -15,7 +14,11 @@ const usePython = () => {
     error: any;
   }>) => void = (v) => null;
 
+  let _callback_map = {};
+  
+
   async function _dispatchEvent(id: string, data: Record<string, any>) {
+    console.log("Python process id recv", id, " data ", data); 
     switch (data.type) {
       case "end":
         _callback({ results: data.res, error: null })
@@ -58,10 +61,22 @@ const usePython = () => {
 		case "log":
 			pyLogging.get().push({
 				text: data.text,
-				level: data.level
+				level: data.level,
+        done: false
 			})
 			pyLogging.notify();
+
+
 			break;
+
+    case "alert":
+			pyDialogs.get().push({
+				type: "alert",
+				text: data.text
+			})
+			pyDialogs.notify();
+      break;
+
 
         case "showDirectoryPicker":
             _pyodideWorker.postMessage({
@@ -95,9 +110,6 @@ const usePython = () => {
             });
 
 
-            break;
-            case "filesystem":
-              pyodide_fs = data.msg.fs;
             break;
       default:
         pyExecState.set(0);
@@ -297,6 +309,10 @@ const usePython = () => {
       //console.log("=> msg in:", id, ":", data);
       await _dispatchEvent(id ?? "", data)
     };
+
+    _pyodideWorker.onmessageerror = async (error) => {
+      console.log(error); 
+    }
   }
 
   bindEventWorker();
@@ -362,6 +378,22 @@ const usePython = () => {
 
     restore = false;
   }
+
+  async function sendDialogResult(type: string, data: any) {
+		let context = {
+			type: type,
+			data: structuredClone(data),
+		}
+
+    return new Promise((onSuccess) => {
+			//_callback = onSuccess;
+      console.log("IM HERE!"); 
+			_pyodideWorker.postMessage({
+				id: "_sendDialogSignal",
+				...context,
+			});
+		});
+	}
   
 
 
@@ -378,6 +410,7 @@ const usePython = () => {
     /** The ready state atom */
     isReady: isPyReady,
 	  pyLogging: pyLogging,
+    pyDialogs: pyDialogs,
 	  write,
 	  removeFile,
 	  removeDir,
@@ -385,7 +418,8 @@ const usePython = () => {
 	  renameDir,
     interruptExecution,
     destroyAndCreateWorker,
-    restoreFS
+    restoreFS,
+    sendDialogResult
 
   }
 }

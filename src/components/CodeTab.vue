@@ -8,7 +8,7 @@
 			class="log-data-table"
         >
             <template #item-log="{ log }">
-                <sl-alert :variant="log.level" open>
+                <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>
                     <template slot:icon>
                         <sl-icon class="log-child" name="info-circle"></sl-icon>
                     </template>
@@ -22,6 +22,9 @@
                           </pre>
                     </div>
 				      </sl-alert>
+              <div v-else-if="log.type === 'alert'">
+                  <Alert :accept="acceptAlert" :text="log.text"></Alert>
+              </div>
 			    </template>
 		</EasyDataTable>
 	</div>
@@ -37,6 +40,7 @@ import { computed, ref, onBeforeMount } from 'vue';
 import { useTabStore } from "@/stores/TabStore";
 import VueJsonPretty from 'vue-json-pretty';
 import { usePythonStore } from '@/stores/PythonStore';
+import Alert from "./Interaction/Alert.vue"; 
 
     const pythonStore = usePythonStore();
 
@@ -54,6 +58,13 @@ import { usePythonStore } from '@/stores/PythonStore';
 
     const logItems = ref<Record<string, any>[]>([]);
     const error = ref<string>("");
+
+    function acceptAlert() {
+      console.log("alert!");
+      pythonStore.py.sendDialogResult("alert", {}).then(() => {
+        console.log("sended succesfully!!"); 
+      }); 
+    }
 
 
     function getThemeByLevel(level: string)
@@ -96,9 +107,15 @@ import { usePythonStore } from '@/stores/PythonStore';
 	}
 
     pythonStore.py.pyLogging.listen((val) => {
-            if (pythonStore.scriptRunnerTab == props.keyValue)
+            console.log("Notify: python logging", val)
+            console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue); 
+            if (tabStore.selectedTab === props.keyValue)
             {
-                let entry = val[val.length - 1];
+                for (let i = 0; i<val.length; ++i) {
+                  let entry = val[i];
+                  if (entry.done)
+                    continue;
+
                 console.log(`Pushing Data:${entry.level} value ${entry.text} `)
 
                 logItems.value.push({
@@ -112,8 +129,26 @@ import { usePythonStore } from '@/stores/PythonStore';
                       json: isJsonString(entry.text),
                   }
                 })
+
+                entry.done = true;
+              }
             }
 	  })
+
+    pythonStore.py.pyDialogs.listen((val) => {
+        if (pythonStore.scriptRunnerTab == props.keyValue)
+            {
+                let entry = val[val.length - 1];
+
+                logItems.value.push({
+                  log: {
+                      type: "alert",
+                      text: formatString(entry.text),
+                      time: Date.now(),
+                  }
+                })
+            }
+    }); 
 
   const clearLog = function(){
 		  logItems.value = [];
@@ -192,11 +227,13 @@ import { usePythonStore } from '@/stores/PythonStore';
   height: 100%;
   .vue3-easy-data-table__main {
 	height: 100%;
+
   }
 
   /deep/ .vue3-easy-data-table__main {
 	  height: calc(100% - 2.30em);
 		min-height: auto;
+
   }
 }
 

@@ -4,7 +4,7 @@ from .utils import is_pyodide_context
 if is_pyodide_context():
 	from js import eval as js_eval, self as _self, Blob
 	from pyodide.ffi import to_js, create_once_callable
-	import js_utils
+	#import js_utils
 
 from .logger import Logging as logging
 
@@ -97,7 +97,7 @@ if is_pyodide_context():
 
 		@classmethod
 		async def from_dialog(cls, callback):
-			js_utils.registerEvent(cls.EVENT_NAME, create_once_callable(lambda handle, cb=callback: cls.on_handle_callback(handle, cb)))
+			#js_utils.registerEvent(cls.EVENT_NAME, create_once_callable(lambda handle, cb=callback: cls.on_handle_callback(handle, cb)))
 			_self.postMessage(type=cls.TYPE_NAME)
 
 	class FilePickerWriter(WriterBase, Picker):
