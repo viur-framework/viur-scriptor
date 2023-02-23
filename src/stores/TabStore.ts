@@ -3,6 +3,9 @@ import { defineStore } from 'pinia'
 import { usePython} from "usepython";
 import { SlTabGroup } from '@viur/viur-shoelace';
 import { usePythonStore } from './PythonStore';
+import { useRouter, useRoute } from 'vue-router';
+
+
 interface Tab
 {
     name: string,
@@ -19,6 +22,8 @@ interface Tab
 export const useTabStore = defineStore('tab', () => {
 
     const pythonStore = usePythonStore();
+    const router = useRouter(); 
+    const route = useRoute(); 
 
 	const tabMap = ref<Record<string, Tab>>({});
     const tabList = ref([]);
@@ -109,6 +114,12 @@ export const useTabStore = defineStore('tab', () => {
         if (key in tabMap.value) {
             if (selectedTab.value != key) {
                 selectedTab.value = key;
+                router.push(
+                    {
+                        query: {...route.query, key: key}
+                    }
+                )
+
                 console.log("Calling selectTab Tab", selectedTab.value);
             }
 

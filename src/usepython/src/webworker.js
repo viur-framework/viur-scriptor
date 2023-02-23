@@ -29,11 +29,23 @@ function end(id, res) {
   self.postMessage({ type: "end", res: res ?? null, id: id })
 }
 
+function run_end(id, res) {
+	self.postMessage({ type: "run_end", res: res ?? null, id: id })
+}
+
 let manager = {
 	allocId: 0, 
 	currentProcessId: 0, 
 	tasks: {},
 	resultValue: null,
+	copyResult: function() {
+		return structuredClone(this.resultValue); 
+	},
+
+	reset: function() {
+		this.resultValue = undefined; 
+	},
+
 	intervalEvent: null,
 	sleep: async function sleep(time) {
 		return new Promise((resolve, _) => setTimeout(resolve, time))
@@ -111,7 +123,7 @@ async function runScript(python, id) {
 		manager.tasks[processId]["done"] = true;
 		manager.tasks[processId]["dict"].destroy();
 		console.log("Task done!"); 
-		end(id); 
+		run_end(id); 
 
 	}).catch((error) => {
 		manager.tasks[processId]["done"] = true;
@@ -137,7 +149,7 @@ self.onmessage = async (event) => {
   console.log("Recv message ", id, " python: ", python, " context:", context);
 	if (id === "_pyinstaller") {
 		await loadPyodideAndPackages(id, context.pyoPackages, context.packages, context.initCode, context.transformCode);
-		end(id)
+		run_end(id)
 	}
 	else if (id === "_write")
 	{

@@ -10,14 +10,14 @@
 
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
-            <sl-button  size="medium" v-for="option in props.options"> {{ option }}</sl-button>
+            <sl-button  :disabled="!render" size="medium" v-for="(option, index) in props.options" :key="index" @click="() => selectOption(index)"> {{ option }}</sl-button>
         </div>
 
         <div v-else>
             <div class="checkbox-container">
-                <sl-checkbox class="checkbox" v-for="option in props.options"> {{  option }}</sl-checkbox>
+                <sl-checkbox class="checkbox" :disabled="!render" v-for="(option, index) in props.options" :key="index" @sl-change="(event) => selectRadioButton(event, index)"> {{  option }}</sl-checkbox>
             </div>
-            <sl-button variant="success" style="margin-top: 10px;"> {{ t("send") }} </sl-button>
+            <sl-button variant="success" v-show="render" style="margin-top: 10px;" @click="send"> {{ t("send") }} </sl-button>
 
         </div>
     </sl-card>
@@ -31,11 +31,52 @@ export interface Props {
     multiple: boolean,
     text: String,
     title: String,
+    select: Function,
 }
 
 const render = ref(true); 
 const props = defineProps<Props>();
 const {t} = useI18n(); 
+
+const entries = [];
+
+function selectOption(index: number) {
+  
+  if (!render.value)
+    return;
+
+  
+  render.value = false;
+  props.select(index);
+}
+
+function selectRadioButton(event: UIEvent, index: number) {
+  if (!props.multiple)
+    return;
+
+  if (!render.value)
+    return;
+
+  if (event.target.checked)
+    entries.push(index); 
+  else {
+    const _index = entries.indexOf(index);
+    if (_index !== -1) {
+      entries.splice(_index, 1);
+    }
+  }
+}
+
+function send() {
+  if (!props.multiple)
+    return;
+
+  if (!render.value) 
+    return;
+
+  render.value = false;
+  props.select(entries);
+}
 
 
 </script>
@@ -45,7 +86,7 @@ const {t} = useI18n();
     opacity: 0.5;
   }
   .card-header {
-    max-width: 300px;
+    max-width: 450px;
   }
 
   .card-header [slot='header'] {
@@ -78,11 +119,11 @@ const {t} = useI18n();
   .data-grid {
     display: grid; 
     overflow-x: auto; 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     justify-content: space-between;
     grid-gap: 5px;
-    overflow-y: scroll; 
-    overflow-x: scroll;
+    overflow-y: auto; 
+    overflow-x: auto;
     }
 
 </style>

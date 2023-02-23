@@ -26,6 +26,7 @@
                     <Input type="date" title="Datum" text="type='date'" :select="confirmValue" :cancel=true></Input>
                     <Input type="number" title="Nummer" text="type='number'" :select="confirmValue" :cancel=true></Input>
                     <Input type="text" title="Text" text="type='text'" :select="confirmValue" :cancel=true></Input>
+                    <Input type="datetime-local" title="Time" text="type='text'" :select="confirmValue" :cancel=true></Input>
 
                 </div>
             </sl-details>
@@ -36,7 +37,7 @@
             <sl-details summary="Select" open>
 
                 <div class="data-grid">
-                    <Select :options="['A', 'B', 'c', 'd', 'aa', 'bb', 'cccc', 'XYZWDWDWWD']" :multiple="false" text="A oder B" title="Select (not multiple)"></Select>
+                    <Select :options="['wdwd','wdwdw', '342323232']" :multiple="false" text="A oder B" title="Select (not multiple)"></Select>
                     <Select :options="['A', 'B', 'C', 'D', 'E', 'T', 'G']" :multiple="true" text="A oder B" title="Select (multiple)"></Select>
 
                 </div>

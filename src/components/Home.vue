@@ -117,7 +117,8 @@ import { useTabStore } from '@/stores/TabStore';
 import { clear } from 'console';
 import CodeTab from './CodeTab.vue';
 import {useI18n} from "vue-i18n";
-
+import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'Home',
@@ -132,6 +133,11 @@ export default {
 	const pythonStore = usePythonStore();
 	const messageStore = useMessageStore();
 	const tabStore = useTabStore();
+	const route = useRoute(); 
+
+	console.log("params:", route.query)
+
+
 
 	const { t } = useI18n() // call `useI18n`, and spread `t` from  `useI18n` returning
 
@@ -582,13 +588,14 @@ div.cm-content {
 
 .log-data-table {
   height: inherit;
+
   .vue3-easy-data-table__main {
 	height: inherit;
   }
 
   /deep/ .vue3-easy-data-table__main {
 	height: inherit;
-
+	overflow-y: auto;
   }
 }
 

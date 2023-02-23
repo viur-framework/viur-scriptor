@@ -1,11 +1,17 @@
 <template>
 
-    <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="card-header">
+    <sl-card class="card-header">
         <div slot="header">
-            {{ props.text }}
+            {{ t('alert') }}
         </div>
 
-        <sl-button variant="danger" class="accept-button" @click="hide">OK</sl-button>
+        <div class="big-text">
+          {{ props.text }}
+        </div>
+
+        <br v-if="render"><br>
+
+        <sl-button :disabled="!render" variant="danger" class="accept-button" @click="hide" style="align-items: center;">OK</sl-button>
     </sl-card>
 </template>
 
@@ -17,8 +23,11 @@ export interface Props {
 }
 
 import {ref} from 'vue'; 
+import { useI18n } from 'vue-i18n';
 
 const render = ref(true); 
+
+const {t} = useI18n(); 
 
 
 
@@ -36,9 +45,6 @@ function hide() {
 
 
 <style>
-  .disabled {
-    opacity: 0.5;
-  }
   .card-header {
     max-width: 300px;
   }
@@ -55,6 +61,10 @@ function hide() {
 
   .card-header sl-icon-button {
     font-size: var(--sl-font-size-medium);
+  }
+
+  .big-text {
+    font-size: 1.4em; 
   }
 
 </style>

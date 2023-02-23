@@ -1,3 +1,4 @@
+import { useGlobalStore } from './global';
 import { ref } from 'vue'; 
 import { defineStore } from 'pinia'
 import { usePython} from "usepython";
@@ -125,6 +126,9 @@ export const usePythonStore = defineStore('python', () => {
 				onRun();
 		}
 
+		py.pyLogging.set([]); 
+		py.pyDialogs.set([]); 
+
 		py.run(extraCode + code).then(() => {
 			scriptRunnerTab.value = ""; 
 
@@ -162,6 +166,10 @@ export const usePythonStore = defineStore('python', () => {
 
 	async function reloadPyodide() {
 		isExecuting.value = false;
+		
+		const global = useGlobalStore(); 
+
+		global.setLoading(true); 
 		if (timer.value)
 			clearInterval(timer.value);
 
@@ -172,6 +180,9 @@ export const usePythonStore = defineStore('python', () => {
 		await loadPython(); 
 
 		await py.restoreFS();
+
+		global.setLoading(false); 
+
 	}
 
 

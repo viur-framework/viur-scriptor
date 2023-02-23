@@ -7,9 +7,9 @@
 
         {{  props.text }}
         <div slot="footer" class="container">
-            <sl-button variant="success" :class="'accept-button ' + (selectedValue ? 'selected-button' : '')" @click="() => confirm(true)">{{ t('yes') }} </sl-button>
-            <sl-button variant="danger" :class="'accept-button ' + (selectedValue ? 'selected-button' : '')" @click="() => confirm(false)">{{ t('no')}}</sl-button>
-            <sl-button v-if="props.cancel" variant="neutral" class="accept-button" @click="() => render = false">{{ t('cancel') }} </sl-button>
+            <sl-button :disabled="!render" variant="success" :class="'accept-button ' + ((selectedValue != 1 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(1)">{{ t('yes') }} </sl-button>
+            <sl-button :disabled="!render" variant="danger" :class="'accept-button ' + ((selectedValue != 0 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(0)">{{ t('no')}}</sl-button>
+            <sl-button :disabled="!render" v-if="props.cancel" variant="neutral" :class="'accept-button ' + ((selectedValue != 0 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(-1)">{{ t('cancel') }} </sl-button>
         </div>
     </sl-card>
 </template>
@@ -29,12 +29,12 @@ import { useI18n } from 'vue-i18n';
 
 const render = ref(true); 
 const {t} = useI18n();
-const selectedValue = ref<boolean>(undefined);
+const selectedValue = ref<number>(undefined);
 
 
 const props = defineProps<Props>();
 
-function confirm(state: boolean) {
+function confirm(state: number) {
     if (!render.value)
         return;
 
@@ -49,9 +49,6 @@ function confirm(state: boolean) {
 
 
 <style scoped>
-    .disabled {
-        
-    }
 .card-header {
     max-width: 300px;
   }
@@ -77,7 +74,8 @@ function confirm(state: boolean) {
   }
 
   .selected-button {
-    opacity: 1.5;
+    opacity: 0.3;
+    
   }
 
 

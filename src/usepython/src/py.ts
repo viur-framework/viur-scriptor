@@ -14,24 +14,39 @@ const usePython = () => {
     error: any;
   }>) => void = (v) => null;
 
-  let _callback_map = {};
+  let _callback_map = new Map();
   
 
   async function _dispatchEvent(id: string, data: Record<string, any>) {
     console.log("Python process id recv", id, " data ", data); 
     switch (data.type) {
-      case "end":
+      case "end":  
+      {
         _callback({ results: data.res, error: null })
         _callback = (v) => null
-        pyExecState.set(0);
-
-        
         break;
-      case "err":
+      }
+      // PYTHO NSCRIPT
+      case "run_end":  {
+
+        let _cb = _callback_map.get(id); 
+
+        if (_cb) {
+          _cb({ results: data.res, error: null })
+          pyExecState.set(0);
+          _callback_map.delete(id); 
+        }
+
+        break;
+      }
+      
+      case "err": {
         _callback = (v) => null
         pyExecState.set(0);
         pyLog.setKey("exception", data.msg)
         break;
+      }
+
       case "installlog":
         pyInstallLog.setKey("stage", data.msg.stage);
         pyInstallLog.setKey("msg", data.msg.msg);
@@ -72,10 +87,41 @@ const usePython = () => {
     case "alert":
 			pyDialogs.get().push({
 				type: "alert",
-				text: data.text
+				text: data.text,
+        done: false
 			})
 			pyDialogs.notify();
       break;
+
+    case "confirm":
+			pyDialogs.get().push({
+				type: "confirm",
+				title: data.title, 
+        text: data.text,
+        cancel: data.cancel,
+        done: false
+			})
+			pyDialogs.notify();
+      break;
+
+    case "input":
+			pyDialogs.get().push({
+				type: "input",
+        done: false,
+        ...data
+			})
+			pyDialogs.notify();
+      break;
+
+  
+      case "select":
+        pyDialogs.get().push({
+          type: "select",
+          done: false,
+          ...data
+        })
+        pyDialogs.notify();
+        break;
 
 
         case "showDirectoryPicker":
@@ -174,7 +220,9 @@ const usePython = () => {
     });
     // exec
     return new Promise((onSuccess) => {
-      _callback = onSuccess;
+      //_callback = onSuccess;
+      _callback_map.set(_id, onSuccess); 
+
       _pyodideWorker.postMessage({
         id: _id,
         python: script,
@@ -198,7 +246,8 @@ const usePython = () => {
       restoreWriteList.push({path, name, python})
 
     return new Promise((onSuccess) => {
-      _callback = onSuccess;
+      //_callback_map.set("_write", onSuccess); 
+      _callback = onSuccess; 
       _pyodideWorker.postMessage({
         id: "_write",
         python: python,

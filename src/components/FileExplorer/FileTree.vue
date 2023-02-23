@@ -21,6 +21,7 @@ import {useDialogStore} from "../../stores/dialogs";
 import {useI18n} from "vue-i18n";
 import {useGlobalStore} from "../../stores/global";
 import {useMessageStore} from "../../stores/message";
+import { useRoute } from 'vue-router';
 
 export default {
 	name: "FileTree",
@@ -31,6 +32,8 @@ export default {
 	},
 
 	setup(props){
+
+		const route = useRoute(); 
 
 		let pythonStore = usePythonStore();
 		let tabStore = useTabStore();
@@ -654,7 +657,25 @@ export default {
 				}
 
 
+			  globalStore.setLoading(true); 
 			  await perform();
+			  globalStore.setLoading(false); 
+
+			  if (route.query.key) {
+				let entry = tree.find(route.query.key); 
+
+				let parent = entry.parentObject; 
+
+				while (parent) {
+					if (!parent.state.isOpen.value)
+						parent.state.open();
+					
+					parent = parent.parentObject; 
+				}
+				this.selectItem(null, route.query.key); 
+			  }
+
+
 			}
 
 		}

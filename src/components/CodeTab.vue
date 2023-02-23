@@ -1,11 +1,11 @@
 <template>
 
-    <div v-if="error.length <= 0" class="logging">
+    <div v-if="error.length <= 0" >
         <EasyDataTable
 			:headers="[{ text: 'Log', value: 'log' }]"
 			:items="logItems"
 			:buttons-pagination="true"
-			class="log-data-table"
+			class="log-data-table logging"
         >
             <template #item-log="{ log }">
                 <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>
@@ -21,10 +21,28 @@
                                 <code>{{ log.text }}</code>
                           </pre>
                     </div>
-				      </sl-alert>
-              <div v-else-if="log.type === 'alert'">
-                  <Alert :accept="acceptAlert" :text="log.text"></Alert>
-              </div>
+				        </sl-alert>
+                <div v-else-if="log.type === 'alert'">
+                    <Alert :accept="acceptAlert" :text="log.text"></Alert>
+                </div>
+
+                <div v-else-if="log.type === 'confirm'">
+                  <Confirm :select="confirmSelect" :text="log.text" :title="log.title" :cancel="log.cancel"></Confirm>
+                </div>
+                <div v-else-if="log.type === 'input'">
+                  <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty"></Input>
+                </div>
+                <div v-else-if="log.type === 'select'">
+                  <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices"></Select>
+                </div>
+<!-- 			pyDialogs.get().push({
+				type: "confirm",
+				title: data.title, 
+        text: data.text,
+        cancel: data.cancel,
+        done: false
+			})-->
+
 			    </template>
 		</EasyDataTable>
 	</div>
@@ -41,7 +59,9 @@ import { useTabStore } from "@/stores/TabStore";
 import VueJsonPretty from 'vue-json-pretty';
 import { usePythonStore } from '@/stores/PythonStore';
 import Alert from "./Interaction/Alert.vue"; 
-
+import Confirm from "./Interaction/Confirm.vue"; 
+import Input from "./Interaction/Input.vue"; 
+import Select from "./Interaction/Select.vue"; 
     const pythonStore = usePythonStore();
 
     interface Props {
@@ -63,6 +83,27 @@ import Alert from "./Interaction/Alert.vue";
       console.log("alert!");
       pythonStore.py.sendDialogResult("alert", {}).then(() => {
         console.log("sended succesfully!!"); 
+      }); 
+    }
+
+    function confirmSelect(value: boolean) {
+      console.log("alert!");
+      pythonStore.py.sendDialogResult("alert", value).then(() => {
+        console.log("value succesfully!!"); 
+      }); 
+    }
+
+    function sendInput(value: any) {
+      console.log("alert!");
+      pythonStore.py.sendDialogResult("input", value).then(() => {
+        console.log("value succesfully!!"); 
+      }); 
+    }
+
+    function sendSelect(value: any) {
+      console.log("alert!");
+      pythonStore.py.sendDialogResult("select", value).then(() => {
+        console.log("value sendSelect!!"); 
       }); 
     }
 
@@ -139,14 +180,16 @@ import Alert from "./Interaction/Alert.vue";
         if (pythonStore.scriptRunnerTab == props.keyValue)
             {
                 let entry = val[val.length - 1];
+                if (entry) {
 
-                logItems.value.push({
-                  log: {
-                      type: "alert",
-                      text: formatString(entry.text),
-                      time: Date.now(),
-                  }
-                })
+                  logItems.value.push({
+                    log: {
+                        type: entry.type,
+                        time: Date.now(),
+                        ...entry,
+                    }
+                  })
+                }
             }
     }); 
 
@@ -199,12 +242,14 @@ import Alert from "./Interaction/Alert.vue";
   width: 100%;
   height: 100%;
   list-style-type: None;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   margin: 0;
 
   sl-alert{
 	margin-bottom: 15px;
+
+  
 
 	&::part(message){
 		padding: 0 15px 0 5px;
