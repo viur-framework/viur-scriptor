@@ -1,11 +1,11 @@
 <template>
 
-    <div v-if="error.length <= 0" >
+    <div v-if="error.length <= 0" class="logging">
         <EasyDataTable
 			:headers="[{ text: 'Log', value: 'log' }]"
-			:items="logItems"
+			:items="logItemsNew"
 			:buttons-pagination="true"
-			class="log-data-table logging"
+			class="log-data-table"
         >
             <template #item-log="{ log }">
                 <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>
@@ -56,6 +56,8 @@
 <script setup lang="ts">
 import { computed, ref, onBeforeMount } from 'vue';
 import { useTabStore } from "@/stores/TabStore";
+import { useLogStore } from "@/stores/log";
+
 import VueJsonPretty from 'vue-json-pretty';
 import { usePythonStore } from '@/stores/PythonStore';
 import Alert from "./Interaction/Alert.vue"; 
@@ -147,55 +149,13 @@ import Select from "./Interaction/Select.vue";
 		return str;
 	}
 
-    pythonStore.py.pyLogging.listen((val) => {
-            console.log("Notify: python logging", val)
-            console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue); 
-            if (tabStore.selectedTab === props.keyValue)
-            {
-                for (let i = 0; i<val.length; ++i) {
-                  let entry = val[i];
-                  if (entry.done)
-                    continue;
-
-                console.log(`Pushing Data:${entry.level} value ${entry.text} `)
-
-                logItems.value.push({
-                  log: {
-                      type: "syslog",
-                      level: computed(() => {
-                          return getThemeByLevel(entry.level);
-                      }),
-                      text: formatString(entry.text),
-                      time: Date.now(),
-                      json: isJsonString(entry.text),
-                  }
-                })
-
-                entry.done = true;
-              }
-            }
-	  })
-
-    pythonStore.py.pyDialogs.listen((val) => {
-        if (pythonStore.scriptRunnerTab == props.keyValue)
-            {
-                let entry = val[val.length - 1];
-                if (entry) {
-
-                  logItems.value.push({
-                    log: {
-                        type: entry.type,
-                        time: Date.now(),
-                        ...entry,
-                    }
-                  })
-                }
-            }
-    }); 
+  const logStore = useLogStore(); 
+ 
 
   const clearLog = function(){
 		  logItems.value = [];
 		  error.value = "";
+      logStore.clear(props.keyValue);
 	}
 
 
@@ -206,6 +166,10 @@ import Select from "./Interaction/Select.vue";
     onBeforeMount(async () => {
 		await pythonStore.init(props.keyValue, null, logError, clearLog);
 	})
+
+  const logItemsNew = computed(function(){
+    return logStore.logMap[props.keyValue] ? logStore.logMap[props.keyValue] : [];
+  });
 
 </script>
 
@@ -242,7 +206,7 @@ import Select from "./Interaction/Select.vue";
   width: 100%;
   height: 100%;
   list-style-type: None;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   margin: 0;
 
