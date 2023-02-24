@@ -1,6 +1,15 @@
 <template>
 
-    <div v-if="error.length <= 0" >
+    <div v-if="error.length <= 0" class="wrap">
+		<div class="header">
+			<sl-progress-bar value="50"></sl-progress-bar>
+			<div class="steps">
+				Schritt 1 von 10
+			</div>
+			<div class="current-info">
+				Hier steht was gerade passiert und so in einem längeren Satz.
+			</div>
+		</div>
         <EasyDataTable
 			:headers="[{ text: 'Log', value: 'log' }]"
 			:items="logItems"
@@ -15,7 +24,7 @@
                     <div v-if="log.json">
                         <vue-json-pretty :data="log.text" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
                     </div>
-                        
+
                     <div v-else>
                           <pre class="alert-child log-child log-child-text">
                                 <code>{{ log.text }}</code>
@@ -37,7 +46,7 @@
                 </div>
 <!-- 			pyDialogs.get().push({
 				type: "confirm",
-				title: data.title, 
+				title: data.title,
         text: data.text,
         cancel: data.cancel,
         done: false
@@ -58,10 +67,10 @@ import { computed, ref, onBeforeMount } from 'vue';
 import { useTabStore } from "@/stores/TabStore";
 import VueJsonPretty from 'vue-json-pretty';
 import { usePythonStore } from '@/stores/PythonStore';
-import Alert from "./Interaction/Alert.vue"; 
-import Confirm from "./Interaction/Confirm.vue"; 
-import Input from "./Interaction/Input.vue"; 
-import Select from "./Interaction/Select.vue"; 
+import Alert from "./Interaction/Alert.vue";
+import Confirm from "./Interaction/Confirm.vue";
+import Input from "./Interaction/Input.vue";
+import Select from "./Interaction/Select.vue";
     const pythonStore = usePythonStore();
 
     interface Props {
@@ -82,29 +91,29 @@ import Select from "./Interaction/Select.vue";
     function acceptAlert() {
       console.log("alert!");
       pythonStore.py.sendDialogResult("alert", {}).then(() => {
-        console.log("sended succesfully!!"); 
-      }); 
+        console.log("sended succesfully!!");
+      });
     }
 
     function confirmSelect(value: boolean) {
       console.log("alert!");
       pythonStore.py.sendDialogResult("alert", value).then(() => {
-        console.log("value succesfully!!"); 
-      }); 
+        console.log("value succesfully!!");
+      });
     }
 
     function sendInput(value: any) {
       console.log("alert!");
       pythonStore.py.sendDialogResult("input", value).then(() => {
-        console.log("value succesfully!!"); 
-      }); 
+        console.log("value succesfully!!");
+      });
     }
 
     function sendSelect(value: any) {
       console.log("alert!");
       pythonStore.py.sendDialogResult("select", value).then(() => {
-        console.log("value sendSelect!!"); 
-      }); 
+        console.log("value sendSelect!!");
+      });
     }
 
 
@@ -149,7 +158,7 @@ import Select from "./Interaction/Select.vue";
 
     pythonStore.py.pyLogging.listen((val) => {
             console.log("Notify: python logging", val)
-            console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue); 
+            console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue);
             if (tabStore.selectedTab === props.keyValue)
             {
                 for (let i = 0; i<val.length; ++i) {
@@ -191,7 +200,7 @@ import Select from "./Interaction/Select.vue";
                   })
                 }
             }
-    }); 
+    });
 
   const clearLog = function(){
 		  logItems.value = [];
@@ -240,16 +249,13 @@ import Select from "./Interaction/Select.vue";
 
 .logging {
   width: 100%;
-  height: 100%;
+  flex: 1;
+  height: 1px;
   list-style-type: None;
-  overflow-y: scroll;
-  overflow-x: hidden;
   margin: 0;
 
   sl-alert{
 	margin-bottom: 15px;
-
-  
 
 	&::part(message){
 		padding: 0 15px 0 5px;
@@ -260,7 +266,22 @@ import Select from "./Interaction/Select.vue";
 	  	padding-left: 15px;
   	}
   }
+
+  :deep(.vue3-easy-data-table__body){
+	tr{
+
+	  td{
+		padding: 10px;
+	  	background-color: transparent !important;
+	  }
+	}
+  }
+
+  :deep(.vue3-easy-data-table__header){
+	display: none;
+  }
 }
+
 .danger-print {
   overflow: auto;
   width: 100%;
@@ -269,10 +290,13 @@ import Select from "./Interaction/Select.vue";
 
 
 .log-data-table {
-  height: 100%;
-  .vue3-easy-data-table__main {
-	height: 100%;
 
+  .interaction{
+	font-size: 1.2em;
+  }
+
+  .vue3-easy-data-table__main {
+	flex: 1;
   }
 
   /deep/ .vue3-easy-data-table__main {
@@ -281,5 +305,43 @@ import Select from "./Interaction/Select.vue";
 
   }
 }
+
+.wrap{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 7px;
+
+  sl-progress-bar{
+	flex: 1 1 100%;
+	--height: 6px;
+	--indicator-color: @mainColor;
+  }
+}
+
+.steps{
+  white-space: nowrap;
+  color:  @mainColor;
+  font-size: .9em;
+  margin-left: 15px;
+}
+
+.current-info{
+  white-space: nowrap;
+  font-size: .9em;
+  margin-left: 15px;
+  padding-left: 15px;
+  width: 80ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left: 1px solid @mainColor;
+}
+
 
 </style>

@@ -1,18 +1,25 @@
 <template>
 
-    <sl-card  :class="'card-header'">
+    <sl-card  :class="'interaction'">
         <div slot="header">
             {{ props.title }}
         </div>
 
-        {{  props.text }}
+		<p class="paragraph">
+			{{  props.text }}
+		</p>
+
+		<sl-alert v-if="error.length > 0" variant="danger" open> {{ error }}</sl-alert>
+
+		<sl-input v-if="props.type !== 'text'" :type="props.type + (props.useTime ? 'time-local' : '')" v-model="value" :readonly="!render"></sl-input>
+		<sl-textarea v-else class="label-on-left" v-model="value" :readonly="!render"></sl-textarea>
 
         <div slot="footer">
-            
-            <sl-alert v-if="error.length > 0" variant="danger" open> {{ error }}</sl-alert><br>
-            <sl-input v-if="props.type !== 'text'" :type="props.type + (props.useTime ? 'time-local' : '')" v-model="value" :readonly="!render"></sl-input>
-            <sl-textarea v-else class="label-on-left" v-model="value" :readonly="!render"></sl-textarea>
-            <sl-button v-show="render" variant="success" style="margin-top: 10px;" @click="send"> {{ t("send") }} </sl-button>
+            <sl-button
+				   size="small"
+				   v-show="render"
+				   variant="success"
+				   @click="send"> {{ t("send") }} </sl-button>
         </div>
     </sl-card>
 </template>
@@ -29,24 +36,24 @@ export interface Props {
 }
 
 
-import {ref, watch} from 'vue'; 
+import {ref, watch} from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const render = ref(true); 
+const render = ref(true);
 const {t} = useI18n();
 const selectedValue = ref<boolean>(undefined);
-const value = ref<String>(""); 
+const value = ref<String>("");
 
-const error = ref<String>(""); 
+const error = ref<String>("");
 
 
 const props = defineProps<Props>();
 
 watch(value, (oldValue, newValue) => {
     if (value.value) {
-        error.value = ""; 
+        error.value = "";
     }
-}); 
+});
 
 function send() {
     if (!render.value)
@@ -59,14 +66,14 @@ function send() {
         }
     }
 
-    let tmpValue = value.value; 
+    let tmpValue = value.value;
     if (props.type === "date") {
         tmpValue = new Date(value.value).valueOf();
     }
 
     props.select(tmpValue);
-    render.value = false; 
-   
+    render.value = false;
+
 }
 
 
@@ -75,7 +82,7 @@ function send() {
 
 <style scoped>
     .disabled {
-        
+
     }
 .card-header {
     max-width: 300px;

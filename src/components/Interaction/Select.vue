@@ -1,30 +1,36 @@
 <template>
-    <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="card-header">
+    <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="interaction">
         <div slot="header">
             {{ props.title }}
         </div>
 
-        {{ props.text }}
-        <br>
-        <br>
-
+        <p class="paragraph">
+			{{  props.text }}
+		</p>
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
             <sl-button  :disabled="!render" size="medium" v-for="(option, index) in props.options" :key="index" @click="() => selectOption(index)"> {{ option }}</sl-button>
         </div>
 
-        <div v-else>
-            <div class="checkbox-container">
-                <sl-checkbox class="checkbox" :disabled="!render" v-for="(option, index) in props.options" :key="index" @sl-change="(event) => selectRadioButton(event, index)"> {{  option }}</sl-checkbox>
-            </div>
-            <sl-button variant="success" v-show="render" style="margin-top: 10px;" @click="send"> {{ t("send") }} </sl-button>
+		<div class="checkbox-container" v-else>
+			<sl-checkbox class="checkbox" :disabled="!render" v-for="(option, index) in props.options" :key="index" @sl-change="(event) => selectRadioButton(event, index)"> {{  option }}</sl-checkbox>
+		</div>
 
-        </div>
+		<div slot="footer" v-if="props.multiple">
+		  <sl-button
+				 size="small"
+				 variant="success"
+				 v-show="render"
+				 @click="send">
+			  {{ t("send") }}
+		  </sl-button>
+		</div>
+
     </sl-card>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'; 
+import {ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 export interface Props {
     options: String[],
@@ -34,18 +40,18 @@ export interface Props {
     select: Function,
 }
 
-const render = ref(true); 
+const render = ref(true);
 const props = defineProps<Props>();
-const {t} = useI18n(); 
+const {t} = useI18n();
 
 const entries = [];
 
 function selectOption(index: number) {
-  
+
   if (!render.value)
     return;
 
-  
+
   render.value = false;
   props.select(index);
 }
@@ -58,7 +64,7 @@ function selectRadioButton(event: UIEvent, index: number) {
     return;
 
   if (event.target.checked)
-    entries.push(index); 
+    entries.push(index);
   else {
     const _index = entries.indexOf(index);
     if (_index !== -1) {
@@ -71,7 +77,7 @@ function send() {
   if (!props.multiple)
     return;
 
-  if (!render.value) 
+  if (!render.value)
     return;
 
   render.value = false;
@@ -81,7 +87,7 @@ function send() {
 
 </script>
 
-<style>
+<style lang="less">
   .disabled {
     opacity: 0.5;
   }
@@ -104,26 +110,25 @@ function send() {
   }
 
   .checkbox-container {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  	grid-gap: 20px;
+	margin-bottom: 10px;
   }
 
   .checkbox {
-    width: 25%; 
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left: 5px;
+	  min-width: 100px;
+	  font-size: 1em;
+
+	  &::part(base) {
+		font-size: 1em;
+	  }
   }
 
   .data-grid {
-    display: grid; 
-    overflow-x: auto; 
-    grid-template-columns: repeat(4, 1fr);
-    justify-content: space-between;
-    grid-gap: 5px;
-    overflow-y: auto; 
-    overflow-x: auto;
-    }
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+  }
 
 </style>
