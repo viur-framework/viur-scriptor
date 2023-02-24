@@ -1,17 +1,20 @@
 <template>
 
-    <sl-card class="card-header">
+    <sl-card class="interaction">
         <div slot="header">
             {{ t('alert') }}
         </div>
 
-        <div class="big-text">
-          {{ props.text }}
-        </div>
+		<p class="paragraph">
+			{{ props.text }}
+		</p>
 
-        <br v-if="render"><br>
-
-        <sl-button :disabled="!render" variant="danger" class="accept-button" @click="hide" style="align-items: center;">OK</sl-button>
+        <sl-button :disabled="!render"
+				   variant="success"
+				   size="small"
+				   class="accept-button"
+				   slot="footer"
+				   @click="hide" style="align-items: center;">OK</sl-button>
     </sl-card>
 </template>
 
@@ -22,12 +25,12 @@ export interface Props {
     accept: Function
 }
 
-import {ref} from 'vue'; 
+import {ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const render = ref(true); 
+const render = ref(true);
 
-const {t} = useI18n(); 
+const {t} = useI18n();
 
 
 
@@ -37,9 +40,9 @@ function hide() {
     if (!render.value)
         return;
 
-    render.value = false; 
+    render.value = false;
     if (props.accept)
-        props.accept(); 
+        props.accept();
 }
 </script>
 
@@ -61,10 +64,6 @@ function hide() {
 
   .card-header sl-icon-button {
     font-size: var(--sl-font-size-medium);
-  }
-
-  .big-text {
-    font-size: 1.4em; 
   }
 
 </style>

@@ -1,4 +1,33 @@
 @import "custom/custom";
 
+.interaction{
 
+  &::part(header){
+    background-color: var(--sl-color-neutral-400);
+    color: #fff;
+    font-size: .75em;
+    padding: 7px;
+  }
+
+  &::part(body){
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &::part(footer){
+    padding: 10px;
+  }
+
+  .paragraph{
+    margin-bottom: 10px;
+  }
+}
+
+.paragraph{
+  max-width: 200ch;
+  line-height: 1.7;
+  font-size: 1em;
+  margin: 0;
+}
 

@@ -74,9 +74,7 @@
 
 	<footer class="footer">
 
-
-
-		<sl-badge v-show="pythonStore.isExecuting" variant="success" pulse>{{  pythonStore.runningText }}</sl-badge>
+		<sl-badge v-show="pythonStore.isExecuting" variant="success" class="is-running" pulse>{{  pythonStore.runningText }}</sl-badge>
 
 
 		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="saveScript" variant="white" >
@@ -133,7 +131,7 @@ export default {
 	const pythonStore = usePythonStore();
 	const messageStore = useMessageStore();
 	const tabStore = useTabStore();
-	const route = useRoute(); 
+	const route = useRoute();
 
 	console.log("params:", route.query)
 
@@ -597,6 +595,14 @@ div.cm-content {
 	height: inherit;
 	overflow-y: auto;
   }
+}
+
+.is-running{
+  &::part(base){
+	font-size: 0.95em;
+    height: 32px;
+  }
+
 }
 
 </style>

@@ -1,60 +1,109 @@
 <template>
-    <div class="container">
-        <div class="row">
+	<div class="container">
+		<div class="row">
+			<h2 class="headline">Alerts</h2>
 
-                    
-            <sl-details summary="Alert" open>
-                <Alert :text="'Das ist eine Nachricht!'"></Alert>
-            </sl-details>
-        </div>
-        <div class="row">
-            <sl-details summary="Confirm" open>
+			<div class="item">
+				<Alert :text="'Das ist eine Nachricht!'"></Alert>
 
-                <div class="data-grid">
-                    <Confirm title="Artikeln löschen" text="Willst du wirklich alle Einträge löschen? Das Löschen kann nicht wieder rückgängig gemacht werden." :select="confirmValue" :cancel=true></Confirm>
-                    <Confirm title="Artikeln löschen" text="Willst du wirklich alle Einträge löschen? Das Löschen kann nicht wieder rückgängig gemacht werden." :select="confirmValue" :cancel=false></Confirm>
-                </div>
-            </sl-details>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+				</sl-details>
+			</div>
 
-        </div>
-
-        <div class="row">
-            <sl-details summary="Input" open>
-
-                <div class="data-grid">
-                    <Input type="string" title="Zeichenkette" text="type='string'" :select="confirmValue" :cancel=true></Input>
-                    <Input type="date" title="Datum" text="type='date'" :select="confirmValue" :cancel=true></Input>
-                    <Input type="number" title="Nummer" text="type='number'" :select="confirmValue" :cancel=true></Input>
-                    <Input type="text" title="Text" text="type='text'" :select="confirmValue" :cancel=true></Input>
-                    <Input type="datetime-local" title="Time" text="type='text'" :select="confirmValue" :cancel=true></Input>
-
-                </div>
-            </sl-details>
-        </div>
+		</div>
 
 
-        <div class="row">
-            <sl-details summary="Select" open>
+		<div class="row">
+			<h2 class="headline">Confirm</h2>
 
-                <div class="data-grid">
-                    <Select :options="['wdwd','wdwdw', '342323232']" :multiple="false" text="A oder B" title="Select (not multiple)"></Select>
-                    <Select :options="['A', 'B', 'C', 'D', 'E', 'T', 'G']" :multiple="true" text="A oder B" title="Select (multiple)"></Select>
+			<div class="item">
+				<Confirm title="Artikeln löschen" text="Willst du wirklich alle Einträge löschen? Das Löschen kann nicht wieder rückgängig gemacht werden." :select="confirmValue" :cancel=true></Confirm>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 
-                </div>
-            </sl-details>
-        </div>
+				</sl-details>
+			</div>
+			<div class="item">
+				<Confirm title="Artikeln löschen" text="Willst du wirklich alle Einträge löschen? Das Löschen kann nicht wieder rückgängig gemacht werden." :select="confirmValue" :cancel=false></Confirm>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 
-    </div>
+				</sl-details>
+			</div>
+		</div>
+
+		<div class="row">
+			<h2 class="headline">Inputs</h2>
+
+			<div class="item">
+				<Input type="string" title="Zeichenkette" text="type='string'" :select="confirmValue" :cancel=true></Input>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+			<div class="item">
+				<Input type="date" title="Datum" text="type='date'" :select="confirmValue" :cancel=true></Input>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+			<div class="item">
+				<Input type="number" title="Nummer" text="type='number'" :select="confirmValue" :cancel=true></Input>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+			<div class="item">
+				<Input type="text" title="Text" text="type='text'" :select="confirmValue" :cancel=true></Input>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+			<div class="item">
+				<Input type="datetime-local" title="Time" text="type='text'" :select="confirmValue" :cancel=true></Input>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<h2 class="headline">Inputs</h2>
+
+			<div class="item">
+				<Select :options="['wdwd','wdwdw', '342323232']" :multiple="false" text="A oder B" title="Select (not multiple)"></Select>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+			<div class="item">
+				<Select :options="['A', 'B', 'C', 'D', 'E', 'T', 'G']" :multiple="true" text="A oder B" title="Select (multiple)"></Select>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+
+				</sl-details>
+			</div>
+		</div>
+
+	</div>
 </template>
 
 <script setup lang="ts">
-import Alert from "../components/Interaction/Alert.vue"; 
-import Confirm from "../components/Interaction/Confirm.vue"; 
-import Input from "../components/Interaction/Input.vue"; 
-import Select from "../components/Interaction/Select.vue"; 
+import Alert from "../components/Interaction/Alert.vue";
+import Confirm from "../components/Interaction/Confirm.vue";
+import Input from "../components/Interaction/Input.vue";
+import Select from "../components/Interaction/Select.vue";
 
 function confirmValue(value: String) {
-    console.log("confirmValue:", value)
+	console.log("confirmValue:", value)
 }
 
 </script>
@@ -62,22 +111,38 @@ function confirmValue(value: String) {
 <style scoped>
 
 .container {
-    display: grid;
-    flex-wrap: wrap;
-    justify-content: start;
-    overflow: auto; 
+	overflow: auto;
 }
 
 .data-grid {
-    display: grid; 
-    overflow-x: auto; 
-    grid-template-columns: repeat(5, 1fr);
-    justify-content: space-between;
-    grid-gap: 10px;
+	display: grid;
+	overflow-x: auto;
+	grid-template-columns: repeat(5, 1fr);
+	justify-content: space-between;
+	grid-gap: 10px;
+}
+
+.row{
+	width: 100%;
+	padding: 20px;
+	max-width: 1400px;
+	margin: 0 auto;
 }
 
 sl-details {
-    width: 100% !important;
-    max-width: 100% !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	font-size: .9em;
+}
+
+.source-code{
+	margin-top: 20px;
+}
+
+.item{
+	background-color: var(--sl-color-neutral-200);
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 20px;
 }
 </style>

@@ -1,7 +1,11 @@
 <template>
 
-	<ul class="mainFileTree fileTree">
+	<ul class="fileTree">
 		<FileTreeItem class="item" :model="tree.data.value" :onselect="tree.selectItem" :helper="helper"></FileTreeItem>
+		<!--<div class="loader">
+			<sl-spinner-circle></sl-spinner-circle>
+		</div>-->
+
 	</ul>
 
 
@@ -33,7 +37,7 @@ export default {
 
 	setup(props){
 
-		const route = useRoute(); 
+		const route = useRoute();
 
 		let pythonStore = usePythonStore();
 		let tabStore = useTabStore();
@@ -657,22 +661,22 @@ export default {
 				}
 
 
-			  globalStore.setLoading(true); 
+			  globalStore.setLoading(true);
 			  await perform();
-			  globalStore.setLoading(false); 
+			  globalStore.setLoading(false);
 
 			  if (route.query.key) {
-				let entry = tree.find(route.query.key); 
+				let entry = tree.find(route.query.key);
 
-				let parent = entry.parentObject; 
+				let parent = entry.parentObject;
 
 				while (parent) {
 					if (!parent.state.isOpen.value)
 						parent.state.open();
-					
-					parent = parent.parentObject; 
+
+					parent = parent.parentObject;
 				}
-				this.selectItem(null, route.query.key); 
+				this.selectItem(null, route.query.key);
 			  }
 
 
@@ -1061,6 +1065,7 @@ export default {
   padding: 2px 5px 5px 5px;
   margin: 0;
   list-style: none;
+  position: relative;
 
    &::-webkit-scrollbar-track {
         background-color: transparent;
@@ -1080,6 +1085,23 @@ export default {
     &::-webkit-scrollbar-button {
         height: 6px;
     }
+}
+
+.loader{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, .8);
+
+  sl-spinner-circle{
+	font-size: 2em;
+	--track-width: 4px;
+  }
 }
 
 .menu {

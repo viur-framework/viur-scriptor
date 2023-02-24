@@ -2,6 +2,9 @@
 	<li v-show="canRender" contenteditable="false">
 		<div
 				class="item-inner">
+			<!--<div class="loader">
+				<sl-spinner-circle></sl-spinner-circle>
+			</div>-->
 			<div :class="classNames"
 				@click="click"
 				ref="element"
@@ -372,6 +375,7 @@ export default {
   padding: .2em;
   cursor: pointer;
   width: 100%;
+  position: relative;
 
   &:hover{
 	background-color: var(--sl-color-neutral-100);
@@ -383,6 +387,24 @@ export default {
 	}
   }
 }
+
+.loader{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, .8);
+
+  sl-spinner-circle{
+	font-size: 1em;
+	--track-width: 2px;
+  }
+}
+
 
 .item-inner-wrap{
   display: flex;
