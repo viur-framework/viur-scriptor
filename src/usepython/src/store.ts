@@ -1,5 +1,5 @@
 import { map, atom, computed } from 'nanostores'
-import { PyLog, PyInstallLog } from "./interfaces";
+import { PyLog, PyInstallLog, ProgressbarDetails } from "./interfaces";
 
 const pyLog = map<PyLog>({
   id: "",
@@ -11,6 +11,13 @@ const pyLog = map<PyLog>({
 
 const pyLogging = atom<Array<Object>>([]);
 const pyDialogs = atom<Array<Object>>([]);
+
+const progressBar = atom<ProgressbarDetails>({
+  total: 0,
+  step: -1,
+  maxStep: -1,
+  txt: "",
+}); 
 
 const pyInstallLog = map<PyInstallLog>({
   stage: 0,
@@ -28,4 +35,4 @@ const isPyExecuting = computed(pyExecState, all => {
 const isPyReady = computed(isPyReadyState, all => {
   return all === 1
 })
-export { pyLog, pyDialogs, isPyExecuting, pyExecState, pyInstallLog, isPyReadyState, isPyReady, pyLogging }
+export { pyLog, pyDialogs, isPyExecuting, pyExecState, pyInstallLog, isPyReadyState, isPyReady, pyLogging, progressBar }

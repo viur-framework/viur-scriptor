@@ -1,5 +1,5 @@
 import worker from 'web-worker:./webworker.js';
-import { pyLog, pyLogging, pyDialogs, pyExecState, pyInstallLog, isPyExecuting, isPyReadyState, isPyReady } from "./store";
+import { pyLog, progressBar, pyLogging, pyDialogs, pyExecState, pyInstallLog, isPyExecuting, isPyReadyState, isPyReady } from "./store";
 
 /** The main composable */
 const usePython = () => {
@@ -64,6 +64,15 @@ const usePython = () => {
         //pyLog.setKey("stdOut", [...pyLog.get().stdOut, data.msg])
         break;
 
+      case "progressbar":
+        progressBar.set({
+          total: data.total,
+          step: data.step, 
+          maxStep: data.max_step, 
+          txt: data.txt
+        });
+        break;
+
 	   case "download":
 		   var url = window.URL.createObjectURL(data["blob"]);
 		   var downloadLink = document.createElement("a");
@@ -125,38 +134,59 @@ const usePython = () => {
 
 
         case "showDirectoryPicker":
+          {
+            let handle = -1;
+            try {
+              handle = await window.showDirectoryPicker({
+                mode: "readwrite"
+            })
+            }
+            catch (e) {
+            }
+
             _pyodideWorker.postMessage({
                 id: "_setDirectoryHandle",
-                python: "",
-                handle: await window.showDirectoryPicker({
-                    mode: "readwrite"
-                })
+                handle
             });
 
 
             break;
+          }
 
         case "showSaveFilePicker":
+            let handle = -1; 
+            try {
+              handle = await window.showSaveFilePicker()
+            }
+            catch (e) {
+            }
+
             _pyodideWorker.postMessage({
                 id: "_setFileHandle",
-                python: "",
-                handle: await window.showSaveFilePicker()
+                handle: handle
             });
 
 
             break;        
             
-          case "showOpenFilePicker":
+          case "showOpenFilePicker": {
+            let handle = -1; 
+            try {
+              handle = await window.showOpenFilePicker({
+                multiple: false
+              })
+            }
+            catch (e) {
+            }
+
             _pyodideWorker.postMessage({
                 id: "_setOpenFilePickerHandle",
-                python: "",
-                handle: await window.showOpenFilePicker({
-                  multiple: false
-                })
+                handle
             });
 
 
             break;
+          }
       default:
         pyExecState.set(0);
         throw new Error(`Unknown event type ${data.type}`)
@@ -460,6 +490,7 @@ const usePython = () => {
     isReady: isPyReady,
 	  pyLogging: pyLogging,
     pyDialogs: pyDialogs,
+    progressBar,
 	  write,
 	  removeFile,
 	  removeDir,

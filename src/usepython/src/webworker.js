@@ -263,57 +263,14 @@ self.onmessage = async (event) => {
 		end(id);
 	}
 	else if (id === "_setDirectoryHandle") {
-		console.log("_setDirectoryHandle", context.handle)
-		//webworkerUtils.directoryHandle = context.handle;
-
-		if (webworkerUtils.events.directoryHandle) {
-			await webworkerUtils.events.directoryHandle(context.handle);
-			webworkerUtils.events.directoryHandle = undefined;
-		
-			if (!isStillRunning()) {
-				end(webworkerUtils.runningId, webworkerUtils.res); 
-			}
-		}
-		
+		manager.resultValue = context.handle; 
 	}
 	else if (id === "_setFileHandle") {
-		console.log("_setFileHandle", context.handle, "fileHandle:", webworkerUtils.events.fileHandle)
-
-		if (webworkerUtils.events.fileHandle) {
-			console.log("FileHandle before!")
-
-			await webworkerUtils.events.fileHandle(context.handle);
-
-			console.log("FileHandle callign!")
-
-
-			webworkerUtils.events.fileHandle = undefined;
-			if (!isStillRunning()) {
-				end(webworkerUtils.runningId, webworkerUtils.res); 
-			}
-
-		}
+		manager.resultValue = context.handle; 
 	}	
 	else if (id === "_setOpenFilePickerHandle") 
 	{
-		console.log("_setOpenFilePickerHandle", context.handle, "fileHandle:", webworkerUtils.events.fileHandle)
-
-		if (webworkerUtils.events.filePickerHandle) {
-			console.log("filePickerHandle before!")
-
-			await webworkerUtils.events.filePickerHandle(context.handle);
-
-			console.log("filePickerHandle calling!")
-
-
-			webworkerUtils.events.filePickerHandle = undefined;
-			if (!isStillRunning()) {
-				end(webworkerUtils.runningId, webworkerUtils.res); 
-			}
-
-		}
-
-
+		manager.resultValue = context.handle; 
 	}
   else if (id === "_sendDialogSignal") {
 	

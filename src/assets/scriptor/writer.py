@@ -87,21 +87,34 @@ class MemoryWriter(WriterBase):
 			pass
 
 if is_pyodide_context():
+	from .dialog import wait
+	import manager
+	
 	class Picker:
-		EVENT_NAME = ""
 		TYPE_NAME = ""
 
-		@classmethod
-		async def on_handle_callback(cls, handle, callback):
-			await callback(handle)
+		async def on_startup(self):
+			pass
 
 		@classmethod
-		async def from_dialog(cls, callback):
+		async def open(cls):
 			#js_utils.registerEvent(cls.EVENT_NAME, create_once_callable(lambda handle, cb=callback: cls.on_handle_callback(handle, cb)))
 			_self.postMessage(type=cls.TYPE_NAME)
+			await wait()
+
+			tmp = manager.copyResult()
+			manager.reset()
+			manager.resultValue = None
+
+			if tmp == -1 or not tmp:
+				return None
+
+			instance = cls(tmp)
+			await instance.on_startup()
+			return instance
+
 
 	class FilePickerWriter(WriterBase, Picker):
-		EVENT_NAME = "fileHandle"
 		TYPE_NAME = "showSaveFilePicker"
 
 		def __init__(self, file_object: object, line_terminator: str = WriterBase.LINE_TERMINATOR) -> str:
@@ -141,15 +154,10 @@ if is_pyodide_context():
 		async def __aexit__(self, *args):
 			await self.close()
 
-		def __repr__(self) -> str:
-			return repr(self._file_stream)
-
-		def __str__(self) -> str:
-			return str(self._file_stream)
-		
+		def __len__(self):
+			return len(str(self._file))
 
 	class DirectoryPickerWriter(WriterBase, Picker):
-		EVENT_NAME = "directoryHandle"
 		TYPE_NAME = "showDirectoryPicker"
 
 		def __init__(self, directory_handle: object, line_terminator: str = WriterBase.LINE_TERMINATOR, parent_handle: object = None) -> str:
@@ -169,9 +177,6 @@ if is_pyodide_context():
 				return None
 
 			return DirectoryPickerWriter(await self._directory_handle.getDirectoryHandle(path, create=True), WriterBase.LINE_TERMINATOR, self._directory_handle)
-
-		def __repr__(self) -> str:
-			return repr(self._directory_handle)
-
-		def __str__(self) -> str:
-			return str(self._directory_handle)
+		
+		def __len__(self):
+			return len(str(self._directory_handle))

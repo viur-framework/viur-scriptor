@@ -2,7 +2,6 @@ from js import eval as js_eval, self as _self, Blob
 import manager
 import time
 from js import console
-from scriptor import print
 
 async def wait():
     while manager.resultValue is None:
@@ -81,3 +80,23 @@ async def select(title: str, text: str, choices: list[int], multiple: bool = Fal
 
 
     return tmp
+
+class Progressbar():
+    def __init__(self) -> None:
+        self._value = 0
+        self._step = 0
+        self._
+    
+    def stop(self):
+        self._value = 100
+        _self.postMessage(type="progressbar", step=self._step, total=self._value, txt="")
+    
+    def start(self, total: int, step: int = -1, txt = ''):
+        self._value = total
+        self._step = step
+        self.commit()
+
+    async def commit(self):
+        _self.postMessage(type="progressbar", step=self._step, total=self._value, txt="")
+
+

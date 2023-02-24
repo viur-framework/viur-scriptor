@@ -11,4 +11,12 @@ interface PyInstallLog {
   msg: string;
 }
 
-export { PyLog, PyInstallLog }
+interface ProgressbarDetails {
+  // total=total, step=step, max_step=max_step, txt=txt
+  total: number; 
+  step: number; 
+  maxStep: number;
+  txt: String
+}
+
+export { PyLog, PyInstallLog, ProgressbarDetails }

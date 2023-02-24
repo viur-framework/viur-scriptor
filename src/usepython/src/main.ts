@@ -1,5 +1,5 @@
 
 import { usePython } from "./py";
-import { PyLog, PyInstallLog } from "./interfaces";
+import { PyLog, PyInstallLog, ProgressbarDetails } from "./interfaces";
 
-export { PyLog, PyInstallLog, usePython }
+export { PyLog, PyInstallLog, ProgressbarDetails, usePython }

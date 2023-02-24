@@ -2,6 +2,7 @@
 import {ref, computed} from "vue";
 import {defineStore} from "pinia";
 import { usePythonStore } from "./PythonStore";
+import { ProgressbarDetails } from "@/usepython/dist/interfaces";
 
 export const useLogStore = defineStore("log", () => {
     const pythonStore = usePythonStore(); 
@@ -103,11 +104,17 @@ export const useLogStore = defineStore("log", () => {
             }
         }
 }); 
+    const progessBarMap = ref<Record<string, ProgressbarDetails>>({});
+
+
+    pythonStore.py.progressBar.listen((val) => {
+        progessBarMap.value[pythonStore.scriptRunnerTab] = val; 
+    })
 
     function clear(key: String) {
         logMap.value[key] = ref([]); 
     }
 
 
-    return {logMap, clear}
+    return {logMap, clear, progessBarMap}
 })
