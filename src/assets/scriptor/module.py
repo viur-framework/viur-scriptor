@@ -1,7 +1,9 @@
 from .viur import viur
 from .network import Request
 from .viur import viur
-from js import console
+from .utils import is_pyodide_context
+if is_pyodide_context():
+	from js import console
 
 import inspect
 
@@ -24,11 +26,14 @@ class BaseModule(object):
 	async def register_routes(self, route: object):
 		functions = inspect.getmembers(route.__class__, predicate=inspect.isfunction)
 		for name, func in functions:
-			console.log(f"Register route name {name}")
+			if is_pyodide_context():
+				console.log(f"Register route name {name}")
 
 			if name.startswith("__"):
 				continue
-			console.log(f"Register route {name} -> {func}")
+
+			if is_pyodide_context():
+				console.log(f"Register route {name} -> {func}")
 			async def wrap(*args, **kwargs):
 				return await func(self._routes[name]["instance"], *args, **kwargs)
 
@@ -71,7 +76,9 @@ class ExtendedModule(BaseModule):
 
 
 class ListModule(ExtendedModule):
-	pass
+	async def for_each(self, callback: callable, params: dict = None):
+		async for entry in self.list(params=params):
+			await callback(entry)
 
 class TreeModule(ExtendedModule):
 	async def edit(self, group: str, key: str, params: dict = None):
@@ -102,6 +109,32 @@ class TreeModule(ExtendedModule):
 			"parentNode": parentNode
 		})
 
+	async def for_each(self, callback: callable, root_node_key: str = None, params: dict = None):
+		##
+		async def download(key: str, group: str|list[str] = ['node', 'leaf']):
+			if isinstance(group, list):
+				for grp in group:
+					await download(key, grp)
+				return
+			
+			_params = {"parententry": key}
+			if params:
+				_params.update(params)
+
+
+			async for entry in self.list(group, _params):
+				await callback(group, entry)
+				# Check if this is a node
+				if group == "node":
+					await download(entry["key"])
+
+		if root_node_key:
+			root_nodes = [root_node_key]
+		else:
+			root_nodes = await self.list_root_nodes()
+	
+		for root_node in root_nodes:
+			await download(root_node["key"])
 
 
 def __getattr__(attr):

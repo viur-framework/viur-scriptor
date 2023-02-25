@@ -84,11 +84,16 @@ class MemoryWriter(WriterBase):
 
 			_self.postMessage(type="download", blob=blob, filename=name)
 		else:
-			pass
+			with open(name, "w") as f:
+				f.write(str(self))
 
-if is_pyodide_context():
+if 1:
 	from .dialog import wait
-	import manager
+	if is_pyodide_context():
+		import manager
+	else:
+		import os
+		import click
 	
 	class Picker:
 		TYPE_NAME = ""
@@ -99,17 +104,26 @@ if is_pyodide_context():
 		@classmethod
 		async def open(cls):
 			#js_utils.registerEvent(cls.EVENT_NAME, create_once_callable(lambda handle, cb=callback: cls.on_handle_callback(handle, cb)))
-			_self.postMessage(type=cls.TYPE_NAME)
-			await wait()
+			if is_pyodide_context():
+				_self.postMessage(type=cls.TYPE_NAME)
+				await wait()
 
-			tmp = manager.copyResult()
-			manager.reset()
-			manager.resultValue = None
+				tmp = manager.copyResult()
+				manager.reset()
+				manager.resultValue = None
 
-			if tmp == -1 or not tmp:
-				return None
+				if tmp == -1 or not tmp:
+					return None
 
-			instance = cls(tmp)
+				instance = cls(tmp)
+			else:
+				ret = click.prompt("Enter a path")
+
+				if cls.TYPE_NAME == "showOpenFilePicker":
+					instance = cls([open(ret, "r")])
+				else:
+					instance = cls(ret)
+
 			await instance.on_startup()
 			return instance
 
@@ -123,10 +137,14 @@ if is_pyodide_context():
 			self._file_stream = None
 
 		async def write(self, content: str):
-			await self._file_stream.write(
-				type="write",
-				data=content 
-			)
+			if is_pyodide_context():
+				await self._file_stream.write(
+					type="write",
+					data=content 
+				)
+			else:
+				self._file_stream.seek(self._offset)
+				self._file_stream.write(content)
 
 			self._offset += len(content)
 			self.increase_line_count()
@@ -135,21 +153,32 @@ if is_pyodide_context():
 			content = content + self.line_terminator
 			# FIX WRITING!!
 
-			encoder = js_eval("new TextEncoder()")
-			
-			await self._file_stream.write(
-				type="write",
-				data=encoder.encode(content)
-			)
+			if is_pyodide_context():
+				encoder = js_eval("new TextEncoder()")
+				
+				await self._file_stream.write(
+					type="write",
+					data=encoder.encode(content)
+				)
+			else:
+				self._file_stream.seek(self._offset)
+				self._file_stream.write(content)
 
 			self._offset += len(content)
 			self.increase_line_count()
 
 		async def close(self):
-			await self._file_stream.close()
+			if is_pyodide_context():
+				await self._file_stream.close()
+			else:
+				self._file_stream.close()
 
 		async def __aenter__(self):
-			self._file_stream = await self._file.createWritable()
+			if is_pyodide_context():
+				self._file_stream = await self._file.createWritable()
+			else:
+				self._file_stream = open(self._file, "a+")
+				self._file_stream.truncate()
 
 		async def __aexit__(self, *args):
 			await self.close()
@@ -163,6 +192,10 @@ if is_pyodide_context():
 		def __init__(self, directory_handle: object, line_terminator: str = WriterBase.LINE_TERMINATOR, parent_handle: object = None) -> str:
 			super().__init__(line_terminator)
 			self._directory_handle = directory_handle
+			if not is_pyodide_context():
+				if not os.path.exists(self._directory_handle):
+					os.makedirs(self._directory_handle)
+
 			self._parent_handle = parent_handle
 
 
@@ -170,13 +203,19 @@ if is_pyodide_context():
 			if self._directory_handle is None:
 				return None
 
-			return FilePickerWriter(await self._directory_handle.getFileHandle(path, create=True), WriterBase.LINE_TERMINATOR)
+			if is_pyodide_context():
+				return FilePickerWriter(await self._directory_handle.getFileHandle(path, create=True), WriterBase.LINE_TERMINATOR)
+			
+			return FilePickerWriter(os.path.join(self._directory_handle, path), WriterBase.LINE_TERMINATOR)
 
 		async def directory(self, path: str):
 			if self._directory_handle is None:
 				return None
 
-			return DirectoryPickerWriter(await self._directory_handle.getDirectoryHandle(path, create=True), WriterBase.LINE_TERMINATOR, self._directory_handle)
+			if is_pyodide_context():
+				return DirectoryPickerWriter(await self._directory_handle.getDirectoryHandle(path, create=True), WriterBase.LINE_TERMINATOR, self._directory_handle)
+
+			return DirectoryPickerWriter(os.path.join(self._directory_handle, path), WriterBase.LINE_TERMINATOR, self._directory_handle)
 		
 		def __len__(self):
 			return len(str(self._directory_handle))

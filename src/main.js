@@ -15,6 +15,8 @@ import "@viur/viur-shoelace/dist/components/menu/menu.js";
 import "@viur/viur-shoelace/dist/components/icon/icon.js";
 import "@viur/viur-shoelace/dist/components/icon/icon.styles";
 import "@viur/viur-shoelace/dist/components/card/card.styles";
+import VueHighlightJS from 'vue3-highlightjs'
+import 'highlight.js/styles/solarized-light.css'; 
 
 // plugin-style
 import { setBasePath } from '@viur/viur-shoelace/dist/utilities/base-path.js';
@@ -43,6 +45,7 @@ const i18n = createI18n({
 	messages: {"en": en, "de": de}
 })
 
+app.use(VueHighlightJS);
 app.use(createPinia());
 app.use(i18n);
 app.use(router);

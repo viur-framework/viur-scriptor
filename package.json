@@ -36,7 +36,8 @@
     "vue-json-pretty": "^2.2.3",
     "vue-router": "^4.1.6",
     "vue-virtual-scroll-list": "^2.3.4",
-    "vue3-easy-data-table": "^1.5.24"
+    "vue3-easy-data-table": "^1.5.24",
+    "vue3-highlightjs": "^1.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

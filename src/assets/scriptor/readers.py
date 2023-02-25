@@ -1,14 +1,19 @@
+from .utils import is_pyodide_context
 
 if 1:
 	from .writer import Picker
-	from js import console
+	if is_pyodide_context():
+		from js import console
 
 	class FilePickerReader(Picker):
 		TYPE_NAME = "showOpenFilePicker"
 
 		async def on_startup(self):
-			self._content = await (await self._file.getFile()).text()
-			console.log(f"content_type:{type(self._content)}")
+			if is_pyodide_context():
+				self._content = await (await self._file.getFile()).text()
+				console.log(f"content_type:{type(self._content)}")
+			else:
+				self._content = self._file.read()
 
 		def __init__(self, file_object: object) -> str:
 			super().__init__()

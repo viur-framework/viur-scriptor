@@ -1,7 +1,11 @@
-from js import self as _self
+from .utils import is_pyodide_context
+
+if is_pyodide_context():
+    from js import self as _self
 
 def start(total: int, step: int = -1, max_step=-1, txt = ''):
-    _self.postMessage(type="progressbar", total=total, step=step, max_step=max_step, txt=txt)
+    if is_pyodide_context():
+        _self.postMessage(type="progressbar", total=total, step=step, max_step=max_step, txt=txt)
 
 def stop():
     start(100)

@@ -1,7 +1,10 @@
 from .network import Request
-from js import console, fetch
+from .utils import is_pyodide_context
 from urllib.parse import urlencode as _urlencode
-from config import BASE_URL
+
+if is_pyodide_context():
+    from js import console, fetch
+    from config import BASE_URL
 
 class viur:
 
@@ -119,6 +122,7 @@ class viur:
 
         return ret
 
+    @staticmethod
     async def add(*, url: str = "", module: str = "", params: dict = None, group: str = "", **kwargs):
         url = viur.build_url("add", url, module, group)
 
@@ -127,6 +131,7 @@ class viur:
 
         return ret
 
+    @staticmethod
     async def delete(*, url: str = "", module: str = "", key: str = "", params: dict = None, group: str = "", **kwargs):
         url = viur.build_url("delete", url, module, group, key)
 

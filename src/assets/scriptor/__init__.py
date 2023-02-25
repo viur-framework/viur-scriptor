@@ -1,6 +1,6 @@
 import asyncio
 
-from .utils import get_json_object
+from .utils import get_json_object, is_pyodide_context
 
 
 
@@ -22,9 +22,13 @@ except ModuleNotFoundError:
 import json
 import copy
 
+old_print = print
 
 def print(*args, **kwargs):
-	logging.info(*args, **kwargs)
+	if is_pyodide_context():
+		logging.info(*args, **kwargs)
+	else:
+		old_print(logging.format_text(*args, **kwargs))
 
 
 class prototypes:
@@ -43,4 +47,5 @@ except AttributeError:
 async def init():
 	resp = await viur.request.get("/config", renderer="vi")
 	viur.modules = resp["modules"]
-	console.log("response = ", resp)
+	if is_pyodide_context():
+		console.log("response = ", resp)
