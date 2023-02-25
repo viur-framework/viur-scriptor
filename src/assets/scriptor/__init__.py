@@ -31,6 +31,8 @@ def print(*args, **kwargs):
 		old_print(logging.format_text(*args, **kwargs))
 
 
+from .utils import sleep
+
 class prototypes:
 	list = ListModule
 	singleton = SingletonModule
