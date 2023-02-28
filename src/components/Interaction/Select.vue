@@ -9,11 +9,15 @@
 		</p>
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
-            <sl-button  :disabled="!render" size="medium" v-for="(option, index) in props.options" :key="index" @click="() => selectOption(index)"> {{ option }}</sl-button>
+            <sl-button  :disabled="!render" size="medium" v-for="option in Object.keys(props.options)" :key="option" @click="() => selectOption(option)">
+                {{ props.options[option] }}
+            </sl-button>
         </div>
 
 		<div class="checkbox-container" v-else>
-			<sl-checkbox class="checkbox" :disabled="!render" v-for="(option, index) in props.options" :key="index" @sl-change="(event) => selectRadioButton(event, index)"> {{  option }}</sl-checkbox>
+			<sl-checkbox class="checkbox" :disabled="!render" v-for="option in Object.keys(props.options)" :key="option" @sl-change="(event) => selectRadioButton(event, option)">
+                {{ props.options[option] }}
+            </sl-checkbox>
 		</div>
 
 		<div slot="footer" v-if="props.multiple">
@@ -56,7 +60,7 @@ function selectOption(index: number) {
   props.select(index);
 }
 
-function selectRadioButton(event: UIEvent, index: number) {
+function selectRadioButton(event: UIEvent, index: string) {
   if (!props.multiple)
     return;
 
