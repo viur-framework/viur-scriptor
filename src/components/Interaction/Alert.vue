@@ -2,7 +2,7 @@
 
     <sl-card class="interaction">
         <div slot="header">
-            {{ t('alert') }}
+            {{ t('Alert') }}
         </div>
 
 		<p class="paragraph">
