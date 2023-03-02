@@ -112,6 +112,16 @@ const usePython = () => {
 			pyDialogs.notify();
       break;
 
+      case "diffcmp":
+        pyDialogs.get().push({
+          type: "diffcmp",
+          title: data.title, 
+          changes: data.changes,
+          done: false
+        })
+        pyDialogs.notify();
+        break;
+
     case "input":
 			pyDialogs.get().push({
 				type: "input",

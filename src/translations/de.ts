@@ -124,6 +124,7 @@ export default {
 	no: "Nein",
 	alert: "Alert",
 	send: "Abschicken",
-	share: "Teilen"
+	share: "Teilen",
+	diff: "Änderungen"
 }
 

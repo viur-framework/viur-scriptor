@@ -205,5 +205,19 @@ async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
 
     return ret
 
+async def diffcmp(title: str, changes: list[list[str]]):
+    if is_pyodide_context():
+        for i in range(len(changes)):
+            changes[i] = pyodide.ffi.to_js(changes[i])
 
+        _self.postMessage(type="diffcmp", title=title, changes=pyodide.ffi.to_js(changes))
+    else:
+        click.echo(title)
 
+        for entry in changes:
+            for i in range(len(entry)):
+                if not isinstance(entry[i], str):
+                    entry[i] = str(entry[i])
+
+        ret = "\n".join([f"{e[0]}\t\t\t{e[1]} -> {e[2]}" for e in changes])
+        click.echo(ret)

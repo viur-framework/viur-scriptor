@@ -44,6 +44,9 @@
               <div v-else-if="log.type === 'select'">
                 <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices"></Select>
               </div>
+              <div v-else-if="log.type === 'diffcmp'">
+                <DiffCompare  :title="log.title" :values="log.changes"></DiffCompare>
+              </div>
 <!-- 			pyDialogs.get().push({
       type: "confirm",
       title: data.title,
@@ -73,6 +76,8 @@ import Alert from "./Interaction/Alert.vue";
 import Confirm from "./Interaction/Confirm.vue";
 import Input from "./Interaction/Input.vue";
 import Select from "./Interaction/Select.vue";
+import DiffCompare from "../components/Interaction/DiffCompare.vue";
+
 import { ProgressbarDetails } from '@/usepython/dist/interfaces';
     const pythonStore = usePythonStore();
 
