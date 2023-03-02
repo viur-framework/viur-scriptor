@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../components/Home.vue'
+import Runner from '../views/Runner.vue'
+
 import Interactions from '../views/Interactions.vue'; 
 
 const routes = [
@@ -12,6 +14,12 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: Home
+  },
+
+  {
+    path: '/runner/:key',
+    name: 'Runner',
+    component: Runner
   },
 
   {

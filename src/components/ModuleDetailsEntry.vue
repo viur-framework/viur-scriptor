@@ -27,8 +27,6 @@ export default {
   components: {VueJsonPretty},
   name: "ModuleDetailsEntry",
   setup(props) {
-
-    console.log("props:", props.details)
     return {props}
   }
 }

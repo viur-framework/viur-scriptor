@@ -47,7 +47,7 @@ export const useTabStore = defineStore('tab', () => {
 
     let getTabCode = (key: string) => {
         let code = tabMap.value[key].code;
-        if (code.length > 1)
+        if (code.length > 1 && code[code.length-1] === '\n')
             code = code.substring(0, code.length - 1);
 
         return code;
@@ -64,13 +64,10 @@ export const useTabStore = defineStore('tab', () => {
             let index = tabList.value.indexOf(item);
             if (index-1>=0) {
                 item.leftNode = tabList.value[index-1];
-                console.log("Adding index ", index, " leftNode ", index-1);
 
             }
             if (index + 1 < tabList.value.length){
                 item.rightNode = tabList.value[index+1];
-                console.log("Adding index ", index, " rightNode ", index+1);
-                console.log("Right node = ", item.rightNode);
             }
         });
     }
@@ -82,7 +79,6 @@ export const useTabStore = defineStore('tab', () => {
                 return item.key !== key;
             });
 
-        console.log("Adding code", code)
         tabMap.value[key] = {
             name: name,
             code: code,
@@ -106,7 +102,6 @@ export const useTabStore = defineStore('tab', () => {
 
             }, 200);
 
-            console.log("TabGroup SHow: ", key)
         }
     }
 
@@ -120,7 +115,6 @@ export const useTabStore = defineStore('tab', () => {
                     }
                 )
 
-                console.log("Calling selectTab Tab", selectedTab.value);
             }
 
         }
@@ -140,7 +134,6 @@ export const useTabStore = defineStore('tab', () => {
 
 				}, 200);
 
-				console.log("TabGroup SHow: ", key)
 			}
 
 			return true;
@@ -173,11 +166,9 @@ export const useTabStore = defineStore('tab', () => {
 
         if (tabInstance.leftNode !== undefined) {
             nextIndex = _keys.indexOf(tabInstance.leftNode.key);
-            console.log("left node instance:", tabInstance.leftNode);
         }
 
         if (tabInstance.rightNode !== undefined) {
-            console.log("right node instance:", tabInstance.rightNode);
             if (nextIndex === -1)
                 nextIndex = _keys.indexOf(tabInstance.rightNode.key);
         }
@@ -187,10 +178,6 @@ export const useTabStore = defineStore('tab', () => {
         if (!isSelectedTab && nextIndex !== indexOfTab) {
             nextIndex = indexOfTab;
         }
-
-        console.log("NextIndex: ", nextIndex)
-
-        console.log(tabMap.value);
 
         selectedTab.value = "";
         if (_keys.length > 0) {
@@ -208,6 +195,9 @@ export const useTabStore = defineStore('tab', () => {
                     selectTab(_key);
                 }
             }, 250);
+        }
+        else {
+            router.push({})
         }
 
     }

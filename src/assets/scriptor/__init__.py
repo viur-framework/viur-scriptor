@@ -39,6 +39,17 @@ class prototypes:
 	tree = TreeModule
 
 
+
+def params():
+	params = {}
+	if is_pyodide_context():
+		from manager import params
+
+		params = params.to_py()
+	
+	return params
+
+
 viur.prototypes = prototypes()
 
 try:
@@ -49,5 +60,3 @@ except AttributeError:
 async def init():
 	resp = await viur.request.get("/config", renderer="vi")
 	viur.modules = resp["modules"]
-	if is_pyodide_context():
-		console.log("response = ", resp)

@@ -31,7 +31,6 @@ import router from "./router/index"
 import en from "./translations/en"
 import de from "./translations/de"
 
-console.log(`config: {config}`)
 const app = createApp(App);
 app.config.compilerOptions.isCustomElement = tag => tag.startsWith('sl-');
 app.provide("global", global)

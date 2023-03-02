@@ -41,6 +41,8 @@ export default {
 
   setup(){
 
+	  const checkLoginInterval = ref();
+
 	  const globalStore = useGlobalStore();
 	  let isLoggedIn = ref<boolean>(false);
 	  let isLoading = ref<boolean>(true);
@@ -60,21 +62,31 @@ export default {
 		  isLoading.value = false;
 	  }
 
-	  onBeforeMount(async () => {
-		  try {
+	  async function checkLogin(allowInit = false) {
+		try {
 			  let resp = await Request.get("/vi/user/view/self");
 			  let data = await resp.json();
 			  isLoggedIn.value = true;
 			  global.user = data.values;
 
-			  await init();
+
+			  if (allowInit)
+			  	await init();
 
 			  //messageStore.addMessage("debug", "Text-Nachricht", "Ich bin ein Text");
+
 		  }
 		  catch (error) {
 			  isLoggedIn.value = false;
 			  messageStore.addMessage("error", t("error.title.login"), t("error.text.login"));
 		  }
+	  }
+
+	  onBeforeMount(async () => {
+		  await checkLogin(true);
+		  setInterval(async () => {
+			await checkLogin();
+		  }, 1000 * 60 * 5)
 	  });
 
 	  return {isLoggedIn, isLoading, globalStore}

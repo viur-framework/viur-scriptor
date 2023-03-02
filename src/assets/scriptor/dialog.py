@@ -81,7 +81,6 @@ async def input(text: str, *, title: str = "Input", type: str = "input", use_tim
         manager.resultValue = None
 
         if type == "date":
-            js.console.error(tmp)
             return datetime.datetime.fromtimestamp(math.floor(tmp/1000.0))
 
         return tmp

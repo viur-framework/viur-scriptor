@@ -9,11 +9,6 @@ import mv from "rollup-plugin-mv";
 // https://vitejs.dev/config/
 
 const APPNAME = "scriptor"
-console.log( path.join(__dirname, 'html'))
-console.log( path.join(__dirname, "scriptor.html"))
-console.log( path.join(path.dirname(require.resolve('@viur/viur-shoelace/dist/shoelace.js')), "assets"))
-console.log( path.join("..","..","deploy",'static',APPNAME,"*"))
-console.log( path.join(__dirname, 'public', "../", 'static', APPNAME, "viur-shoelace"))
 export default defineConfig(({command, mode})=>{
 	let conf = {
 		css: {

@@ -59,8 +59,6 @@ if (!props.data.prefix) {
     props.data.prefix = "";
 }
 
-console.log(`Props id: ${props.data.id}`)
-
 const dialog = ref<HTMLDivElement>();
 const inputText = ref<string>(props.data.initialText ? props.data.initialText : "");
 const inputTextColorClass = ref<string>("");
@@ -68,11 +66,6 @@ const inputTextColorClass = ref<string>("");
 onMounted(() => {
     dialog.value.show();
 })
-
-watch(inputText, (a, b) => {
-    console.log(inputText.value);
-})
-
 
 const dialogStore = useDialogStore();
 function destroyDialog() {

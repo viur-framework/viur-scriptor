@@ -19,7 +19,6 @@ export const useLogStore = defineStore("log", () => {
 
       function getThemeByLevel(level: string)
       {
-          console.log("level", level);
           switch (level)
           {
               case "debug": return "neutral";
@@ -50,18 +49,13 @@ export const useLogStore = defineStore("log", () => {
         if (!(pythonStore.scriptRunnerTab in logMap.value))
             logMap.value[pythonStore.scriptRunnerTab] = ref([]); 
          
-        //console.log("Notify: python logging", val)
-        //console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue); 
         {
-          console.error("pythonStore.py.pyLogging"); 
 
             for (let i = 0; i<val.length; ++i) {
                 let entry = val[i];
                 if (entry.done)
                     continue;
 
-                console.log(`Pushing Data:${entry.level} value ${entry.text} `)
-                console.error(logMap.value[pythonStore.scriptRunnerTab])
                 logMap.value[pythonStore.scriptRunnerTab].push({
                     log: {
                         type: "syslog",

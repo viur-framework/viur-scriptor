@@ -78,9 +78,7 @@ export default {
 
         let showList = [];
         for (let child in children) {
-          console.log(children[child].renderElement)
           if (text) {
-            console.log("label:", children[child].label, "includes: ", children[child].label.includes(text))
             children[child].renderElement = children[child].label.toLowerCase().includes(text.toLowerCase());
             if (children[child].renderElement)
               showList.push(children[child].parentObject)
@@ -374,17 +372,12 @@ export default {
 
 			// Select a item from children (left click)
 			selectItem: function(element: HTMLDivElement, key: string, skipSave: boolean = false, callback: Function = null) {
-				console.log("Select ", element, " key", key)
 
 				let _entry = tree.find(key);
 				if (_entry === null) {
-					console.log(tree.data.value, " value ", key)
 					console.error("Cannot find element ", element, " key", key)
 					return;
 				}
-
-
-				console.log("Select ", element, " key", key)
 
 				if (!_entry.parent) {
 					globalStore.setLoading(true);
@@ -398,11 +391,8 @@ export default {
 									props.onSelectItem();
 								props.manager.showMirror();
 
-								console.log("view", res);
 								tabStore.addTab(key, res.values.name, res.values.script);
 
-
-								console.log("tabStore.tabMap", tabStore.tabMap);
 
 								globalStore.setLoading(false);
 
@@ -420,6 +410,7 @@ export default {
 			},
 
 			create: async function () {
+				
 				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 				async function perform() {
 
@@ -429,7 +420,6 @@ export default {
 						for (let i in parents) {
 							let parent = parents[i];
 							if (!tree.isExistingLabel(parent.name, iter.children)) {
-								console.log("Creating Parent with plugin: ", parent.name,  " plugin state:", parent.plugin)
 								let new_children = {
 									label: parent.name,
 									key: parent.key,
@@ -464,15 +454,12 @@ export default {
 
                 }
 
-
-								console.log("parents:", parents, "Abc children: ", new_children)
 								iter.children.push(new_children);
 								iter = new_children;
 							} else {
 								let children = iter.children;
 								iter = tree.getChildrenByLabel(parent.name, children);
 
-								console.log("iter is ", iter)
 							}
 						}
 
@@ -482,7 +469,9 @@ export default {
 					await Request.get("/json/script/listRootNodes").then(async (answer: Response) => {
 						let res = await answer.json();
 						let rootNode = res[0];
-						console.log("rootNode", res);
+						if (route.query.rkey)
+							rootNode = {key: route.query.rkey} 
+						
 						tree.data.value.key = rootNode.key;
 
 						async function create() {
@@ -497,11 +486,9 @@ export default {
 								});
 
 								const data = await resp.json();
-								console.log("abc!!!", data);
 
 								for (let index in data["skellist"]) {
 									const skel: any = data["skellist"][index];
-									console.log("SKel data!!!", skel);
 
 									tree.data.value.children.push({
 										label: skel.name,
@@ -525,7 +512,6 @@ export default {
 
 								for (let index in res["skellist"]) {
 									let entry = res["skellist"][index];
-									console.log("wdwdwdwdw:", entry)
 
 									let resolveChildrenLeaf = async function (parents = [], parentkey) {
 										let resp_leaf = await Request.list("script", {
@@ -540,7 +526,6 @@ export default {
 
 
 										if (iter) {
-											console.log("iter is ", iter);
 											let path = "/";
 											let isPlugin = false;
 
@@ -569,7 +554,6 @@ export default {
 												if (isPlugin) {
 													if (path && _entry) {
 														let file_path = path + _entry.name;
-														console.log("file_path_", file_path);
 														await pythonStore.py.write(path, "/" + _entry.name, _entry.script);
 													}
 												}
@@ -579,7 +563,6 @@ export default {
 
 										}
 										else {
-											console.error("Iter is no defined.")
 										}
 
 									};
@@ -603,7 +586,6 @@ export default {
 											parents_copy.push(_entry);
 
 											//console.log("lOG SCRIPT:", _entry)
-											console.log("Parent:", parents_copy, "entry", _entry)
 
 											createParents(parents_copy);
 
@@ -652,7 +634,6 @@ export default {
 							await create();
 						}
 
-						console.log(tree.data);
 
 
 				});
@@ -704,10 +685,8 @@ export default {
 			move: async function(node_key: string, leaf_key: string){
 				let node = tree.find(node_key);
 				let leaf = tree.find(leaf_key);
-				console.log("tree", tree.data.value.children)
 				if (node === null || leaf === null) {
 					console.error("Failed to move unknown node key: ", node_key, " or unknown leaf key:", leaf_key);
-					console.log("node: ", node, "leaf: ", leaf)
 					return;
 				}
 
@@ -785,7 +764,7 @@ export default {
 					group: "leaf"
 				}).then (async (res) => {
 					let data = await res.json();
-					const code = data.values.script.length  <= 0 ? "#### scriptor ####" : data.values.script;
+					const code = data.values.script.length  <= 0 ? pythonStore.defaultCode : data.values.script;
 					await this.add(parentKey, "leaf", name, "", code);
 					messageStore.addMessage("success", t("tree.action.clone.success.title"), "")
 
@@ -793,14 +772,13 @@ export default {
 					messageStore.addMessage("error", t("tree.action.clone.failed.title"), "")
 
 					globalStore.setLoading(false);
-					console.log(e);
 				})
 
 
 
 			},
 
-			add: function (parentKey: string, type: string, name: string, path: string, code: string = "#### scriptor ####"){
+			add: function (parentKey: string, type: string, name: string, path: string, code: string = pythonStore.defaultCode){
 
 				globalStore.setLoading(true);
 				Request.securePost(`/vi/script/add/${type}/${parentKey}`, {
@@ -812,7 +790,6 @@ export default {
 						path: path
 					}
 				}).then(async (res) => {
-					console.log("added:", res, res.ok);
 					let data = await res.json();
 
 					if (data.action === "addSuccess") {
@@ -851,7 +828,6 @@ export default {
 					},
 					group: type
 				}).then(async (res) => {
-					console.log("edit:", res, res.ok);
 					let data = await res.json();
 
 					if (data.action === "editSuccess") {
@@ -917,7 +893,6 @@ export default {
 			remove: function(key: string){
 				let entry = tree.find(key);
 				if (entry === null) {
-					console.log(`There is no node by key ${entry}`);
 					return;
 				}
 
@@ -930,30 +905,21 @@ export default {
 				Request.delete("script", key, {
 					group: entry.parent ? "node" : "leaf"
 				}).then(async (res) => {
-					console.log("delete:", res, res.ok);
 					if (res.ok) {
-						console.log("I'm here!")
 						if (tree.isPluginItem(key)) {
-							console.log("I'm here 1!")
 
 							let path = tree.getPath(key);
-							console.log("I'm here 2!")
 
 							let element = tree.find(key);
-							console.log("I'm here [6] SEARCHING!!")
 
 							if (entry.parent === "node") {
-								console.log("I'm here REMOVE DIR!")
 
 								await pythonStore.py.removeDir("/" + path + element.label);
-								console.log("I'm here 2!")
 							}
 							else {
-								console.log("I'm here REMOVE file!")
 
 								await pythonStore.py.removeFile("/" + path, element.label);
 							}
-							console.log("I'm here 3!")
 
 						}
 
@@ -985,7 +951,6 @@ export default {
 			getMyPath: tree.getMyPath,
 			getPath: tree.getPath,
 			saveCode: function(key: string, code: string, callback: Function = null){
-				console.log( "saved length:", code.split(/\r\n|\r|\n/).length)
 				 //const key = tree.selectedFile.value;
 				globalStore.setLoading(true);
 				Request.edit("script", key, {
@@ -996,11 +961,9 @@ export default {
 				}).then(async (resp) => {
 					const data = await resp.json();
 					if (data.action === 'editSuccess') {
-						console.log("Saved properly!")
 						if (tree.isPluginItem(key)) {
 							let element = tree.find(key);
 							let path = tree.getPath(key);
-							console.log("LOG_SAVE:", "path: ", path, " element.name: ", element.label)
 							await pythonStore.py.write("/" + path, element.label, code);
 						}
 						props.manager.save();

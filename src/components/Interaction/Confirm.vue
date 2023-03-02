@@ -13,7 +13,7 @@
             <sl-button :disabled="!render"
 				   size="small" variant="danger" :class="'accept-button ' + ((selectedValue != 0 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(0)">{{ t('no')}}</sl-button>
             <sl-button :disabled="!render"
-				   size="small" v-if="props.cancel" variant="neutral" :class="'accept-button ' + ((selectedValue != 0 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(-1)">{{ t('cancel') }} </sl-button>
+				   size="small" v-if="props.cancel" variant="neutral" :class="'accept-button ' + ((selectedValue != -1 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(-1)">{{ t('cancel') }} </sl-button>
         	<sl-button :disabled="!render"
 				   size="small" variant="success" :class="'accept-button ' + ((selectedValue != 1 && selectedValue !== undefined) ? 'selected-button' : '')" @click="() => confirm(1)">{{ t('yes') }} </sl-button>
 		</div>

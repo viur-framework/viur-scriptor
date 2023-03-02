@@ -18,7 +18,6 @@ const usePython = () => {
   
 
   async function _dispatchEvent(id: string, data: Record<string, any>) {
-    console.log("Python process id recv", id, " data ", data); 
     switch (data.type) {
       case "end":  
       {
@@ -466,13 +465,22 @@ const usePython = () => {
 
     return new Promise((onSuccess) => {
 			//_callback = onSuccess;
-      console.log("IM HERE!"); 
 			_pyodideWorker.postMessage({
 				id: "_sendDialogSignal",
 				...context,
 			});
 		});
 	}
+
+  function sendParams(params: object) {
+    return new Promise((onSuccess) => {
+			_callback = onSuccess;
+      _pyodideWorker.postMessage({
+        id: "setParams",
+        params
+      });
+		});
+  }
   
 
 
@@ -499,7 +507,8 @@ const usePython = () => {
     interruptExecution,
     destroyAndCreateWorker,
     restoreFS,
-    sendDialogResult
+    sendDialogResult,
+    sendParams
 
   }
 }

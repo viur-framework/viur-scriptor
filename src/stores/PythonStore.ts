@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia'
 import { usePython} from "usepython";
 import { useTabStore } from './TabStore';
+import { useRoute } from 'vue-router';
 
 
 interface PyEvents
@@ -28,12 +29,10 @@ export const usePythonStore = defineStore('python', () => {
 						onLog(val.stdOut[entry]);
 				}
 			}
-			console.log("LOG", val.stdOut);
 			// val.stdErr is also available
 		}
 		else
 		{
-			console.log("Exception:", val.exception)
 
 			
 			if (scriptRunnerTab.value) {
@@ -73,7 +72,6 @@ export const usePythonStore = defineStore('python', () => {
 
 
 	async function init(key: string, onLogCallback: Function, onErrorCallback: Function, onRunCallback: Function) {
-		console.log("on init!")
 		eventMap.value[key] = {
 			logCallback: onLogCallback,
 			errorCallback: onErrorCallback,
@@ -88,8 +86,9 @@ export const usePythonStore = defineStore('python', () => {
 	}
 
 	const timer = ref<NodeJS.Timer>(); 
+	const defaultCode = "#### scriptor ####\nfrom scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
 
-	let runScript = function (code: string){
+	let runScript = function (code: string, name: string = undefined, key: string = undefined){
 		let extraCode = "from scriptor import print, init as __scriptor__init\nawait __scriptor__init()\n";
 		if (code.includes("async def main():"))
 			code += "\nawait main()"
@@ -97,8 +96,14 @@ export const usePythonStore = defineStore('python', () => {
 		if (py.isExecuting.get() === true)
 			return;
 
-		let tabName = tabStore.tabMap[tabStore.selectedTab].name;
-
+			
+		let tabName = ""; 
+		
+		if (name)
+			tabName = name;
+		else
+			tabName = tabStore.tabMap[tabStore.selectedTab].name;
+		
 		runningText.value = "Running " + tabName + " ";
 
 		if (timer.value)
@@ -116,11 +121,14 @@ export const usePythonStore = defineStore('python', () => {
 			}
 		}, 150)
 
-		scriptRunnerTab.value = tabStore.selectedTab;
+		if (key)
+			scriptRunnerTab.value = key;
+		else
+			scriptRunnerTab.value = tabStore.selectedTab;
+
 		isExecuting.value = true;
 
 		if (scriptRunnerTab.value) {
-			console.log(eventMap.value, scriptRunnerTab.value)
 			let onRun = eventMap.value[scriptRunnerTab.value].runCallback; 
 			if (onRun)
 				onRun();
@@ -135,6 +143,8 @@ export const usePythonStore = defineStore('python', () => {
 			isExecuting.value = false;
 		});
 	};
+
+	const route = useRoute(); 
 
 	async function loadPython() {
 		isLoading.value = true;
@@ -151,14 +161,35 @@ export const usePythonStore = defineStore('python', () => {
 
 		const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
 
-		console.log("zipUrl:", zipUrl);
-
 		// Loading scriptor library
 		await py.run(`
 		  from pyodide.http import pyfetch
 		  response = await pyfetch("${zipUrl}")
 		  await response.unpack_archive()
 	   `)
+
+		let object = {}; 
+
+
+		if (route.query["scriptor_params"]) {
+		
+			if (typeof route.query.scriptor_params === 'string') 
+			{
+				try {
+					let _string = route.query.scriptor_params.replace(/'/g, '"');; 
+					object = JSON.parse(_string)
+				}
+				catch(error) {
+					console.error(error)
+				}
+			}
+			else
+			{
+				object = route.query.scriptor_params; 
+			}
+		}
+
+	   await py.sendParams(object)
 
 	   isLoading.value = false;
 
@@ -186,5 +217,5 @@ export const usePythonStore = defineStore('python', () => {
 	}
 
 
-	return { py, run, setCode, getCode, init, runScript, loadPython, reloadPyodide, isLoading, scriptRunnerTab, isExecuting, runningText }
+	return { py, run, setCode, getCode, init, runScript, loadPython, reloadPyodide, isLoading, scriptRunnerTab, isExecuting, runningText, defaultCode }
 })

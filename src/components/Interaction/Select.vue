@@ -9,7 +9,7 @@
 		</p>
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
-            <sl-button  :disabled="!render" size="medium" v-for="option in Object.keys(props.options)" :key="option" @click="() => selectOption(option)">
+            <sl-button  :variant="selectedOption === index ? 'success' : 'default'" :disabled="!render" size="medium" v-for="(option, index) in Object.keys(props.options)" :key="option" @click="() => selectOption(option, index)">
                 {{ props.options[option] }}
             </sl-button>
         </div>
@@ -50,7 +50,9 @@ const {t} = useI18n();
 
 const entries = [];
 
-function selectOption(index: number) {
+const selectedOption = ref(-1); 
+
+function selectOption(index: number, _index: number) {
 
   if (!render.value)
     return;
@@ -58,6 +60,8 @@ function selectOption(index: number) {
 
   render.value = false;
   props.select(index);
+
+  selectedOption.value = _index; 
 }
 
 function selectRadioButton(event: UIEvent, index: string) {

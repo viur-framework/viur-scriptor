@@ -92,37 +92,28 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
     const error = ref<string>("");
 
     function acceptAlert() {
-      console.log("alert!");
       pythonStore.py.sendDialogResult("alert", {}).then(() => {
-        console.log("sended succesfully!!");
       });
     }
 
     function confirmSelect(value: boolean) {
-      console.log("alert!");
       pythonStore.py.sendDialogResult("alert", value).then(() => {
-        console.log("value succesfully!!");
       });
     }
 
     function sendInput(value: any) {
-      console.log("alert!");
       pythonStore.py.sendDialogResult("input", value).then(() => {
-        console.log("value succesfully!!");
       });
     }
 
     function sendSelect(value: any) {
-      console.log("alert!");
       pythonStore.py.sendDialogResult("select", value).then(() => {
-        console.log("value sendSelect!!");
       });
     }
 
 
     function getThemeByLevel(level: string)
     {
-        console.log("level", level);
         switch (level)
         {
             case "debug": return "neutral";

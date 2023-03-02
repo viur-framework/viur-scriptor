@@ -9,7 +9,8 @@
 			{{  props.text }}
 		</p>
 
-		<sl-alert v-if="error.length > 0" variant="danger" open> {{ error }}</sl-alert>
+		<sl-alert v-if="error.length > 0" variant="danger" open class="error-message"> {{ error }}</sl-alert>
+
 
 		<sl-input v-if="props.type !== 'text'" :type="props.type + (props.useTime ? 'time-local' : '')" v-model="value" :readonly="!render"></sl-input>
 		<sl-textarea v-else class="label-on-left" v-model="value" :readonly="!render"></sl-textarea>
@@ -102,5 +103,8 @@ function send() {
     font-size: var(--sl-font-size-medium);
   }
 
+.error-message {
+   margin-bottom: 15px;
+}
 
 </style>

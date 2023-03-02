@@ -15,7 +15,7 @@
     </sl-drawer>
 
     <div class="messages_target">
-        <message v-for="message in messageStore.state.messages.slice(0,3)"
+        <message v-for="message in messageStore.state.messages.slice(0,1)"
                  :key="message['time']"
                  :variant="message['variant']"
                  :icon="message['icon']"
@@ -52,7 +52,7 @@ export default defineComponent({
 .messages_target{
   position: absolute;
   width: 500px;
-  right: 25px;
+  left: 25px;
   bottom: 25px;
   z-index: 99;
 }

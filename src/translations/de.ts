@@ -51,7 +51,9 @@ export default {
 		},
 		text: {
 			login: "Du bist nicht einloggt! Bitte logge dich zuerst ein um dem Scriptor benutzen zu können."
-		}
+		},
+		empty: "Das Feld darf nicht leer sein."
+
 	},
 	// tree.action.move.success.title
 	tree: {
@@ -116,7 +118,12 @@ export default {
 					description: "Die Datei {file} konnte nicht geöffnet werden."
 				}
 			}
-		}
-	}
+		},
+	},
+	cancel: "Abbrechen",
+	no: "Nein",
+	alert: "Alert",
+	send: "Abschicken",
+	share: "Teilen"
 }
 

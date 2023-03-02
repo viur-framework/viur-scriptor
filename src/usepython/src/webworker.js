@@ -37,6 +37,7 @@ let manager = {
 	allocId: 0, 
 	currentProcessId: 0, 
 	tasks: {},
+	params: {},
 	resultValue: null,
 	copyResult: function() {
 		return structuredClone(this.resultValue); 
@@ -105,12 +106,10 @@ async function runScript(python, id) {
     //console.log("Load imports")
     await self.pyodide.loadPackagesFromImports(python);
 	let empty_dict = await self.pyodide.runPythonAsync("{}");
-	console.log("abc!!!");
 	//let results = await self.pyodide.globals.get("pyeval")(python, empty_dict)
 	//empty_dict.destroy();
 
 	manager.currentProcessId = ++manager.allocId; 
-	console.log("Ich bin hier!!!"); 
 	manager.tasks[manager.currentProcessId] = {
 		"promise": self.pyodide.globals.get("pyeval")(python, empty_dict),
 		"dict": empty_dict,
@@ -122,7 +121,6 @@ async function runScript(python, id) {
 	manager.tasks[processId]["promise"].then(() => {
 		manager.tasks[processId]["done"] = true;
 		manager.tasks[processId]["dict"].destroy();
-		console.log("Task done!"); 
 		run_end(id); 
 
 	}).catch((error) => {
@@ -134,8 +132,6 @@ async function runScript(python, id) {
 		err(id, error.message)
 	})
 
-	console.log("End of file!"); 
-
   } catch (error) {
     console.log("PY RUN ERR", error)
     err(id, error.message)
@@ -146,7 +142,6 @@ self.onmessageerror = e => {
   }
 self.onmessage = async (event) => {
   const { id, python, ...context } = event.data;
-  console.log("Recv message ", id, " python: ", python, " context:", context);
 	if (id === "_pyinstaller") {
 		await loadPyodideAndPackages(id, context.pyoPackages, context.packages, context.initCode, context.transformCode);
 		run_end(id)
@@ -155,9 +150,6 @@ self.onmessage = async (event) => {
 	{
 		if (context === undefined)
 			return;
-
-		console.log("Starting ! name", context.name, " path:", context.path, " python: ", python)
-
 
 		let _path = context.path.substring(1);
 		let _dirs = _path.split("/");
@@ -170,34 +162,27 @@ self.onmessage = async (event) => {
 			value = self.pyodide.FS.analyzePath(_tmp_path);
 			_tmp_path.replaceAll("//", "/");
 
-			console.log("Temp Path:", _tmp_path)
 			if (!value.exists) {
 				self.pyodide.FS.mkdir(_tmp_path);
 
 			}
 		}
 
-		console.log("I'm here! Write!", context.name, python, "FileSystem:", self.pyodide.FS)
 		value = self.pyodide.FS.analyzePath(context.path);
 		if (!value.exists) {
 			self.pyodide.FS.mkdir(context.path);
-			console.log("I'm here2! Creating Path:", context.path)
 		}
 
 		let file_path = context.path+context.name;
 		file_path.replaceAll("//", "/");
-		console.log(`Path for writing! ${file_path}`)
 
 		value = self.pyodide.FS.analyzePath(file_path);
 		if (value.exists) {
 			self.pyodide.FS.unlink(file_path);
 			//self.pyodide.FS.ftruncate(file_path, 0);
-			console.log(`[SEARCHING] Path exists: ${file_path}`)
 		}
 
 		self.pyodide.FS.writeFile(file_path, python, {encoding: "utf-8"})
-		console.log("I'm here3! Write!", context.name, python)
-		console.log("I'm here4! Write!", context.name, python)
 		end(id);
 
 	}
@@ -272,13 +257,14 @@ self.onmessage = async (event) => {
 	{
 		manager.resultValue = context.handle; 
 	}
-  else if (id === "_sendDialogSignal") {
-	
-	manager.resultValue = context.data; 
-	console.log("_sendDialogSignal recv", manager.resultValue); 
-	end(id); 
-
-}
+  	else if (id === "_sendDialogSignal") {
+		manager.resultValue = context.data; 
+		end(id); 
+	}
+	else if (id === "setParams") {
+		manager.params = context.params; 
+		end(id); 
+	}
   else {
 
     // The worker copies the context in its own "memory" (an object mapping name to values)
@@ -291,8 +277,6 @@ self.onmessage = async (event) => {
       //await loadPyodideAndPackages(id, []);
       throw new Error("Python is not loaded")
     }
-
-		console.log("Functions:", context.showSaveFilePicker, " other", context.showDirectoryPicker)
 
 		manager.resultValue = null; 
 

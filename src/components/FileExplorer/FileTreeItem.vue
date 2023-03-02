@@ -122,10 +122,7 @@ export default {
     })
 		const classList = ref<[]>(["item-inner-wrap"]);
 
-    console.log("mymodel", props.model)
-
 		function toggle(event: UIEvent) {
-			console.log("Toggle!!");
 			if (props.model.parent) {
 				// eslint-disable-next-line vue/no-mutating-props
 				props.model.state.toggle();
@@ -135,7 +132,6 @@ export default {
 		}
 
 		function click(event: UIEvent) {
-			console.log("detail:", event.detail)
 			if(event.detail === 1) {
 
 
@@ -150,7 +146,6 @@ export default {
 			event.dataTransfer.dropEffect = 'move'
 			event.dataTransfer.effectAllowed = 'move'
 			event.dataTransfer.setData('key', props.model.key);
-			console.log("key: ", props.model.key)
 		}
 
 		function dragLeave(event) {
@@ -166,7 +161,6 @@ export default {
 			if (key !== props.model.key)
 			{
 				props.helper.move(props.model.key, key);
-				console.log("recv key", key);
 			}
 		}
 
@@ -175,7 +169,6 @@ export default {
 				//	console.log("is parent", props.model.parent)
 
 				element.value.ondragover = (event) => {
-					console.log("on drag over", event.dataTransfer.getData('key'));
 					if (event.dataTransfer.getData('key') !== props.model.key) {
 						if (!classList.value.includes("accept-drop"))
 							classList.value.push("accept-drop");
@@ -200,14 +193,12 @@ export default {
 
 		watch(() => props.model.parent, (first, second) => {
 			if (props.model.parent) {
-				console.log("Before Mount: !!!")
 				props.model.state.init();
 			}
 		});
 
 		onBeforeMount(function(){
 			if (props.model.parent) {
-				console.log("Before Mount: !!!")
 				if (props.model.state) {
 					props.model.state.init();
 				}
@@ -224,7 +215,6 @@ export default {
 				// Download-File
 				Request.view("script", props.model.key, {group:"leaf"}).then(async function(response) {
 					const data = (await response.json()).values;
-					console.log(data);
 					const blob1 = new Blob([data["script"]], { type: "text/plain" });
 
 					const url = window.URL.createObjectURL(blob1);
@@ -327,7 +317,6 @@ export default {
 
 				});
 			}
-			console.log(item.value);
 		}
 
 

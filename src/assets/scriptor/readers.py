@@ -11,7 +11,6 @@ if 1:
 		async def on_startup(self):
 			if is_pyodide_context():
 				self._content = await (await self._file.getFile()).text()
-				console.log(f"content_type:{type(self._content)}")
 			else:
 				self._content = self._file.read()
 

@@ -56,7 +56,6 @@ function editorFromTextArea(textarea: HTMLTextAreaElement, extensions: any)
 
 		tabStore.updateCode(props.keyValue, currentCode.value)
 
-		console.log("currentCode.value", currentCode.value, "initialCode.value", initialCode.value)
 	};
 
 

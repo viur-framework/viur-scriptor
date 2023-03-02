@@ -70,7 +70,7 @@ class MemoryWriter(WriterBase):
 		return self._content.getvalue()
 
 	def clear(self):
-		self._content.truncate()
+		self._content.truncate(0)
 
 	def download(self, name: str = ""):
 
