@@ -9,11 +9,33 @@
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
+    font-family: 'Ubuntu';
     src: url('/static/font/Ubuntu-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('/static/font/Ubuntu-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/static/font/OpenSans-VariableFont_wdth,wght.ttf') format("truetype-variations");
+  font-style: normal;
+  font-weight: 1 999;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/static/font/OpenSans-Italic-VariableFont_wdth,wght.ttf') format("truetype-variations");
+  font-style: italic;
+  font-weight: 1 999;
 }
 
 *{
@@ -29,8 +51,12 @@ body{
   margin: 0;
 }
 
+p{
+
+}
+
 #app{
-  font-family: Ubuntu, Helvetica, Arial, sans-serif;
+  font-family: Open Sans, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100vw;
@@ -38,6 +64,14 @@ body{
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.headline{
+  font-family: Ubuntu,  Open Sans, Helvetica, Arial, sans-serif;
+}
+
+.paragraph{
+  font-size: .9em;
 }
 
 sl-input {

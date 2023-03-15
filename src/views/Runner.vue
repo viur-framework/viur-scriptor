@@ -24,26 +24,26 @@ import { onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
-const route = useRoute(); 
+const route = useRoute();
 const globalStore = useGlobalStore();
-const pythonStore = usePythonStore(); 
-const {t} = useI18n(); 
+const pythonStore = usePythonStore();
+const {t} = useI18n();
 
 function interruptCode() {
     pythonStore.reloadPyodide();
 }
 
 onBeforeMount(async function(){
-    
-    let rootNodeKey = route.query.rkey; 
+
+    let rootNodeKey = route.query.rkey;
 
     if (!rootNodeKey) {
-        let ret = await Request.get("/json/script/listRootNodes"); 
-        let data = await ret.json(); 
-        rootNodeKey = data[0]; 
+        let ret = await Request.get("/json/script/listRootNodes");
+        let data = await ret.json();
+        rootNodeKey = data[0];
     }
 
-    let pluginKey = undefined; 
+    let pluginKey = undefined;
 
     if (!pluginKey) {
         let ret = await Request.list("script", {
@@ -51,23 +51,23 @@ onBeforeMount(async function(){
             dataObj: {
                 plugin: true
             }
-        }); 
+        });
 
-        let data = await ret.json(); 
+        let data = await ret.json();
         if (data)
         {
-            pluginKey = data.skellist[0].key; 
+            pluginKey = data.skellist[0].key;
         }
     }
 
     if (!pluginKey) {
-        console.error("No Importable directory found!"); 
+        console.error("No Importable directory found!");
         return;
     }
-    
+
     async function download(key: string, group=['leaf', 'node']) {
         for (let i = 0; i<group.length; ++i) {
-            const dataObj = {parententry: key}; 
+            const dataObj = {parententry: key};
             let resp = await Request.list("script", {
 									group: group[i],
 									dataObj: dataObj
@@ -80,7 +80,7 @@ onBeforeMount(async function(){
                     await download(data.skellist[j].key)
                 }
                 else {
-                    const entry = data.skellist[j]; 
+                    const entry = data.skellist[j];
 
                     let directory_path = entry.path.substring(0,entry.path.lastIndexOf("/")+1);
                     directory_path = directory_path.slice(0, -1);
@@ -104,7 +104,7 @@ const run = function() {
         answ.json().then(function (res) {
             //tabStore.addTab(key, res.values.name, res.values.script);
 
-            pythonStore.runScript(res.values.script, res.values.name, route.params.key); 
+            pythonStore.runScript(res.values.script, res.values.name, route.params.key);
 
             globalStore.setLoading(false);
 
@@ -117,7 +117,7 @@ const run = function() {
 </script>
 <style>
 .wrap {
-    width: 100%; 
+    width: 100%;
     height: 95%;
 }
 </style>

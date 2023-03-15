@@ -14,7 +14,7 @@
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 					<pre v-highlightjs><code class="python">{{ "await alert('Das ist eine Nachricht')" }}</code></pre>
-					
+
 				</sl-details>
 			</div>
 
@@ -29,7 +29,7 @@
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 					<pre v-highlightjs><code class="python">{{ "await diffcmp('Änderungen', ['Bezeichnung 1 Links', 'Nebenteil', 'Nebenteilscheibe links'], ['Bezeichnung 2 Links', 'Tür', 'Türschreibe links'])" }}</code></pre>
-					
+
 				</sl-details>
 			</div>
 
@@ -109,7 +109,7 @@
 				<Select :options="['A','B']" :multiple="false" text="Select (not multiple)" title="Select"></Select>
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
-					<pre v-highlightjs><code class="python">{{ 'choices = ["A", "B"]\n' 
+					<pre v-highlightjs><code class="python">{{ 'choices = ["A", "B"]\n'
 		+ 'ret = await select("Select (not multiple)", choices) '}}
 </code></pre>
 
@@ -137,14 +137,14 @@ import Select from "../components/Interaction/Select.vue";
 import DiffCompare from "../components/Interaction/DiffCompare.vue";
 
 function confirmValue(value: String) {
-	
+
 }
 
 let details = [['Bezeichnung 1 Links', 'Nebenteil', 'Nebenteilscheibe links'], ['Bezeichnung 2 Links', 'Tür', 'Türschreibe links']];
 
 </script>
 
-<style scoped>
+<style scoped lang="less">
 
 .container {
 	overflow: auto;

@@ -50,7 +50,7 @@ const {t} = useI18n();
 
 const entries = [];
 
-const selectedOption = ref(-1); 
+const selectedOption = ref(-1);
 
 function selectOption(index: number, _index: number) {
 
@@ -61,7 +61,7 @@ function selectOption(index: number, _index: number) {
   render.value = false;
   props.select(index);
 
-  selectedOption.value = _index; 
+  selectedOption.value = _index;
 }
 
 function selectRadioButton(event: UIEvent, index: string) {
@@ -95,7 +95,7 @@ function send() {
 
 </script>
 
-<style lang="less">
+<style scoped lang="less">
   .disabled {
     opacity: 0.5;
   }
