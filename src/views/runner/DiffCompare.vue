@@ -90,12 +90,14 @@ const props = defineProps<Props>();
 .container {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   flex-wrap: nowrap;
   margin-bottom: 10px;
 }
 
 .child-start {
+  display: flex;
+  align-items: center;
   order: 0;
   width: 20%;
   padding: .4em;
@@ -105,6 +107,7 @@ const props = defineProps<Props>();
   order: 1;
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   gap: 15px;
   background-color: var(--sl-color-neutral-100);
   padding: .4em;

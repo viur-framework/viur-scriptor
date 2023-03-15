@@ -1,32 +1,36 @@
 <template>
 
     <sl-card class="interaction">
+		<div class="interaction-img">
+			<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+			class="">
+		</div>
+
         <div slot="header">
-            
+
             <template v-if="!props.title">{{ t('diff') }}</template>
             <template v-else>{{props.title}}</template>
-            
+
         </div>
 
 
       <div class="extended-inter">
 
       <div v-for="(value, index) in props.values" :key="index">
-        <sl-divider v-if="index > 0" style="--width: 4px;"></sl-divider>
-       
+
         <div class="container">
-          <div class="child child-start">{{ value[0] }}</div>
-          <div class="child child-end">
+          <div class="child-start">{{ value[0] }}</div>
+          <div class="child-end">
             <div class="from">
-              {{ value[1] }} 
+              {{ value[1] }}
             </div>
 
-            ->
+            <span class="arrow">&#8594;</span>
 
             <div class="to">
               {{ value[2] }}
             </div>
-            
+
           </div>
 
 
@@ -62,49 +66,22 @@ const props = defineProps<Props>();
 
 
 <style scoped lang="less">
-  .extended-inter {
-    overflow-y: auto;
-    max-height: 400px;
-    margin-right: 2px
-  }
 
-  #scroll {
-    margin-left: 5px;
-  }
+.interaction-img{
+  margin: -10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(100% + 20px);
+  height: 200px;
+  margin-bottom: 20px;
+  background-color: var(--sl-color-neutral-100);
 
-  .card-header {
-    max-width: 300px;
-    max-height: 300px;
+  img{
+	object-fit: contain;
+	height: 100%;
   }
-
-  .card-header [slot='header'] {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-header h3 {
-    margin: 0;
-  }
-
-  .card-header sl-icon-button {
-    font-size: var(--sl-font-size-medium);
-  }
-
-  .diff {
-    flex:1 0 50%;
-    align-items: flex-start;
-  }
-
-  .diff-start {
-    display: flex;
-    align-self: flex-start; 
-  }
-  .diff-end {
-    display: flex;
-    align-self: flex-end; 
-
-  }
+}
 
 .container {
   overflow-y: auto;
@@ -114,29 +91,63 @@ const props = defineProps<Props>();
   align-items: flex-start;
 }
 
-.child {
-  padding: 5px;
+  .extended-inter {
+    overflow-y: auto;
+    max-height: 400px;
+  }
+
+  .diff {
+    flex:1 0 50%;
+    align-items: flex-start;
+  }
+
+  .diff-start {
+    display: flex;
+    align-self: flex-start;
+  }
+  .diff-end {
+    display: flex;
+    align-self: flex-end;
+
+  }
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
 }
 
 .child-start {
+  display: flex;
+  align-items: center;
   order: 0;
+  width: 20%;
+  padding: .4em;
 }
 
 .child-end {
   order: 1;
-
   display: flex;
-
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
   gap: 15px;
+  background-color: var(--sl-color-neutral-100);
+  padding: .4em;
+  flex: 1;
 }
 
 .from {
   margin-left: 5px;
-  color: red;
+  color: var(--sl-color-danger-600);
+}
+
+.arrow{
+  color: var(--sl-color-primary-500);
 }
 
 .to {
-  color: green;
+  color: var(--sl-color-success-600);
 }
 </style>

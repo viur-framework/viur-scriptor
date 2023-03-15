@@ -1,6 +1,12 @@
 <template>
 
     <sl-card  :class="'interaction'">
+
+		<div class="interaction-img">
+			<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+			class="">
+		</div>
+
         <div slot="header">
             {{ props.title }}
         </div>
@@ -54,34 +60,29 @@ function confirm(state: number) {
 </script>
 
 
-<style scoped>
-.card-header {
-    max-width: 300px;
+<style scoped lang="less">
+
+.interaction-img{
+	margin: -10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: calc(100% + 20px);
+	height: 200px;
+	margin-bottom: 20px;
+	background-color: var(--sl-color-neutral-100);
+
+	img{
+	  object-fit: contain;
+	  height: 100%;
+	}
   }
 
-  .card-header [slot='header'] {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-header h3 {
-    margin: 0;
-  }
-
-  .card-header sl-icon-button {
-    font-size: var(--sl-font-size-medium);
-  }
 
   .container {
     display: flex;
 	  flex-direction: row;
 	  justify-content: space-between;
-  }
-
-  .selected-button {
-    opacity: 0.3;
-
   }
 
 

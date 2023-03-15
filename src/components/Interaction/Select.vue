@@ -1,5 +1,11 @@
 <template>
     <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="interaction">
+
+		<div class="interaction-img">
+			<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+			class="">
+		</div>
+
         <div slot="header">
             {{ props.title }}
         </div>
@@ -9,13 +15,23 @@
 		</p>
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
-            <sl-button  :variant="selectedOption === index ? 'success' : 'default'" :disabled="!render" size="medium" v-for="(option, index) in Object.keys(props.options)" :key="option" @click="() => selectOption(option, index)">
+            <sl-button  :variant="selectedOption === index ? 'success' : 'default'" :disabled="!render"
+						size="medium"
+						class="data-btn"
+						v-for="(option, index) in Object.keys(props.options)"
+						:key="option" @click="() => selectOption(option, index)">
+				<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+						class="data-btn-img"
+						slot="prefix">
                 {{ props.options[option] }}
             </sl-button>
         </div>
 
 		<div class="checkbox-container" v-else>
-			<sl-checkbox class="checkbox" :disabled="!render" v-for="option in Object.keys(props.options)" :key="option" @sl-change="(event) => selectRadioButton(event, option)">
+			<sl-checkbox class="checkbox"
+						 :disabled="!render"
+						 v-for="option in Object.keys(props.options)"
+						 :key="option" @sl-change="(event) => selectRadioButton(event, option)">
                 {{ props.options[option] }}
             </sl-checkbox>
 		</div>
@@ -96,6 +112,23 @@ function send() {
 </script>
 
 <style scoped lang="less">
+
+.interaction-img{
+	margin: -10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: calc(100% + 20px);
+	height: 200px;
+	margin-bottom: 20px;
+	background-color: var(--sl-color-neutral-100);
+
+	img{
+	  object-fit: contain;
+	  height: 100%;
+	}
+  }
+
   .disabled {
     opacity: 0.5;
   }
@@ -138,5 +171,24 @@ function send() {
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 10px;
   }
+
+  .data-btn{
+	&::part(base){
+	  justify-content: flex-start;
+	  padding-left: 0;
+	}
+
+  &.active{
+	&::part(base) {
+	  color: var(--sl-color-primary-500);
+	  border-color: var(--sl-color-primary-500)
+	}
+  }
+}
+
+.data-btn-img{
+  height: 100%;
+  width: auto;
+}
 
 </style>

@@ -79,7 +79,7 @@ const selectedOption = ref(-1);
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 
 .app{
 	width: 100vw;
