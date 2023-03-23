@@ -42,7 +42,7 @@ export default {
 			"browser": "Datei-Browser",
 		},
 		database: {
-			fields: "Datenbank-Felder"
+			fields: "API"
 		}
 	},
 	error: {

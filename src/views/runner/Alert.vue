@@ -7,23 +7,27 @@
 		  </div>
 		  <div class="main">
 				<div class="runner-wrap">
-				  <div class="number">Vorgangsname: 1 / 25</div>
-				<h1 class="headline">Das ist ein einfacher Alert</h1>
-				<p class="paragraph">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-					invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
-					accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-					sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
-					elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-					sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-					kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-				</p>
-				<sl-button :disabled="!render"
-						 variant="primary"
-						 size="medium"
-						 class="accept-button"
-						 slot="footer"
-						 @click="hide">Weiter</sl-button>
+					<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+						class="runner-img">
+					<div class="runner-inner">
+					  <div class="number">Vorgangsname: 1 / 25</div>
+					  <h1 class="headline">Das ist ein einfacher Alert</h1>
+					  <p class="paragraph">
+						  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+						  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+						  accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+						  sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
+						  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+						  sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+						  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+					  </p>
+					  <sl-button :disabled="!render"
+							   variant="primary"
+							   size="medium"
+							   class="accept-button"
+							   slot="footer"
+							   @click="hide">Weiter</sl-button>
+					</div>
 				</div>
 		  </div>
 	</div>
@@ -93,12 +97,36 @@ function hide() {
 }
 
 .runner-wrap{
-	display: flex;
+  display: flex;
+  flex-direction: row;
+  max-width: 900px;
+  padding: 20px;
+  margin: auto 0;
+
+  @media (max-width: 750px){
 	flex-direction: column;
-	max-width: 900px;
-	padding: 20px;
-	margin: auto 0;
+  }
 }
+
+.runner-inner{
+  display: flex;
+  flex-direction: column;
+}
+
+.runner-img{
+  width: 30%;
+  height: auto;
+  object-fit: cover;
+  margin-right: 40px;
+
+  @media (max-width: 750px){
+	margin-right: 0;
+	margin-bottom: 40px;
+  	width: 100%;
+	height: 300px;
+  }
+}
+
 
 .headline{
 	margin-top: 15px;

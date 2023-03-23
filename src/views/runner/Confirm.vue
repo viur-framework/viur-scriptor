@@ -7,28 +7,32 @@
 		  </div>
 		  <div class="main">
 				<div class="runner-wrap">
-				  <div class="number">Vorgangsname: 2 / 25</div>
-				<h1 class="headline">Hier Steht eine Frage?</h1>
-				<p class="paragraph">
-					Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-					invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-				</p>
-				<div slot="footer" class="btn-footer">
-				  <sl-button :disabled="!render"
-							 size="medium"
-							 variant="danger"
-							 :class="'accept-button ' + ((selectedValue != 0 && selectedValue !== undefined) ? 'selected-button' : '')"
-							 @click="() => confirm(0)">
-					  {{ t('no')}}
-				  </sl-button>
-					 <sl-button :disabled="!render"
-							 	size="medium"
-								variant="success"
-								:class="'accept-button ' + ((selectedValue != 1 && selectedValue !== undefined) ? 'selected-button' : '')"
-								@click="() => confirm(1)">
-						 {{ t('yes') }}
-					 </sl-button>
-				  </div>
+					<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+						class="runner-img">
+					<div class="runner-inner">
+					<div class="number">Vorgangsname: 2 / 25</div>
+					<h1 class="headline">Hier Steht eine Frage?</h1>
+					<p class="paragraph">
+						Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+						invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+					</p>
+					<div slot="footer" class="btn-footer">
+					  <sl-button :disabled="!render"
+								 size="medium"
+								 variant="danger"
+								 :class="'accept-button ' + ((selectedValue != 0 && selectedValue !== undefined) ? 'selected-button' : '')"
+								 @click="() => confirm(0)">
+						  {{ t('no')}}
+					  </sl-button>
+						 <sl-button :disabled="!render"
+									size="medium"
+									variant="success"
+									:class="'accept-button ' + ((selectedValue != 1 && selectedValue !== undefined) ? 'selected-button' : '')"
+									@click="() => confirm(1)">
+							 {{ t('yes') }}
+						 </sl-button>
+					  </div>
+					</div>
 				</div>
 
 		  </div>
@@ -103,12 +107,36 @@ function confirm(state: number) {
 }
 
 .runner-wrap{
-	display: flex;
+  display: flex;
+  flex-direction: row;
+  max-width: 900px;
+  padding: 20px;
+  margin: auto 0;
+
+  @media (max-width: 750px){
 	flex-direction: column;
-	max-width: 900px;
-	padding: 20px;
-	margin: auto 0;
+  }
 }
+
+.runner-inner{
+  display: flex;
+  flex-direction: column;
+}
+
+.runner-img{
+  width: 30%;
+  height: auto;
+  object-fit: cover;
+  margin-right: 40px;
+
+  @media (max-width: 750px){
+	margin-right: 0;
+	margin-bottom: 40px;
+  	width: 100%;
+	height: 300px;
+  }
+}
+
 
 .headline{
 	margin-top: 15px;

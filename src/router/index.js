@@ -61,7 +61,8 @@ const routes = [
     path: '/runner/diffcompare',
     name: 'DiffCompare',
     component: DiffCompare
-  }
+  },
+
 ]
 
 const router = createRouter({

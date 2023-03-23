@@ -1,52 +1,56 @@
 <template>
-  	<div class="app">
-		  <div class="logo">
-			  <img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
-				class="logo-img">
-		  </div>
-		  <div class="main">
-				<div class="runner-wrap">
-				  <div class="number">Vorgangsname: 3 / 25</div>
-				<h1 class="headline">Hier können wir Änderungen abgleichen</h1>
+	<div class="app">
+		<div class="logo">
+			<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+				 class="logo-img">
+		</div>
+		<div class="main">
+			<div class="runner-wrap">
+				<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+					 class="runner-img">
+				<div class="runner-inner">
+					<div class="number">Vorgangsname: 3 / 25</div>
+					<h1 class="headline">Hier können wir Änderungen abgleichen</h1>
 
-				<div class="extended-inter">
+					<div class="extended-inter">
 
-				  <div v-for="i in 10" :key="index">
+						<div v-for="i in 10" :key="index">
 
-					<div class="container">
-					  <div class="child-start">Variable</div>
-					  <div class="child-end">
-						<div class="from">
-						  Wert Alt
+							<div class="container">
+								<div class="child-start">Variable</div>
+								<div class="child-end">
+									<div class="from">
+										Wert Alt
+									</div>
+
+									<span class="arrow">&#8594;</span>
+
+									<div class="to">
+										Wert Neu
+									</div>
+
+								</div>
+
+							</div>
+
 						</div>
-
-						  <span class="arrow">&#8594;</span>
-
-						<div class="to">
-						  Wert Neu
-						</div>
-
-					  </div>
-
 					</div>
 
-				  </div>
+					<sl-button
+							size="medium"
+							v-show="render"
+							variant="primary"> Weiter</sl-button>
 				</div>
-
-				<sl-button
-				   size="medium"
-				   v-show="render"
-				   variant="primary"> Weiter</sl-button>
-				</div>
-		  </div>
+			</div>
+		</div>
 	</div>
 </template>
 
 
 <script setup lang="ts">
 export interface Props {
-    title: String,
-    values: String[][],
+	title: String,
+	values: String[][],
 }
 
 
@@ -60,32 +64,32 @@ const {t} = useI18n();
 
 
 const props = defineProps<Props>();
-  console.log("values:", props.values)
+console.log("values:", props.values)
 
 </script>
 
 
 <style scoped lang="less">
-  .extended-inter {
-    overflow-y: auto;
-    max-height: 400px;
-    margin-bottom: 20px;
-  }
+.extended-inter {
+  overflow-y: auto;
+  max-height: 250px;
+  margin-bottom: 20px;
+}
 
-  .diff {
-    flex:1 0 50%;
-    align-items: flex-start;
-  }
+.diff {
+  flex:1 0 50%;
+  align-items: flex-start;
+}
 
-  .diff-start {
-    display: flex;
-    align-self: flex-start;
-  }
-  .diff-end {
-    display: flex;
-    align-self: flex-end;
+.diff-start {
+  display: flex;
+  align-self: flex-start;
+}
+.diff-end {
+  display: flex;
+  align-self: flex-end;
 
-  }
+}
 
 .container {
   display: flex;
@@ -128,69 +132,93 @@ const props = defineProps<Props>();
 }
 
 .app{
-	width: 100vw;
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .main{
-	width: 100%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	overflow-y: auto;
-	align-items: center;
-	padding-top: 6em;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  align-items: center;
+  padding-top: 6em;
 }
 
 
 .logo{
-	position: absolute;
-	top: 20px;
-	left: calc(50% - 3em);
-	width: 6em;
-	max-height: 6em;
+  position: absolute;
+  top: 20px;
+  left: calc(50% - 3em);
+  width: 6em;
+  max-height: 6em;
 }
 
 .logo-img{
-	width: 100%;
+  width: 100%;
 }
 
 .runner-wrap{
-	display: flex;
+  display: flex;
+  flex-direction: row;
+  max-width: 900px;
+  padding: 20px;
+  margin: auto 0;
+
+  @media (max-width: 750px){
 	flex-direction: column;
-	max-width: 900px;
-	padding: 20px;
-	margin: auto 0;
+  }
 }
 
+.runner-inner{
+  display: flex;
+  flex-direction: column;
+}
+
+.runner-img{
+  width: 30%;
+  height: auto;
+  object-fit: cover;
+  margin-right: 40px;
+
+  @media (max-width: 750px){
+	margin-right: 0;
+	margin-bottom: 40px;
+	width: 100%;
+	height: 300px;
+  }
+}
+
+
 .headline{
-	margin-top: 15px;
-	text-transform: uppercase;
-	color: var(--sl-color-primary-500);
-	font-size: 2.2em;
+  margin-top: 15px;
+  text-transform: uppercase;
+  color: var(--sl-color-primary-500);
+  font-size: 2.2em;
 }
 
 .number{
-	color: var(--sl-color-primary-500);
-	font-weight: normal;
-	font-family: Ubuntu, sans-serif;
-	font-size: .75em;
-	border-radius: 5px;
-	border: 1px solid var(--sl-color-primary-500);
-	padding: .4em .6em;
-	align-self: flex-start;
+  color: var(--sl-color-primary-500);
+  font-weight: normal;
+  font-family: Ubuntu, sans-serif;
+  font-size: .75em;
+  border-radius: 5px;
+  border: 1px solid var(--sl-color-primary-500);
+  padding: .4em .6em;
+  align-self: flex-start;
 }
 
 .paragraph{
-	margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 sl-button{
-	display: flex;
-	align-self: flex-end;
+  display: flex;
+  align-self: flex-end;
 }
 
 
