@@ -45,6 +45,8 @@ export const useLogStore = defineStore("log", () => {
             return true;
       }
 
+      let _id = 0; 
+
     pythonStore.py.pyLogging.listen((val) => {
         if (!(pythonStore.scriptRunnerTab in logMap.value))
             logMap.value[pythonStore.scriptRunnerTab] = ref([]); 
@@ -57,7 +59,7 @@ export const useLogStore = defineStore("log", () => {
                     continue;
 
                 logMap.value[pythonStore.scriptRunnerTab].push({
-                    log: {
+                    
                         type: "syslog",
                         level: computed(() => {
                         return getThemeByLevel(entry.level);
@@ -65,7 +67,8 @@ export const useLogStore = defineStore("log", () => {
                         text: formatString(entry.text),
                         time: Date.now(),
                         json: isJsonString(entry.text),
-                    }
+                        id: ++_id, 
+                    
                 })
 
                 entry.done = true;
@@ -86,11 +89,13 @@ export const useLogStore = defineStore("log", () => {
                 if (entry) {
 
                     logMap.value[pythonStore.scriptRunnerTab].push({
-                        log: {
-                            type: entry.type,
-                            time: Date.now(),
-                            ...entry,
-                        }
+                        
+                        type: entry.type,
+                        time: Date.now(),
+                        id: ++_id, 
+
+                        ...entry,
+                        
                     })
 
                     entry.done = true;

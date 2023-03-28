@@ -132,6 +132,7 @@ import {useI18n} from "vue-i18n";
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 
+
 export default {
   name: 'Home',
   components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails},
@@ -375,7 +376,8 @@ export default {
 }
 
 .split-bottom{
-  overflow-y: auto;
+	overflow: hidden;
+  
 }
 
 :deep(.cm-editor){

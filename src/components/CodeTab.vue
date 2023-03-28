@@ -10,7 +10,18 @@
       {{ progressBarDetails.txt }}
     </div>
   </div>
-      <EasyDataTable
+
+      <VirtualList ref="content"
+              class="list-dynamic scroll-touch"
+              :data-key="'id'"
+              :data-sources="logItemsNew"
+              :data-component="LogItem"
+              :estimate-size="120"
+              :item-class="'list-item-dynamic'"
+            />
+
+      
+      <!-- <EasyDataTable
     :headers="[{ text: 'Log', value: 'log' }]"
     :items="logItemsNew"
     :buttons-pagination="true"
@@ -47,16 +58,12 @@
               <div v-else-if="log.type === 'diffcmp'">
                 <DiffCompare  :title="log.title" :values="log.changes"></DiffCompare>
               </div>
-<!-- 			pyDialogs.get().push({
-      type: "confirm",
-      title: data.title,
-      text: data.text,
-      cancel: data.cancel,
-      done: false
-    })-->
+        
 
         </template>
   </EasyDataTable>
+      -->
+      
 </div>
   <div v-else class="logging">
       <sl-alert class="danger-print" variant="danger" open>
@@ -77,9 +84,12 @@ import Confirm from "./Interaction/Confirm.vue";
 import Input from "./Interaction/Input.vue";
 import Select from "./Interaction/Select.vue";
 import DiffCompare from "../components/Interaction/DiffCompare.vue";
+import VirtualList from 'vue3-virtual-scroll-list';
+import LogItem from './LogItem.vue';
 
 import { ProgressbarDetails } from '@/usepython/dist/interfaces';
     const pythonStore = usePythonStore();
+    const content = ref<VirtualList>(); 
 
     interface Props {
         keyValue?: string
@@ -289,5 +299,19 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
   overflow: hidden;
   text-overflow: ellipsis;
   border-left: 1px solid @mainColor;
+}
+.list-dynamic {
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+  .list-item-dynamic {
+    display: flex;
+    align-items: center;
+
+    padding: 1em;
+
+
+  }
 }
 </style>
