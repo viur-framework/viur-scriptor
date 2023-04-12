@@ -123,6 +123,16 @@
 		+ 'ret = await select("Select (multiple)", choices)'}}
 </code></pre>
 				</sl-details>
+			</div>			
+			
+			<div class="item">
+				<Table></Table>
+				<sl-details summary="Source Code" class="source-code">
+					<sl-icon name="code-slash" slot="prefix"></sl-icon>
+					<pre v-highlightjs><code class="python">{{ "choices = ['A', 'B', 'C', 'D', 'E', 'T', 'G']\n"
+		+ 'ret = await select("Select (multiple)", choices)'}}
+</code></pre>
+				</sl-details>
 			</div>
 		</div>
 
@@ -135,7 +145,7 @@ import Confirm from "../components/Interaction/Confirm.vue";
 import Input from "../components/Interaction/Input.vue";
 import Select from "../components/Interaction/Select.vue";
 import DiffCompare from "../components/Interaction/DiffCompare.vue";
-
+import Table from "../components/Interaction/NewTable.vue";
 function confirmValue(value: String) {
 	
 }
