@@ -28,6 +28,8 @@ export default {
   setup(props){
     let structure = ref<[]>([])
 	  let render = ref<boolean>(false);
+    console.log("ModulDetails", props.details);
+
     onBeforeMount(async function(){
       let url = `/vi/${props.name.toLowerCase()}/structure`;
       if (props.group)
@@ -36,12 +38,14 @@ export default {
 
 
       let answ = await Request.get(url);
-	  if (!answ.ok)
-		  render.value = false;
-	  else {
-		  structure.value = (await answ.json())["structure"];
-		  render.value = true;
-	  }
+      if (!answ.ok)
+        render.value = false;
+      else {
+        structure.value = (await answ.json())["structure"];
+        console.log(" structure.value",  structure.value)
+
+        render.value = true;
+      }
     })
 
 

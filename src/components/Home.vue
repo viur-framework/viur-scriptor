@@ -37,20 +37,18 @@
 			  <sl-tab-panel name="data">
 
 				<div class="data-detail-scroll">
-					<div v-for="(module, index) in modules" :key="index">
 
-						<div v-if="module.handler.startsWith('tree.node') || module.handler.startsWith('hierarchy') ">
-							<ModuleDetails :name="module.name" group="node"></ModuleDetails>
-						</div>
-						<div v-else-if="module.handler.startsWith('tree')">
-							<ModuleDetails :name="module.name" group="node"></ModuleDetails>
-							<ModuleDetails :name="module.name" group="leaf"></ModuleDetails>
-						</div>
-						<div v-else>
-							<ModuleDetails :name="module.name"></ModuleDetails>
-
-						</div>
-					</div>
+					<sl-button class="data-btn"
+									varian="default"
+									size="medium"
+									v-for="(module, index) in modules" :key="index"
+									@click="() => openTabDocumentation(module.name)"
+							>
+								<sl-avatar :initials="module.name[0]" slot="prefix"  shape="rounded">
+									
+								</sl-avatar>
+								{{ module.name }}
+					</sl-button>
 				</div>
 
 			  </sl-tab-panel>
@@ -64,8 +62,10 @@
 				</sl-tab>
 
 				<sl-tab-panel v-for="(tab,key) in tabStore.tabMap" :panel="key" :key="key" :name="key">
-
-					<sl-split-panel class="side-split" vertical >
+					<div class="side-split" v-if="tab.documentation" style="overflow-y: auto;" vertical>
+						<Api :module-name="tab.key"></Api>
+					</div>
+					<sl-split-panel v-else class="side-split" vertical >
 						<div slot="start" class="split-top">
 							<CodeEditor :keyValue="'' + key"/>
 						</div>
@@ -74,6 +74,7 @@
 						</div>
 					</sl-split-panel>
 				</sl-tab-panel>
+
 
 			</sl-tab-group>
 
@@ -131,10 +132,12 @@ import CodeTab from './CodeTab.vue';
 import {useI18n} from "vue-i18n";
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
+import Api from './Api.vue';
+import { useGlobalStore } from '../stores/global';
 
 export default {
   name: 'Home',
-  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails},
+  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, Api},
   setup() {
 	const executor = ref();
 	const log = ref([]);
@@ -218,6 +221,8 @@ export default {
 			return;
 		}
 
+		// globalStore.modules
+
 		let _url = window.location.origin+"/#"+"/runner/"+route.query.key; 
 
 		console.log(import.meta.env.MODE)
@@ -235,6 +240,12 @@ export default {
 		}
 	}
 
+	function openTabDocumentation(module: string) {
+		const docs = module + " (docs)"; 
+
+		tabStore.addTab(module, docs, "", true);
+	}
+
 	function interruptCode(){
 
 		pythonStore.reloadPyodide();
@@ -247,21 +258,23 @@ export default {
 
     let modules = ref([]);
 
+	let globalStore = useGlobalStore();
     onBeforeMount(async function(){
       let answ = await Request.get(`/vi/config`);
       let data = await answ.json();
       for (let index in data.modules) {
         let moduleEntry = data.modules[index];
+		console.log("config:", moduleEntry,  " index:", index);
 
 			modules.value.push(
 			  {
 				name: index,
 				handler: moduleEntry.handler
 			  });
-
-
-
       }
+	  globalStore.modules.value = data["modules"];
+	  console.log("globalStore.modules.value", globalStore.modules.value)
+
     })
 
     function searchText(event: UIEvent){
@@ -298,7 +311,9 @@ export default {
 	  canShare: computed(function(){
 		return route.query.key;
 	  }),
-		  t
+	  
+		  t,
+		  openTabDocumentation
     }
   }
 }
@@ -611,7 +626,10 @@ div.cm-content {
 
 }
 
+
 .data-detail-scroll{
+  display: flex;
+  flex-direction: column;
   height: 100%;
   overflow-y: auto;
 }
@@ -641,6 +659,30 @@ div.cm-content {
 	width: 55px;
 	height: 55px;
 	background-color: transparent !important;
+}
+
+.data-btn{
+
+&:hover{
+  &::part(base){
+	background-color: #f3f3f3;
+  }
+}
+
+&::part(base){
+  justify-content: flex-start;
+  border: none;
+  height: auto;
+  line-height: 1;
+  padding: 6px 7px;
+  background-color: transparent;
+  transition: all ease .3s;
+}
+
+&::part(label){
+  display: flex;
+  align-items: center;
+}
 }
 
 

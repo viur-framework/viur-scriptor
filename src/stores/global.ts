@@ -13,5 +13,7 @@ export const useGlobalStore = defineStore("globalStore", () => {
 		return isLoading.value;
 	}
 
-	return {isLoading, setLoading, getLoadingState}
+	const modules = ref({});
+
+	return {isLoading, setLoading, getLoadingState, modules}
 })

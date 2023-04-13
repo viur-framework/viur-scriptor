@@ -12,10 +12,12 @@ interface Tab
     code: string,
     key: string,
     render: Boolean,
+    documentation: Boolean,
     log?: Record<string, any>,
     error?: string,
     leftNode?: Tab,
-    rightNode?: Tab
+    rightNode?: Tab,
+    
 };
 
 
@@ -72,7 +74,7 @@ export const useTabStore = defineStore('tab', () => {
         });
     }
 
-    let addTab = function(key: string, name: string, code: string) {
+    let addTab = function(key: string, name: string, code: string = "", documentation = false) {
 
         if (tabList.value.includes(tabMap.value[key]))
             tabList.value = tabList.value.filter(function(item){
@@ -84,6 +86,7 @@ export const useTabStore = defineStore('tab', () => {
             code: code,
             render: false,
             key: key,
+            documentation: documentation,
         }
 
 
