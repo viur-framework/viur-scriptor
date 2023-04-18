@@ -43,11 +43,10 @@
         <h2 class="headline coloured-headline underline-headline">Datenbankfelder</h2>
 
 
-            <div class="data" v-for="key in structure">
-                {{ key.name }}
-                <div class="data-name">{{key.descr}}</div>
+            <div class="data" v-for="(key, name) in structure">
+                <div class="data-name">{{name}}</div>
                 <div class="data-type">Typ: {{key.type}}</div>
-                <div class="data-type">descr: {{key.descr}}</div>
+                <div class="data-type">Description: {{key.descr}}</div>
                 <code class="data-code">
                     <vue-json-pretty :data="key" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
 

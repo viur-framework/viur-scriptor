@@ -27,7 +27,7 @@
 
 			  </sl-tab>
 			  <sl-tab slot="nav" panel="data" >
-				  {{ t("tab.database.fields") }}
+				  {{ t("tab.api") }}
 
 			  </sl-tab>
 
