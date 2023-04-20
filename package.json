@@ -7,7 +7,7 @@
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
     "dev": "vite",
-    "build": "vite build"
+    "build": "npm install --prefix ./src/usepython && npm run build --prefix ./src/usepython && cd ./src/assets/ && python3 make.py && cd ../.. && npm install && vite build"
   },
   "dependencies": {
     "@codemirror/commands": "^6.1.0",
