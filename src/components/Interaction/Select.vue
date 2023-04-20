@@ -1,10 +1,7 @@
 <template>
     <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="interaction">
 
-		<div class="interaction-img">
-			<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
-			class="">
-		</div>
+
 
         <div slot="header">
             {{ props.title }}
