@@ -1,5 +1,10 @@
 <template>
   <sl-card class="interaction">
+    <div v-if="imageURL" class="interaction-img">
+          <img :src="imageURL"
+          class="">
+        </div>
+
     <div slot="header">
       <template v-if="!props.title">{{ t("diff") }}</template>
       <template v-else>{{ props.title }}</template>
@@ -30,6 +35,7 @@
   export interface Props {
     title: String;
     values: String[][];
+    imageURL: String; 
   }
 
   import { ref } from "vue";

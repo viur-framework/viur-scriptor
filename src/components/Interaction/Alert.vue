@@ -1,5 +1,11 @@
 <template>
   <sl-card class="interaction">
+      <div v-if="imageURL" class="interaction-img">
+          <img :src="imageURL" class="">
+      </div>
+
+
+
     <div slot="header">
       {{ t("alert") }}
     </div>
@@ -25,7 +31,9 @@
   export interface Props {
     text: String;
     accept: Function;
+    imageURL: String; 
   }
+
 
   import { ref } from "vue";
   import { useI18n } from "vue-i18n";
@@ -35,6 +43,8 @@
   const { t } = useI18n();
 
   const props = defineProps<Props>();
+    console.log("imageURL: ", props.imageURL); 
+
 
   function hide() {
     if (!render.value) return;

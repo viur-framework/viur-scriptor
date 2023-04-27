@@ -31,12 +31,12 @@ async def wait():
     else:
         await asyncio.sleep(250)
 
-async def alert(text: str):
+async def alert(text: str, image: str = ""):
     """
     Provide a message and stop program execution until accepted.
     """
     if is_pyodide_context():
-        _self.postMessage(type="alert", text=text)
+        _self.postMessage(type="alert", text=text, image=image)
         await wait()
         manager.reset()
         manager.resultValue = None
@@ -44,12 +44,12 @@ async def alert(text: str):
         click.pause("Press any key to continue")
 
 
-async def confirm(text: str, *, title: str = "Confirm", allow_cancel: bool = False) -> bool | None:
+async def confirm(text: str, *, title: str = "Confirm", allow_cancel: bool = False, image: str = "") -> bool | None:
     """
     Provide a Yes-No or Yes-No-Cancel-dialog.
     """
     if is_pyodide_context():
-        _self.postMessage(type="confirm", title=title, text=text, cancel=allow_cancel)
+        _self.postMessage(type="confirm", title=title, text=text, cancel=allow_cancel, image=image)
         await wait()
         ret = manager.copyResult()
         manager.reset()
@@ -68,13 +68,13 @@ async def confirm(text: str, *, title: str = "Confirm", allow_cancel: bool = Fal
     return ret
 
 
-async def input(text: str, *, title: str = "Input", type: str = "input", use_time: bool = False, empty: bool = False):
+async def input(text: str, *, title: str = "Input", type: str = "input", use_time: bool = False, empty: bool = False, image: str = ""):
     """
     Provide a dialog asking for some value.
     """
 
     if is_pyodide_context():
-        _self.postMessage(type="input", title=title, text=text, input_type=type, use_time=use_time, empty=empty)
+        _self.postMessage(type="input", title=title, text=text, input_type=type, use_time=use_time, empty=empty, image=image)
         await wait()
         tmp = manager.copyResult()
         manager.reset()
@@ -160,7 +160,7 @@ input.string = input_string
 
 
 async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
-                 title: str = "Select", multiple: bool = False):
+                 title: str = "Select", multiple: bool = False, image: str = ""):
     if isinstance(choices, (list, tuple)):
         choices = {str(k): str(k) for k in choices}
 
@@ -171,7 +171,7 @@ async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
     if is_pyodide_context():
         choices = pyodide.ffi.to_js(choices, dict_converter=js.Object.fromEntries)
 
-        _self.postMessage(type="select", title=title, text=text, choices=choices, multiple=multiple)
+        _self.postMessage(type="select", title=title, text=text, choices=choices, multiple=multiple, image=image)
         await wait()
 
         ret = manager.resultValue
@@ -205,12 +205,12 @@ async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
 
     return ret
 
-async def diffcmp(title: str, changes: list[list[str]]):
+async def diffcmp(title: str, changes: list[list[str]], image: str = ""):
     if is_pyodide_context():
         for i in range(len(changes)):
             changes[i] = pyodide.ffi.to_js(changes[i])
 
-        _self.postMessage(type="diffcmp", title=title, changes=pyodide.ffi.to_js(changes))
+        _self.postMessage(type="diffcmp", title=title, changes=pyodide.ffi.to_js(changes), image=image)
     else:
         click.echo(title)
 
@@ -221,3 +221,28 @@ async def diffcmp(title: str, changes: list[list[str]]):
 
         ret = "\n".join([f"{e[0]}\t\t\t{e[1]} -> {e[2]}" for e in changes])
         click.echo(ret)
+
+async def table(header: list[str], rows: list[list[str]], *, select=False, multiple=False, image: str = ""):
+    if is_pyodide_context():
+        for i in range(len(rows)):
+            rows[i] = pyodide.ffi.to_js(rows[i])
+
+        header = pyodide.ffi.to_js(header)
+        rows = pyodide.ffi.to_js(rows)
+
+        _self.postMessage(type="table", header=header, rows=rows, select=select, multiple=multiple, image=image)
+
+        await wait()
+        
+        ret = manager.resultValue.to_py()
+        ret = [rows[idx] for idx in ret]
+
+        if not multiple:
+            ret = ret[0] if ret else None
+
+        manager.reset()
+        manager.resultValue = None
+
+        return ret
+    else:
+        pass

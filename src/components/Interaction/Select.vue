@@ -1,6 +1,10 @@
 <template>
     <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="interaction">
 
+      <div v-if="imageURL" class="interaction-img">
+            <img :src="imageURL"
+            class="">
+          </div>
 
 
         <div slot="header">
@@ -17,9 +21,9 @@
 						class="data-btn"
 						v-for="(option, index) in Object.keys(props.options)"
 						:key="option" @click="() => selectOption(option, index)">
-				<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
+				<!--<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
 						class="data-btn-img"
-						slot="prefix">
+						slot="prefix">!-->
                 {{ props.options[option] }}
             </sl-button>
         </div>
@@ -55,6 +59,8 @@ export interface Props {
     text: String,
     title: String,
     select: Function,
+    imageURL: String; 
+
 }
 
 const render = ref(true);

@@ -115,15 +115,10 @@
 
 				</sl-details>
 			</div>
-			<div class="item">
-				<Select :options="['A', 'B', 'C', 'D', 'E', 'T', 'G']" :multiple="true" text="Select (multiple)" title="Select"></Select>
-				<sl-details summary="Source Code" class="source-code">
-					<sl-icon name="code-slash" slot="prefix"></sl-icon>
-					<pre v-highlightjs><code class="python">{{ "choices = ['A', 'B', 'C', 'D', 'E', 'T', 'G']\n"
-		+ 'ret = await select("Select (multiple)", choices)'}}
-</code></pre>
-				</sl-details>
-			</div>
+		</div>
+
+		<div class="row">
+		<MyTable :header="['Id', 'Name', 'Alter']" :rows="fake" :selectable="true"></MyTable>
 		</div>
 
 	</div>
@@ -135,6 +130,7 @@ import Confirm from "../components/Interaction/Confirm.vue";
 import Input from "../components/Interaction/Input.vue";
 import Select from "../components/Interaction/Select.vue";
 import DiffCompare from "../components/Interaction/DiffCompare.vue";
+import MyTable from "../components/Interaction/Table.vue";
 
 function confirmValue(value: String) {
 
@@ -142,6 +138,12 @@ function confirmValue(value: String) {
 
 let details = [['Bezeichnung 1 Links', 'Nebenteil', 'Nebenteilscheibe links'], ['Bezeichnung 2 Links', 'Tür', 'Türschreibe links']];
 
+let fake = []; 
+
+for (let i = 0; i<1000; ++i)
+{
+	fake.push([i+1, 'row'+i, i]);
+}
 </script>
 
 <style scoped lang="less">

@@ -1,5 +1,11 @@
 <template>
   <sl-card :class="'interaction'">
+
+    <div v-if="imageURL" class="interaction-img">
+        <img :src="imageURL"
+        class="">
+      </div>
+    
     <div slot="header">
       {{ props.title }}
     </div>
@@ -48,6 +54,8 @@
     select: Function;
     empty: Boolean;
     useTime: Boolean;
+    imageURL: String; 
+
   }
 
   import { ref, watch } from "vue";

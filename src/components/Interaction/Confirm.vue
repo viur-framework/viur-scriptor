@@ -4,6 +4,11 @@
       {{ props.title }}
     </div>
 
+    <div v-if="imageURL" class="interaction-img">
+			<img :src="imageURL"
+			class="">
+		</div>
+    
     <p class="paragraph">
       {{ props.text }}
     </p>
@@ -59,6 +64,7 @@
     text: String;
     select: Function;
     cancel: Boolean;
+    imageURL: String; 
   }
 
   import { ref } from "vue";

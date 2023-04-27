@@ -15,6 +15,7 @@ import "@viur/viur-shoelace/dist/components/menu/menu.js";
 import "@viur/viur-shoelace/dist/components/icon/icon.js";
 import "@viur/viur-shoelace/dist/components/icon/icon.styles";
 import "@viur/viur-shoelace/dist/components/card/card.styles";
+import "@viur/viur-shoelace/dist/components/table-wrapper/table-wrapper";
 import VueHighlightJS from 'vue3-highlightjs'
 import 'highlight.js/styles/solarized-light.css'; 
 

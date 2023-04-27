@@ -43,7 +43,8 @@
         <h2 class="headline coloured-headline underline-headline">Datenbankfelder</h2>
 
 
-            <div class="data" v-for="(key, name) in structure">
+            
+            <div class="data" v-if="isObject" v-for="(key, name) in structure.value">
                 <div class="data-name">{{name}}</div>
                 <div class="data-type">Typ: {{key.type}}</div>
                 <div class="data-type">Description: {{key.descr}}</div>
@@ -54,6 +55,21 @@
 
 
             </div>
+
+              <div v-else v-for="(key, v) in structure.value">
+                  <h3 class="headline coloured-headline underline-headline">{{ v }}</h3>
+
+                  <div class="data" v-for="(key, name) in key">
+                    
+                    <div class="data-name">{{name}}</div>
+                    <div class="data-type">Typ: {{key.type}}</div>
+                    <div class="data-type">Description: {{key.descr}}</div>
+                    <code class="data-code">
+                        <vue-json-pretty :data="key" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
+
+                    </code>
+                  </div>
+              </div>
         </div>
     </div>
   </template>
@@ -74,14 +90,41 @@ const moduleConfig = computed(function(){
     return globalStore.modules.value[props.moduleName];
 });
 
+const isObject = computed(function(){
+  //console.log(structure.value, "Is Array", structure.value.constructor == Object)
+  return structure.value["type"] === "normal";
+});
+
 onBeforeMount(async function(){
-    let url = `/vi/${props.moduleName.toLowerCase()}/structure`;
+    console.log("moduleConfig.value ", moduleConfig.value)
+    if (!moduleConfig.value.handler.startsWith("tree"))
+    {
+      let url = `/vi/${props.moduleName.toLowerCase()}/structure`;
 
-    let answ = await Request.get(url);
-    if (answ.ok) {
-        structure.value = (await answ.json())["structure"];
+      let answ = await Request.get(url);
+      if (answ.ok) {
+          structure.value["value"] = (await answ.json())["structure"];
+          structure.value["type"] = "normal";
+      }
+    }
+    else
+    {
+      let url = `/vi/${props.moduleName.toLowerCase()}/structure/leaf`;
 
-        console.log(" structure.value",  structure.value)
+      structure.value["value"] = {};
+      structure.value["type"] = "tree";
+    
+      let answ = await Request.get(url);
+      if (answ.ok) {
+          structure.value["value"]["leaf"] = (await answ.json())["structure"];
+      }
+
+      url = `/vi/${props.moduleName.toLowerCase()}/structure/node`;
+
+      answ = await Request.get(url);
+      if (answ.ok) {
+          structure.value["value"]["node"] = (await answ.json())["structure"];
+      }
     }
 
 });

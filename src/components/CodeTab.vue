@@ -32,20 +32,24 @@
                   </div>
               </sl-alert>
               <div v-else-if="log.type === 'alert'">
-                  <Alert :accept="acceptAlert" :text="log.text"></Alert>
+                  <Alert :accept="acceptAlert" :text="log.text" :imageURL="log.image" ></Alert>
               </div>
 
               <div v-else-if="log.type === 'confirm'">
-                <Confirm :select="confirmSelect" :text="log.text" :title="log.title" :cancel="log.cancel"></Confirm>
+                <Confirm :select="confirmSelect" :text="log.text" :title="log.title" :cancel="log.cancel" :imageURL="log.image"></Confirm>
               </div>
               <div v-else-if="log.type === 'input'">
-                <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty"></Input>
+                <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty" :imageURL="log.image"></Input>
               </div>
               <div v-else-if="log.type === 'select'">
-                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices"></Select>
+                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image"></Select>
               </div>
               <div v-else-if="log.type === 'diffcmp'">
-                <DiffCompare  :title="log.title" :values="log.changes"></DiffCompare>
+                <DiffCompare  :title="log.title" :values="log.changes" :imageURL="log.image"></DiffCompare>
+              </div>            
+              
+              <div v-else-if="log.type === 'table'">
+                <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image"></MyTable>
               </div>
 <!-- 			pyDialogs.get().push({
       type: "confirm",
@@ -77,6 +81,7 @@ import Confirm from "./Interaction/Confirm.vue";
 import Input from "./Interaction/Input.vue";
 import Select from "./Interaction/Select.vue";
 import DiffCompare from "../components/Interaction/DiffCompare.vue";
+import MyTable from "../components/Interaction/Table.vue";
 
 import { ProgressbarDetails } from '@/usepython/dist/interfaces';
     const pythonStore = usePythonStore();
@@ -113,6 +118,11 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
 
     function sendSelect(value: any) {
       pythonStore.py.sendDialogResult("select", value).then(() => {
+      });
+    }
+  
+    function sendTable(value: any) {
+      pythonStore.py.sendDialogResult("table", value).then(() => {
       });
     }
 
