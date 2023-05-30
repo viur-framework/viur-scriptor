@@ -162,8 +162,12 @@ input.string = input_string
 async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
                  title: str = "Select", multiple: bool = False, image: str = ""):
     if isinstance(choices, (list, tuple)):
-        choices = {str(k): str(k) for k in choices}
-
+        if all([isinstance(k, (dict)) for k in choices]):
+            # Image Mode
+            choices = {str(k): {"text": str(k.get("text", "")), "image": str(k.get("image", "")) } for k in choices}
+        else:
+            choices = {str(k): str(k) for k in choices}
+ 
     if not isinstance(choices, dict):
         raise ValueError("'choices' must be either a list or a dict.")
 

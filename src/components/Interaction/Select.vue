@@ -1,6 +1,5 @@
 <template>
     <sl-card :disabled="!render" :class="!render ? 'disabled' : ''" class="interaction">
-
       <div v-if="imageURL" class="interaction-img">
             <img :src="imageURL"
             class="">
@@ -10,10 +9,10 @@
         <div slot="header">
             {{ props.title }}
         </div>
-
+    
         <p class="paragraph">
-			{{  props.text }}
-		</p>
+			    {{  props.text }}
+		    </p>
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
             <sl-button  :variant="selectedOption === index ? 'success' : 'default'" :disabled="!render"
@@ -21,23 +20,56 @@
 						class="data-btn"
 						v-for="(option, index) in Object.keys(props.options)"
 						:key="option" @click="() => selectOption(option, index)">
-				<!--<img src="https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80&sat=-100&bri=-5"
-						class="data-btn-img"
-						slot="prefix">!-->
-                {{ props.options[option] }}
+				    <img v-if="props.options[option].image !== undefined" :src="props.options[option].image"
+						  class="data-btn-img"
+						  slot="prefix">
+
+            <template v-if="props.options[option].text">
+               {{ props.options[option].text }}
+            </template>
+            <template v-else>
+               {{ option }}
+            </template>
+
             </sl-button>
         </div>
 
 		<div class="checkbox-container" v-else>
-			<sl-checkbox class="checkbox"
+			<template v-if="!isImageSelct">
+        <sl-checkbox class="checkbox"
 						 :disabled="!render"
 						 v-for="option in Object.keys(props.options)"
 						 :key="option" @sl-change="(event) => selectRadioButton(event, option)">
-                {{ props.options[option] }}
+
+               {{ option }}
+           
+
             </sl-checkbox>
+      </template>
+      <template v-else>
+          
+        <div class="image-container">
+          <template v-for="option in Object.keys(props.options)"  :key="option">
+
+            <figure>
+              <img :src="props.options[option].image" alt="Bild 1">
+              <figcaption>{{ props.options[option].text }}</figcaption>
+              <sl-checkbox class="checkbox" @sl-change="(event) => selectRadioButton(event, props.options[option].text)"></sl-checkbox>
+            </figure>
+
+
+          </template>
+
+          
+          <!-- Weitere Bilder und Texte hier einfügen -->
+        </div>
+
+
+      </template>
+
 		</div>
 
-		<div slot="footer" v-if="props.multiple">
+    		<div slot="footer" v-if="props.multiple">
 		  <sl-button
 				 size="small"
 				 variant="success"
@@ -47,11 +79,13 @@
 		  </sl-button>
 		</div>
 
+	
+
     </sl-card>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import { useI18n } from 'vue-i18n';
 export interface Props {
     options: String[],
@@ -62,6 +96,19 @@ export interface Props {
     imageURL: String; 
 
 }
+
+
+const isImageSelct = computed(function(){
+  let arr = Object.keys(props.options); 
+
+  for (let i = 0; i<arr.length; ++i)
+  {
+    if (props.options[arr[i]].image === undefined)
+      return false;
+  }
+
+  return true;
+})
 
 const render = ref(true);
 const props = defineProps<Props>();
@@ -115,6 +162,22 @@ function send() {
 </script>
 
 <style scoped lang="less">
+  .image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .image-container figure {
+    width: calc(50% - 20px);
+    margin: 10px;
+    text-align: center;
+  }
+
+  .image-container img {
+    width: 100%;
+  }
 
 .interaction-img{
 	margin: -10px;
@@ -192,6 +255,16 @@ function send() {
 .data-btn-img{
   height: 100%;
   width: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 10px;
+}
+
+.column {
+  grid-column: span 1 / -1;
 }
 
 </style>

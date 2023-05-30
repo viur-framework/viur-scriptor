@@ -48,68 +48,68 @@ class BaseModule(object):
 		return self.__getattribute__(name)
 
 
-	async def preview(self, params: dict = None, group: str = ""):
-		return await viur.preview(module=self._name, params=params, group=group)
+	async def preview(self, params: dict = None, group: str = "", **kwargs):
+		return await viur.preview(module=self._name, params=params, group=group, **kwargs)
 
-	async def structure(self, group: str = ""):
-		return await viur.structure(module=self._name, group=group)
+	async def structure(self, group: str = "", **kwargs):
+		return await viur.structure(module=self._name, group=group, **kwargs)
 
-	async def view(self, key: str, group: str = "") -> dict:
-		return await viur.view(module=self._name, key=key, group=group)
+	async def view(self, key: str, group: str = "", **kwargs) -> dict:
+		return await viur.view(module=self._name, key=key, group=group, **kwargs)
 
 class SingletonModule(BaseModule):
-	async def edit(self, params: dict = None, group: str = ""):
-		return await viur.edit(module=self._name, params=params, group=group)
+	async def edit(self, params: dict = None, group: str = "", **kwargs):
+		return await viur.edit(module=self._name, params=params, group=group, **kwargs)
 
 class ExtendedModule(BaseModule):
-	async def edit(self, key: str, params: dict = None, group: str = ""):
-		return await viur.edit(module=self._name, key=key, params=params, group=group)
+	async def edit(self, key: str, params: dict = None, group: str = "", **kwargs):
+		return await viur.edit(module=self._name, key=key, params=params, group=group, **kwargs)
 
-	def list(self, params: dict = None, group: str = '') -> viur.list:
-		return viur.list(module=self._name, params=params, group=group)
+	def list(self, params: dict = None, group: str = '', **kwargs) -> viur.list:
+		return viur.list(module=self._name, params=params, group=group, **kwargs)
 
-	async def add(self, params: dict = None, group: str = ""):
-		return await viur.add(module=self._name, params=params, group=group)
+	async def add(self, params: dict = None, group: str = "", **kwargs):
+		return await viur.add(module=self._name, params=params, group=group, **kwargs)
 
-	async def delete(self, key: str, params: dict = None, group: str = ""):
-		return await viur.delete(module=self._name, key=key, params=params, group=group)
+	async def delete(self, key: str, params: dict = None, group: str = "", **kwargs):
+		return await viur.delete(module=self._name, key=key, params=params, group=group, **kwargs)
 
 
 class ListModule(ExtendedModule):
-	async def for_each(self, callback: callable, params: dict = None):
-		async for entry in self.list(params=params):
+	async def for_each(self, callback: callable, params: dict = None, **kwargs):
+		async for entry in self.list(params=params, **kwargs):
 			await callback(entry)
 
 class TreeModule(ExtendedModule):
-	async def edit(self, group: str, key: str, params: dict = None):
-		return await super().edit(group=group, key=key, params=params)
+	async def edit(self, group: str, key: str, params: dict = None, **kwargs):
+		return await super().edit(group=group, key=key, params=params, **kwargs)
 
-	def list(self, group: str, params: dict = None) -> viur.list:
-		return super().list(group=group, params=params)
+	def list(self, group: str, params: dict = None, **kwargs) -> viur.list:
+		return super().list(group=group, params=params, **kwargs)
 
-	async def add(self, group: str, params: dict = None):
-		return await super().add(group=group, params=params)
+	async def add(self, group: str, params: dict = None, **kwargs):
+		return await super().add(group=group, params=params, **kwargs)
 
-	async def view(self, group: str, key: str) -> dict:
-		return await super().view(group=group, key=key)
+	async def view(self, group: str, key: str, **kwargs) -> dict:
+		return await super().view(group=group, key=key, **kwargs)
 
-	async def preview(self, group: str, params: dict = None):
-		return await super().preview(params=params, group=group)
+	async def preview(self, group: str, params: dict = None, **kwargs):
+		return await super().preview(params=params, group=group, **kwargs)
 	
 
-	async def list_root_nodes(self):
-		return await viur.request.get(f"/{self.name}/listRootNodes")
+	async def list_root_nodes(self, **kwargs):
+		return await viur.request.get(f"/{self.name}/listRootNodes", **kwargs)
 
-	async def delete(self, group: str, key: str, params: dict = None):
-		return await super().delete(group=group, key=key, params=params)
+	async def delete(self, group: str, key: str, params: dict = None, **kwargs):
+		return await super().delete(group=group, key=key, params=params, **kwargs)
 
-	async def move(self, key: str, parentNode: str):
+	async def move(self, key: str, parentNode: str, **kwargs):
 		return await viur.request.secure_post(f"/{self.name}/move", params={
 			"key": key,
 			"parentNode": parentNode
-		})
+		}, **kwargs)
 
-	async def for_each(self, callback: callable, root_node_key: str = None, params: dict = None):
+	async def for_each(self, callback: callable, root_node_key: str = None, params: dict = None, **kwargs):
 		##
 		async def download(key: str, group: str|list[str] = ['node', 'leaf']):
 			if isinstance(group, list):
@@ -122,7 +122,7 @@ class TreeModule(ExtendedModule):
 				_params.update(params)
 
 
-			async for entry in self.list(group, _params):
+			async for entry in self.list(group, _params, **kwargs):
 				await callback(group, entry)
 				# Check if this is a node
 				if group == "node":
@@ -131,7 +131,7 @@ class TreeModule(ExtendedModule):
 		if root_node_key:
 			root_nodes = [root_node_key]
 		else:
-			root_nodes = await self.list_root_nodes()
+			root_nodes = await self.list_root_nodes(**kwargs)
 	
 		for root_node in root_nodes:
 			await download(root_node["key"])

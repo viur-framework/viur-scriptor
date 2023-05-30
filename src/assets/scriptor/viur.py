@@ -16,6 +16,8 @@ class viur:
 
             prefix = "/json"
             if renderer:
+                if not type(renderer) is str:
+                    renderer = str(renderer)
                 prefix = "/" + renderer
 
             url = self.build_url(prefix + url)

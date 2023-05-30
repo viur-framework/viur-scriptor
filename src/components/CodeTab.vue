@@ -44,9 +44,13 @@
               <div v-else-if="log.type === 'select'">
                 <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image"></Select>
               </div>
+              <div v-else-if="log.type === 'image_select'">
+                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image"></Select>
+              </div>
               <div v-else-if="log.type === 'diffcmp'">
                 <DiffCompare  :title="log.title" :values="log.changes" :imageURL="log.image"></DiffCompare>
               </div>            
+
               
               <div v-else-if="log.type === 'table'">
                 <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image"></MyTable>
