@@ -17,7 +17,7 @@ import "@viur/viur-shoelace/dist/components/icon/icon.styles";
 import "@viur/viur-shoelace/dist/components/card/card.styles";
 import "@viur/viur-shoelace/dist/components/table-wrapper/table-wrapper";
 import VueHighlightJS from 'vue3-highlightjs'
-import 'highlight.js/styles/solarized-light.css'; 
+import 'highlight.js/styles/github-dark.css'; 
 
 // plugin-style
 import { setBasePath } from '@viur/viur-shoelace/dist/utilities/base-path.js';
