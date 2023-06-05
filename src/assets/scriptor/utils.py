@@ -11,6 +11,7 @@ def get_json_object(text: str):
 		return False
 	return True
 
+""" Performs a sleep """
 async def sleep(ms: int):
 	if is_pyodide_context():
 		import manager
