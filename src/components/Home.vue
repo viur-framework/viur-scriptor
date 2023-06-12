@@ -4,7 +4,6 @@
 		<div slot="start" class="split-start">
 
 
-
 				<div class="header">
 					<div class="logo">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 886.82 1024"><defs><radialGradient id="Unbenannter_Verlauf_10" cx="-195.94" cy="1024.05" fx="-195.94" fy="1024.05" r="1.03" gradientTransform="translate(-353259.2 68187.55) rotate(90) scale(345.39 -345.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fc3832"/><stop offset="1" stop-color="#d46764"/></radialGradient><radialGradient id="Unbenannter_Verlauf_2" cx="-195.96" cy="1024.07" fx="-195.96" fy="1024.07" r="1.03" gradientTransform="translate(118682.34 -339648.66) rotate(-150) scale(345.39 -345.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ea3a3a"/><stop offset="1" stop-color="#8f4c4a"/></radialGradient><radialGradient id="Unbenannter_Verlauf_3" cx="-195.96" cy="1024.04" fx="-195.96" fy="1024.04" r="1.03" gradientTransform="translate(235908.99 272981.98) rotate(-30) scale(345.39 -345.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#c21d1d"/><stop offset="1" stop-color="#662020"/></radialGradient></defs><g><path d="M443.4,0L0,256l34.11,19.69L443.4,39.38l409.3,236.31,34.11-19.69L443.4,0Z" fill="#d46764" fill-rule="evenodd"/><path d="M886.81,255.99l-34.11,19.69v472.61s-409.3,236.31-409.3,236.31v39.39s443.41-256,443.41-256" fill="#8f4c4a" fill-rule="evenodd"/><path d="M443.41,984.61L34.11,748.31V275.69S0,256,0,256V768s443.41,256,443.41,256" fill="#662020" fill-rule="evenodd"/><path d="M34.11,748.31l409.29-236.31,409.3,236.31-409.3,236.31L34.11,748.31Z" fill="url(#Unbenannter_Verlauf_10)" fill-rule="evenodd"/><path d="M443.4,512L34.11,748.31V275.69L443.4,39.38" fill="url(#Unbenannter_Verlauf_2)" fill-rule="evenodd"/><path d="M443.4,39.38l409.3,236.31v472.61l-409.3-236.31V39.38Z" fill="url(#Unbenannter_Verlauf_3)" fill-rule="evenodd"/></g><g><path d="M431.01,827.14h3.7V470.38h-22.23v-61.83h61.83v61.83h-22.23v356.65l-21.06,.23v-.11Z" fill="#572727" fill-rule="evenodd"/><path d="M404.51,274.07h77.78l84.86,199.78-73.53,157.78-20.97,140.1,.16,55.41h-20.73V470.38h22.23v-61.83h-61.83v61.83h22.23v356.76h-19.97l-.09-55.41-21.48-140.1-73.53-157.78,84.86-199.78Z" fill="#d8d8d8" fill-rule="evenodd"/><g><path d="M482.31,274.08l84.86,199.79-73.53,157.75-20.93,140.08,25.94-72.42,113.7-212.86-77.05-212.34h-52.98Z" fill="#fff" fill-rule="evenodd"/><path d="M404.51,274.08l-84.86,199.79,73.53,157.75,20.93,140.08-25.94-72.42-113.7-212.86,77.05-212.34h52.98Z" fill="#fff" fill-rule="evenodd"/></g></g></svg>
@@ -14,13 +13,20 @@
 				</div>
 		
 
+
+				
+
 			<div class="search-wrap">
 				<sl-input @input="searchText" size="small"></sl-input>
 				<sl-button size="small">
 					<sl-icon name="search"></sl-icon>
 				</sl-button>
+
 			</div>
 
+
+
+			
 			<sl-tab-group class="tab-group">
 			  <sl-tab slot="nav" panel="files">
 				  {{ t("tab.file.browser") }}
@@ -83,6 +89,9 @@
 	</sl-split-panel>
 
 	<footer class="footer">
+		<sl-button size="small" variant="primary">
+			<a href="https://docu.scriptor.viur.org/" target="_blank"  style="width: 20% !important; background-color: transparent !important; border: none;">Documentation</a>
+		</sl-button>
 
 		<sl-badge v-show="pythonStore.isExecuting" variant="success" class="is-running" pulse>{{  pythonStore.runningText }}</sl-badge>
 
@@ -106,6 +115,8 @@
 		<sl-button size="small" @click="showGeneralLogs" variant="primary">
 			{{ t("logs") }}
 		</sl-button>
+
+
 	</footer>
 
 </template>
