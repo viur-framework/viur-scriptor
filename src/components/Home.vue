@@ -90,7 +90,7 @@
 
 	<footer class="footer">
 		<sl-button size="small" variant="primary">
-			<a href="https://docu.scriptor.viur.org/" target="_blank"  style="width: 20% !important; background-color: transparent !important; border: none;">Documentation</a>
+			<a href="https://docs.scriptor.viur.dev/" target="_blank"  style="width: 20% !important; background-color: transparent !important; border: none;">Documentation</a>
 		</sl-button>
 
 		<sl-badge v-show="pythonStore.isExecuting" variant="success" class="is-running" pulse>{{  pythonStore.runningText }}</sl-badge>
