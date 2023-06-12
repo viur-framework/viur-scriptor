@@ -6,27 +6,34 @@
 Welcome to scriptor's documentation!
 ====================================
 
-.. automodule:: scriptor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :imported-members:
+The Scriptor is a client-side scripting environment specifically designed for the Viur framework. With this powerful component, you can quickly and effectively create scripts to enhance the functionality of your Viur-based applications. By leveraging the Scriptor, you can customize and extend the capabilities of your applications with ease.
 
-.. automodule:: scriptor.network
-   :members:
-   :undoc-members:
-   :show-inheritance:
-      :imported-members:
+Scriptor provides a robust set of tools and libraries that enable you to execute client-side scripts seamlessly within the Viur framework. Whether you need to implement complex data manipulation, interactive features, or dynamic user interfaces, the Scriptor empowers you to achieve your goals efficiently.
+
+With the Scriptor, you can harness the full potential of client-side scripting to create dynamic experiences for your users. Build interactive forms, perform real-time data validation, or implement custom data visualizations - the possibilities are endless.
+
+Integrating the Scriptor into your Viur-based projects is straightforward. Its intuitive syntax and comprehensive documentation make it accessible to both seasoned developers and those new to client-side scripting. Unlock the full potential of the Viur framework by utilizing the Scriptor for your scripting needs.
+
+Don't miss out on the opportunity to leverage the power of the Scriptor to enhance the functionality and interactivity of your Viur applications. Start using the Scriptor today and elevate your development process to new heights.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
+   :caption: Documentation
 
-
+   Getting Started
 
 Indices and tables
 ==================
 
+
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. code-block:: python
+
+   print("Moin")
+   print("Test")
+
+wdwdwdw

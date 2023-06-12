@@ -9,7 +9,7 @@ import os
 import sys
 
 project = 'Scriptor'
-copyright = '2023, Cian Ocak'
+copyright = '2023, Mausbrand Informationssysteme GmbH'
 author = 'Cian Ocak'
 
 # -- General configuration ---------------------------------------------------

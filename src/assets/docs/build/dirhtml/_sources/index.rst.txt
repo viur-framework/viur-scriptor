@@ -16,24 +16,9 @@ Integrating the Scriptor into your Viur-based projects is straightforward. Its i
 
 Don't miss out on the opportunity to leverage the power of the Scriptor to enhance the functionality and interactivity of your Viur applications. Start using the Scriptor today and elevate your development process to new heights.
 
-.. toctree::
-   :maxdepth: 4
-   :caption: Documentation
-
-   Getting Started
-
 Indices and tables
 ==================
-
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-.. code-block:: python
-
-   print("Moin")
-   print("Test")
-
-wdwdwdw
