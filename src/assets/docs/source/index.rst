@@ -20,7 +20,8 @@ Don't miss out on the opportunity to leverage the power of the Scriptor to enhan
    :maxdepth: 4
    :caption: Documentation
 
-   Getting Started
+   getting-started
+   dialog
 
 Indices and tables
 ==================
