@@ -31,7 +31,7 @@ async def wait():
     else:
         await asyncio.sleep(250)
 
-async def alert(text: str, image: str = ""):
+async def alert(text: str, image: str = "") -> None:
     """
     Provide a message and stop program execution until accepted.
     """
@@ -68,7 +68,7 @@ async def confirm(text: str, *, title: str = "Confirm", allow_cancel: bool = Fal
     return ret
 
 
-async def input(text: str, *, title: str = "Input", type: str = "input", use_time: bool = False, empty: bool = False, image: str = ""):
+async def input(text: str, *, title: str = "Input", type: str = "input", use_time: bool = False, empty: bool = False, image: str = "") -> datetime.datetime|str|float|int:
     """
     Provide a dialog asking for some value.
     """
@@ -137,19 +137,19 @@ async def input(text: str, *, title: str = "Input", type: str = "input", use_tim
         else:
             return ret
 
-async def input_date(*args, **kwargs):
+async def input_date(*args, **kwargs) -> datetime.datetime:
     kwargs |= {"type": "date"}
     return await input(*args, **kwargs)
 
-async def input_number(*args, **kwargs):
+async def input_number(*args, **kwargs) -> int|float:
     kwargs |= {"type": "number"}
     return await input(*args, **kwargs)
 
-async def input_string(*args, **kwargs):
+async def input_string(*args, **kwargs) -> str:
     kwargs |= {"type": "string"}
     return await input(*args, **kwargs)
 
-async def input_text(*args, **kwargs):
+async def input_text(*args, **kwargs) -> str:
     kwargs |= {"type": "text"}
     return await input(*args, **kwargs)
 
@@ -160,7 +160,7 @@ input.string = input_string
 
 
 async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
-                 title: str = "Select", multiple: bool = False, image: str = ""):
+                 title: str = "Select", multiple: bool = False, image: str = "") -> str|list[str]:
     if isinstance(choices, (list, tuple)):
         if all([isinstance(k, (dict)) for k in choices]):
             # Image Mode
@@ -209,7 +209,7 @@ async def select(text: str, choices: tuple[str] | list[str] | dict[str, str], *,
 
     return ret
 
-async def diffcmp(title: str, changes: list[list[str]], image: str = ""):
+async def diffcmp(title: str, changes: list[list[str]], image: str = "") -> None:
     if is_pyodide_context():
         for i in range(len(changes)):
             changes[i] = pyodide.ffi.to_js(changes[i])
@@ -226,7 +226,7 @@ async def diffcmp(title: str, changes: list[list[str]], image: str = ""):
         ret = "\n".join([f"{e[0]}\t\t\t{e[1]} -> {e[2]}" for e in changes])
         click.echo(ret)
 
-async def table(header: list[str], rows: list[list[str]], *, select=False, multiple=False, image: str = ""):
+async def table(header: list[str], rows: list[list[str]], *, select=False, multiple=False, image: str = "") -> str|list[str]|None:
     if is_pyodide_context():
         for i in range(len(rows)):
             rows[i] = pyodide.ffi.to_js(rows[i])

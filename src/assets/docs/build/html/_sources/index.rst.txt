@@ -14,7 +14,6 @@ With the Scriptor, you can harness the full potential of client-side scripting t
 
 Integrating the Scriptor into your Viur-based projects is straightforward. Its intuitive syntax and comprehensive documentation make it accessible to both seasoned developers and those new to client-side scripting. Unlock the full potential of the Viur framework by utilizing the Scriptor for your scripting needs.
 
-Don't miss out on the opportunity to leverage the power of the Scriptor to enhance the functionality and interactivity of your Viur applications. Start using the Scriptor today and elevate your development process to new heights.
 
 .. toctree::
    :maxdepth: 4

@@ -35,7 +35,6 @@
       class="label-on-left"
       v-model="value"
       :readonly="!render"
-      @keypress.enter="send"
     ></sl-textarea>
 
     <div slot="footer">
