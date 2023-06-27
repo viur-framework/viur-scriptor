@@ -20,7 +20,7 @@ class BaseModule(object):
 	def name(self, value: str):
 		self._name = value
 
-	async def register_route(self, callback: callable, name: str = None):
+	def register_route(self, callback: callable, name: str = None):
 		self._routes[name if name is not None else callback.__name__] = {"function": callback,"instance": None}
 
 	async def register_routes(self, route: object):
@@ -158,8 +158,38 @@ def __getattr__(attr):
 			if not ("type" in details):
 				details["type"] = module_type
 
-			if not ("instance" in details):
+			if not ("instance" in details):	
 				details["instance"] = details["type"](attr)
+				if "functions" in details:
+					for f in details["functions"]:
+						async def callback(*args, **kwargs):
+							result = None
+							method: str = kwargs.get("request_method", f["method"]).upper()
+							if "request_method" in kwargs:
+								kwargs.pop("request_method")
+							secure_method: str = kwargs.get("request_secure", False)
+							if "request_secure" in kwargs:
+								kwargs.pop("request_secure")
+							
+							if method == "POST":
+								if secure_method:
+									result = await viur.request.secure_post(f"/{attr}/{f.name}", *args, params=kwargs)
+								else:
+									result = await viur.request.post(f"/{attr}/{f.name}", *args, params=kwargs)
+							elif method == "GET":
+								result = await viur.request.get(f"/{attr}/{f.name}", *args, params=kwargs)
+							elif method == "DELETE":
+								result = await viur.request.delete(f"/{attr}/{f.name}", *args, params=kwargs)
+							elif method == "PATCH":
+								result = await viur.request.patch(f"/{attr}/{f.name}", *args, params=kwargs)
+							elif method == "PUT":
+								result = await viur.request.put(f"/{attr}/{f.name}", *args, params=kwargs)
+
+
+							return result
+
+						callback.__doc__ = f.docs
+						details["instance"].register_route(callback, f.name)
 
 			return details["instance"]
 
