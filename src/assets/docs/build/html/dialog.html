@@ -7,6 +7,7 @@
   <title>Dialogues &mdash; Scriptor  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -19,6 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" />
     <link rel="prev" title="Getting Started" href="getting-started.html" /> 
 </head>
 
@@ -75,6 +77,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 
         </div>
@@ -195,11 +198,13 @@ The inputs in Scriptor are similar to inputs in an HTML context.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="scriptor.dialog.input.date">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.input.</span></span><span class="sig-name descname"><span class="pre">date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span></span></span><a class="headerlink" href="#scriptor.dialog.input.date" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Provide a input asking for datetime value.</p>
+</dd></dl>
 
 </section>
 <section id="strings">
 <h3>Strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h3>
+<p>The Scriptor also supports input fields in the form of strings. Input strings allow the receiving of one-line texts. Here is a simple example to ask for a name:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
 <span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="nb">input</span>
 
@@ -216,6 +221,7 @@ The inputs in Scriptor are similar to inputs in an HTML context.</p>
 </section>
 <section id="text">
 <h3>Text<a class="headerlink" href="#text" title="Permalink to this heading"></a></h3>
+<p>Not only single-line strings are possible, but also multi-line strings. The designated type for this purpose is the ‘input.text’ type. With this type, it is possible to receive multi-line strings.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
 <span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="nb">input</span>
 
@@ -238,6 +244,7 @@ The inputs in Scriptor are similar to inputs in an HTML context.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="getting-started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autoapi/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

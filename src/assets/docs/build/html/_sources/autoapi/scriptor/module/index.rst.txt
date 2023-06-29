@@ -1,0 +1,152 @@
+:py:mod:`scriptor.module`
+=========================
+
+.. py:module:: scriptor.module
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.module.BaseModule
+   scriptor.module.SingletonModule
+   scriptor.module.ExtendedModule
+   scriptor.module.ListModule
+   scriptor.module.TreeModule
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.module.create_and_compile_function
+   scriptor.module.__getattr__
+
+
+
+.. py:function:: create_and_compile_function(function_name, function_code)
+
+
+.. py:class:: BaseModule(name: str)
+
+
+   Bases: :py:obj:`object`
+
+   .. py:property:: name
+      :type: str
+
+
+   .. py:method:: register_route(callback: callable, name: str = None, *args, **kwargs)
+
+
+   .. py:method:: register_routes(route: object)
+      :async:
+
+
+   .. py:method:: __getattr__(name: str)
+
+
+   .. py:method:: preview(params: dict = None, group: str = '', **kwargs)
+      :async:
+
+
+   .. py:method:: structure(group: str = '', **kwargs)
+      :async:
+
+
+   .. py:method:: view(key: str, group: str = '', **kwargs) -> dict
+      :async:
+
+
+
+.. py:class:: SingletonModule(name: str)
+
+
+   Bases: :py:obj:`BaseModule`
+
+   .. py:method:: edit(params: dict = None, group: str = '', **kwargs)
+      :async:
+
+
+
+.. py:class:: ExtendedModule(name: str)
+
+
+   Bases: :py:obj:`BaseModule`
+
+   .. py:method:: edit(key: str, params: dict = None, group: str = '', **kwargs)
+      :async:
+
+
+   .. py:method:: list(params: dict = None, group: str = '', **kwargs) -> scriptor.viur.viur.list
+
+
+   .. py:method:: add(params: dict = None, group: str = '', **kwargs)
+      :async:
+
+
+   .. py:method:: delete(key: str, params: dict = None, group: str = '', **kwargs)
+      :async:
+
+
+
+.. py:class:: ListModule(name: str)
+
+
+   Bases: :py:obj:`ExtendedModule`
+
+   .. py:method:: for_each(callback: callable, params: dict = None, **kwargs)
+      :async:
+
+
+
+.. py:class:: TreeModule(name: str)
+
+
+   Bases: :py:obj:`ExtendedModule`
+
+   .. py:method:: edit(group: str, key: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: list(group: str, params: dict = None, **kwargs) -> scriptor.viur.viur.list
+
+
+   .. py:method:: add(group: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: view(group: str, key: str, **kwargs) -> dict
+      :async:
+
+
+   .. py:method:: preview(group: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: list_root_nodes(**kwargs)
+      :async:
+
+
+   .. py:method:: delete(group: str, key: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: move(key: str, parentNode: str, **kwargs)
+      :async:
+
+
+   .. py:method:: for_each(callback: callable, root_node_key: str = None, params: dict = None, **kwargs)
+      :async:
+
+
+
+.. py:function:: __getattr__(attr)
+
+

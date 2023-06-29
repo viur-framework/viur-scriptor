@@ -138,6 +138,9 @@ async def input(text: str, *, title: str = "Input", type: str = "input", use_tim
             return ret
 
 async def input_date(*args, **kwargs) -> datetime.datetime:
+    """
+        Provide a input asking for datetime value.
+    """
     kwargs |= {"type": "date"}
     return await input(*args, **kwargs)
 

@@ -1,0 +1,53 @@
+:py:mod:`scriptor.readers`
+==========================
+
+.. py:module:: scriptor.readers
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.readers.FilePickerReader
+
+
+
+
+.. py:class:: FilePickerReader(file_object: object)
+
+
+   Bases: :py:obj:`scriptor.writer.Picker`
+
+   .. py:property:: content
+      :type: str
+
+
+   .. py:attribute:: TYPE_NAME
+      :value: 'showOpenFilePicker'
+
+      
+
+   .. py:method:: on_startup()
+      :async:
+
+
+   .. py:method:: close()
+      :async:
+
+
+   .. py:method:: readlines()
+
+
+   .. py:method:: read()
+
+
+   .. py:method:: __str__() -> str
+
+      Return str(self).
+
+
+

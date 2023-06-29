@@ -98,6 +98,7 @@ Properties
 
 Strings
 ~~~~~~~~~~~~~
+The Scriptor also supports input fields in the form of strings. Input strings allow the receiving of one-line texts. Here is a simple example to ask for a name:
 
 .. code-block:: python
 
@@ -113,6 +114,7 @@ Strings
 
 Text
 ~~~~~~~~~~~~~
+Not only single-line strings are possible, but also multi-line strings. The designated type for this purpose is the 'input.text' type. With this type, it is possible to receive multi-line strings.
 
 .. code-block:: python
 

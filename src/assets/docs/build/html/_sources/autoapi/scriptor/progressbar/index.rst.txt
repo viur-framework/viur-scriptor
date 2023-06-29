@@ -1,0 +1,30 @@
+:py:mod:`scriptor.progressbar`
+==============================
+
+.. py:module:: scriptor.progressbar
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.progressbar.start
+   scriptor.progressbar.stop
+   scriptor.progressbar.update
+
+
+
+.. py:function:: start(total: int, step: int = -1, max_step: int = -1, txt='')
+
+
+.. py:function:: stop()
+
+
+.. py:function:: update(*args, **kwargs)
+
+

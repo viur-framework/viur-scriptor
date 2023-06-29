@@ -20,6 +20,7 @@ Integrating the Scriptor into your Viur-based projects is straightforward. Its i
    :caption: Documentation
 
    getting-started
+   async
    dialog
 
 Indices and tables

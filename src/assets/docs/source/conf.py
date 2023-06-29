@@ -15,10 +15,12 @@ author = 'Cian Ocak'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc',]
+extensions = ['sphinx.ext.autodoc', 'autoapi.extension']
 
 templates_path = ['_templates']
 exclude_patterns = []
+autoapi_dirs = ['../../scriptor']
+
 
 source_dir = os.path.abspath('../../')
 sys.path.insert(0, source_dir)

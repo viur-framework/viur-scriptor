@@ -1,0 +1,100 @@
+:py:mod:`scriptor.viur`
+=======================
+
+.. py:module:: scriptor.viur
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.viur.viur
+
+
+
+
+.. py:class:: viur
+
+
+   .. py:class:: request(method: str, url: str, params=None, renderer: str = None)
+
+
+      Bases: :py:obj:`scriptor.network.Request`
+
+      .. py:method:: build_url(url)
+         :staticmethod:
+
+
+      .. py:method:: get(*args, **kwargs)
+         :staticmethod:
+         :async:
+
+
+      .. py:method:: post(*args, **kwargs)
+         :staticmethod:
+         :async:
+
+
+      .. py:method:: secure_post(url, params=None, renderer: str = None)
+         :staticmethod:
+         :async:
+
+
+
+   .. py:class:: list(*, url: str = '', module: str = '', params: dict = None, group: str = '', renderer: str = '')
+
+
+      Fetches a list from a VIUR module
+
+      .. py:method:: __aiter__()
+
+
+      .. py:method:: __anext__()
+         :async:
+
+
+
+   .. py:method:: build_url(action: str, url: str, module: str, group: str = '', key: str = '')
+      :staticmethod:
+
+
+   .. py:method:: view(*, url: str = '', module: str = '', key: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: edit(*, url: str = '', module: str = '', key: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: structure(*, url: str = '', module: str = '', group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: preview(*, url: str = '', module: str = '', group: str = '', params: dict = None, **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: add(*, url: str = '', module: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: delete(*, url: str = '', module: str = '', key: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: list_root_nodes(*, url: str = '', module: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+

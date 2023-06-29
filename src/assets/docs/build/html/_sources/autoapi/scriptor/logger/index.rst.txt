@@ -1,0 +1,85 @@
+:py:mod:`scriptor.logger`
+=========================
+
+.. py:module:: scriptor.logger
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.logger.Logging
+
+
+
+
+.. py:class:: Logging
+
+
+   .. py:attribute:: CRITICAL
+      :value: 50
+
+      
+
+   .. py:attribute:: FATAL
+
+      
+
+   .. py:attribute:: ERROR
+      :value: 40
+
+      
+
+   .. py:attribute:: WARNING
+      :value: 30
+
+      
+
+   .. py:attribute:: WARN
+
+      
+
+   .. py:attribute:: INFO
+      :value: 20
+
+      
+
+   .. py:attribute:: DEBUG
+      :value: 10
+
+      
+
+   .. py:attribute:: NOTSET
+      :value: 0
+
+      
+
+   .. py:method:: format_text(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: set_level(level: int)
+      :staticmethod:
+
+
+   .. py:method:: debug(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: info(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: warning(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: error(*args, **kwargs)
+      :staticmethod:
+
+
+

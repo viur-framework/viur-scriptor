@@ -167,7 +167,7 @@ class TreeModule(ExtendedModule):
 
 
 def __getattr__(attr):
-	console.log("Calling __getattr__")
+	#console.log("Calling __getattr__")
 	modules_resolver = {
 		"tree": TreeModule, 
 		"list": ListModule,
