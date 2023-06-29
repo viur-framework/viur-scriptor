@@ -14,6 +14,8 @@ else:
 
 from .logger import Logging
 
+import traceback
+
 
 class Request:
     COOKIES = {}
@@ -75,13 +77,19 @@ class Request:
             return None
 
         if is_pyodide_context():
-            return json.loads(await self._response.text())
+            _text = await self._response.text()
+            try:
+                ret = json.loads(_text)
+            except:
+                #Logging.error(traceback.format_exc())
+                ret = _text
+            return ret
 
         return self._response.json()
 
     async def text(self):
         if is_pyodide_context():
-            return await self._response.text
+            return await self._response.text()
         
         return self._response.text
 

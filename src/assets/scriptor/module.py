@@ -6,6 +6,25 @@ if is_pyodide_context():
 	from js import console
 
 import inspect
+import traceback
+import copy
+
+
+def create_and_compile_function(function_name, function_code):
+	# Define the function code as a string
+	code = f'''
+async def {function_name}(*args, **kwargs):
+{function_code}
+'''
+
+	# Compile the code using the built-in `compile()` function
+	compiled_code = compile(code, filename='<string>', mode='exec')
+
+	# Execute the compiled code using `exec()` to define the function
+	exec(compiled_code)
+
+	# Return the created function
+	return eval(function_name)
 
 class BaseModule(object):
 	def __init__(self, name: str):
@@ -20,8 +39,18 @@ class BaseModule(object):
 	def name(self, value: str):
 		self._name = value
 
-	def register_route(self, callback: callable, name: str = None):
-		self._routes[name if name is not None else callback.__name__] = {"function": callback,"instance": None}
+	def register_route(self, callback: callable, name: str = None, *args, **kwargs):
+		_name = name if name is not None else callback.__name__
+		_func = getattr(self, _name, None)
+		if _func:
+			if is_pyodide_context():
+				console.warn(f"There is already a function for {_name}")
+			return
+
+		if is_pyodide_context():
+			console.log(f"Register route name {_name}")
+
+		self._routes[_name] = {"function": callback,"instance": None, "args": args, "kwargs": kwargs}
 
 	async def register_routes(self, route: object):
 		functions = inspect.getmembers(route.__class__, predicate=inspect.isfunction)
@@ -39,7 +68,7 @@ class BaseModule(object):
 
 			self._routes[name] = {
 				"function": wrap,
-				"instance": route
+				"instance": route,
 			}
 
 	def __getattr__(self, name: str):
@@ -138,6 +167,7 @@ class TreeModule(ExtendedModule):
 
 
 def __getattr__(attr):
+	console.log("Calling __getattr__")
 	modules_resolver = {
 		"tree": TreeModule, 
 		"list": ListModule,
@@ -151,46 +181,63 @@ def __getattr__(attr):
 			if details["handler"].startswith(key):
 				module_type = value
 				break
+
 		
 		# If the module has a registered type
 		if module_type:
+
 			# Ensure one instance of the module
 			if not ("type" in details):
 				details["type"] = module_type
 
 			if not ("instance" in details):	
 				details["instance"] = details["type"](attr)
-				if "functions" in details:
-					for f in details["functions"]:
-						async def callback(*args, **kwargs):
-							result = None
-							method: str = kwargs.get("request_method", f["method"]).upper()
-							if "request_method" in kwargs:
-								kwargs.pop("request_method")
-							secure_method: str = kwargs.get("request_secure", False)
-							if "request_secure" in kwargs:
-								kwargs.pop("request_secure")
-							
-							if method == "POST":
-								if secure_method:
-									result = await viur.request.secure_post(f"/{attr}/{f.name}", *args, params=kwargs)
-								else:
-									result = await viur.request.post(f"/{attr}/{f.name}", *args, params=kwargs)
-							elif method == "GET":
-								result = await viur.request.get(f"/{attr}/{f.name}", *args, params=kwargs)
-							elif method == "DELETE":
-								result = await viur.request.delete(f"/{attr}/{f.name}", *args, params=kwargs)
-							elif method == "PATCH":
-								result = await viur.request.patch(f"/{attr}/{f.name}", *args, params=kwargs)
-							elif method == "PUT":
-								result = await viur.request.put(f"/{attr}/{f.name}", *args, params=kwargs)
+				try:
+					if "functions" in details:
+						for f in details["functions"]:
+							code = f"""
+	route = f"/{attr}/{f['name']}"
+	result = None
+	secure_method: bool = kwargs.get("scriptor_request_secure", False)
+	method: str = kwargs.get("scriptor_request_method", '{f["method"]}').upper()
+	renderer: str = kwargs.get("scriptor_request_renderer", '')
+	console.log("route renderer", kwargs)
 
-
-							return result
-
-						callback.__doc__ = f.docs
-						details["instance"].register_route(callback, f.name)
-
+	if "scriptor_request_method" in kwargs:
+		kwargs.pop("scriptor_request_method")
+	if "scriptor_request_secure" in kwargs:
+		kwargs.pop("scriptor_request_secure")	
+	if "scriptor_request_renderer" in kwargs:
+		kwargs.pop("scriptor_request_renderer")
+	#console.log("route callback", route)
+	if method == "POST":
+		if secure_method:
+			result = await viur.request.secure_post(route, *args, params=kwargs, renderer=renderer)
+		else:
+			try:
+				params = copy.deepcopy(kwargs)
+				result = await viur.request.secure_post(route, *args, params=params, renderer=renderer)
+				if result["status"] != 200:
+					result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
+			except:
+				result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
+	elif method == "GET":
+		result = await viur.request.get(route, *args, params=kwargs, renderer=renderer)
+	elif method == "DELETE":
+		result = await viur.request.delete(route, *args, params=kwargs, renderer=renderer)
+	elif method == "PATCH":
+		result = await viur.request.patch(route, *args, params=kwargs, renderer=renderer)
+	elif method == "PUT":
+		result = await viur.request.put(route, *args, params=kwargs, renderer=renderer)
+	return result"""
+							callback = create_and_compile_function(f"callback_{attr}_{f['name']}", code)
+							callback.__doc__ = f["docs"]
+							details["instance"].register_route(callback, f["name"])
+				except:
+					if is_pyodide_context():
+						console.error(traceback.format_exc())
+					else:
+						print(traceback.format_exc())
 			return details["instance"]
 
 	return super(__import__(__name__).__class__).__getattr__(attr)

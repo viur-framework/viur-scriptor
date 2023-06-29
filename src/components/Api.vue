@@ -11,7 +11,7 @@
           <br>
   
         <h2 class="headline coloured-headline underline-headline">Funktionen</h2>
-          <div class="box" v-for="(item, key) in moduleConfig['function']" :key="key">
+          <div class="box" v-for="(item, key) in moduleConfig['functions']" :key="key">
 
             <h3 class="headline">{{ item.name }}</h3>
             <p class="paragraph">
@@ -31,8 +31,8 @@
                       <div class="name">Typ:</div>
                       {{ arg['type'] }}
                   </div>
-                  <div class="value-info">
-                      <div class="name">noch was:</div>
+                  <div class="value-info" v-if="arg['default']">
+                      <div class="name">Standardwert:</div>
                       {{ arg['default'] }}
                   </div>
               </div>
@@ -57,15 +57,15 @@
             </div>
 
               <div v-else v-for="(key, v) in structure.value">
-                  <h3 class="headline coloured-headline underline-headline">{{ v }}</h3>
 
-                  <div class="data" v-for="(key, name) in key">
-                    
-                    <div class="data-name">{{name}}</div>
-                    <div class="data-type">Typ: {{key.type}}</div>
-                    <div class="data-type">Description: {{key.descr}}</div>
+
+                  <div class="data">
+                    <div class="data-name">{{key[0]}}</div>
+
+                    <div class="data-type">Typ: {{key[1].type}}</div>
+                    <div class="data-type">Description: {{key[1].descr}}</div>
                     <code class="data-code">
-                        <vue-json-pretty :data="key" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
+                        <vue-json-pretty :data="key[1]" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
 
                     </code>
                   </div>
@@ -91,8 +91,7 @@ const moduleConfig = computed(function(){
 });
 
 const isObject = computed(function(){
-  //console.log(structure.value, "Is Array", structure.value.constructor == Object)
-  return structure.value["type"] === "normal";
+  return false;
 });
 
 onBeforeMount(async function(){

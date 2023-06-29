@@ -89,9 +89,9 @@ export const usePythonStore = defineStore('python', () => {
 	const defaultCode = "#### scriptor ####\nfrom scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
 
 	let runScript = function (code: string, name: string = undefined, key: string = undefined){
-		let extraCode = "from scriptor import print, init as __scriptor__init\nawait __scriptor__init()\n";
+		let extraCode = "import traceback\nfrom scriptor import print,logging, init as __scriptor__init\nawait __scriptor__init()\n";
 		if (code.includes("async def main():"))
-			code += "\nawait main()"
+			code += "\ntry:\tawait main()\nexcept:\n\tlogging.error(traceback.format_exc())"
 
 		if (py.isExecuting.get() === true)
 			return;
