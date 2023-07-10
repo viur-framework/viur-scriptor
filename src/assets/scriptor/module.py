@@ -218,8 +218,10 @@ def __getattr__(attr):
 		if secure_method is None:
 			## Bruteforce method try skey method.. and after a normal post..
 			try:
-				copy_kwargs = copy.deepcopy(kwargs)
-				result = await viur.request.secure_post(route, *args, params=copy_kwargs, renderer=renderer)
+				params = copy.deepcopy(kwargs)
+				result = await viur.request.secure_post(route, *args, params=params, renderer=renderer)
+				if result["status"] != 200:
+					result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
 			except:
 				result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
 		else:
