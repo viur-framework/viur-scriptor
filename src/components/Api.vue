@@ -13,7 +13,11 @@
         <h2 class="headline coloured-headline underline-headline">Funktionen</h2>
           <div class="box" v-for="(item, key) in moduleConfig['functions']" :key="key">
 
-            <h3 class="headline">{{ item.name }}</h3>
+<div style="display: flex; align-items: center;">
+  <sl-badge variant="danger" pill style="margin-bottom: 17px;" pulse>async</sl-badge>
+  <h3 class="headline" style="margin-left: 10px;">{{ item.name }}</h3>
+</div>
+
             <p class="paragraph">
                 {{ item.docs }}
 
@@ -45,6 +49,7 @@
 
             
             <div class="data" v-if="isObject" v-for="(key, name) in structure.value">
+            
                 <div class="data-name">{{name}}</div>
                 <div class="data-type">Typ: {{key.type}}</div>
                 <div class="data-type">Description: {{key.descr}}</div>
@@ -56,20 +61,44 @@
 
             </div>
 
-              <div v-else v-for="(key, v) in structure.value">
+              <template v-else>
+                <template v-if="structure.type === 'normal'" >
+                    <div v-for="(key, v) in structure.value">
+                      <div class="data">
+                        <div class="data-name">{{key[0]}}</div>
 
+                        <div class="data-type">Typ: {{key[1].type}}</div>
+                        <div class="data-type">Description: {{key[1].descr}}</div>
+                        <code class="data-code">
+                            <vue-json-pretty :data="key[1]" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
 
-                  <div class="data">
-                    <div class="data-name">{{key[0]}}</div>
+                        </code>
+                      </div>
+                    </div>
+                </template>
+                <template v-else>
+                    <div v-for="(key2, v2) in structure.value">
+                      
+                      <h3 class="headline coloured-headline underline-headline">{{ v2 }}</h3>
 
-                    <div class="data-type">Typ: {{key[1].type}}</div>
-                    <div class="data-type">Description: {{key[1].descr}}</div>
-                    <code class="data-code">
-                        <vue-json-pretty :data="key[1]" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
+                      <div v-for="(key, v) in key2">
+                        <div class="data">
+                        
+                          <div class="data-name">{{key[0]}}</div>
 
-                    </code>
-                  </div>
-              </div>
+                          <div class="data-type">Typ: {{key[1].type}}</div>
+                          <div class="data-type">Description: {{key[1].descr}}</div>
+                          <code class="data-code">
+                              <vue-json-pretty :data="key[1]" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" :collapsedOnClickBrackets="true" />
+
+                          </code>
+                        </div>
+                      </div>
+                    </div>
+                 </template>
+   
+              </template>
+
         </div>
     </div>
   </template>

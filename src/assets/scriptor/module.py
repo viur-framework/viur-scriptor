@@ -198,8 +198,12 @@ def __getattr__(attr):
 							code = f"""
 	route = f"/{attr}/{f['name']}"
 	result = None
-	secure_method: bool = kwargs.get("scriptor_request_secure", False)
-	method: str = kwargs.get("scriptor_request_method", '{f["method"]}').upper()
+	methods = {f["method"]}
+	_method = "GET"
+	if methods == ["POST"]:
+		_method = "POST"
+	secure_method: bool = kwargs.get("scriptor_request_secure", {f['skey']})
+	method: str = kwargs.get("scriptor_request_method", _method).upper()
 	renderer: str = kwargs.get("scriptor_request_renderer", '')
 	console.log("route renderer", kwargs)
 
@@ -211,15 +215,18 @@ def __getattr__(attr):
 		kwargs.pop("scriptor_request_renderer")
 	#console.log("route callback", route)
 	if method == "POST":
-		if secure_method:
-			result = await viur.request.secure_post(route, *args, params=kwargs, renderer=renderer)
-		else:
+		if secure_method is None:
+			## Bruteforce method try skey method.. and after a normal post..
 			try:
-				params = copy.deepcopy(kwargs)
-				result = await viur.request.secure_post(route, *args, params=params, renderer=renderer)
-				if result["status"] != 200:
-					result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
+				copy_kwargs = copy.deepcopy(kwargs)
+				result = await viur.request.secure_post(route, *args, params=copy_kwargs, renderer=renderer)
 			except:
+				result = await viur.request.post(route, *args, params=copy_kwargs, renderer=renderer)
+		else:
+			# New version
+			if secure_method:
+				result = await viur.request.secure_post(route, *args, params=kwargs, renderer=renderer)
+			else:
 				result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
 	elif method == "GET":
 		result = await viur.request.get(route, *args, params=kwargs, renderer=renderer)
