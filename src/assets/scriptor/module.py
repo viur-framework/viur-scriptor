@@ -221,7 +221,7 @@ def __getattr__(attr):
 				copy_kwargs = copy.deepcopy(kwargs)
 				result = await viur.request.secure_post(route, *args, params=copy_kwargs, renderer=renderer)
 			except:
-				result = await viur.request.post(route, *args, params=copy_kwargs, renderer=renderer)
+				result = await viur.request.post(route, *args, params=kwargs, renderer=renderer)
 		else:
 			# New version
 			if secure_method:
