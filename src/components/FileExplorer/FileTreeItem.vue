@@ -15,7 +15,7 @@
 				<sl-icon name="chevron-right" v-if="isFolder" class="arrow" @click="toggle" :class="{ isOpen: props.model.state.isOpen }"></sl-icon>
 				<div class="spacer" v-else></div>
 				<sl-icon class="icon" name="folder" v-if="isFolder"></sl-icon>
-				<sl-icon class="icon" name="file" v-else></sl-icon>
+				<sl-icon class="icon" name="file-earmark" v-else></sl-icon>
 
 				<div class="title"
 					 ref="titleElement">

@@ -2,7 +2,7 @@ import path from "path";
 import copy from 'rollup-plugin-copy'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import visualizer from 'rollup-plugin-visualizer'
+import { visualizer } from 'rollup-plugin-visualizer'
 import del from 'rollup-plugin-delete'
 import mv from "rollup-plugin-mv";
 
@@ -37,8 +37,8 @@ export default defineConfig(({command, mode})=>{
 			copy({
 				targets: [
 					{
-						src: path.join(path.dirname(require.resolve('@viur/viur-shoelace/dist/shoelace.js')), "assets"),
-						dest: path.join(__dirname, 'public', 'static', APPNAME, "viur-shoelace")
+						src: path.join(__dirname, "node_modules", "@viur", "viur-shoelace", "dist", "assets"),
+                        dest: path.join(__dirname, 'public', 'static', APPNAME, "viur-shoelace")
 					}
 				]
 			}),
