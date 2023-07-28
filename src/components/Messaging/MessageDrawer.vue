@@ -53,9 +53,32 @@ export default defineComponent({
   position: absolute;
   width: 500px;
   left: 25px;
-  bottom: 25px;
+  bottom: 77px;
   z-index: 99;
 }
 
+sl-drawer{
+  &::part(title){
+	font-size: 1em;
+	padding: var(--sl-spacing-medium) var(--header-spacing);
+  }
 
+  &::part(title){
+	font-size: 1em;
+	padding: var(--sl-spacing-medium) var(--header-spacing);
+  }
+
+  &::part(header) {
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25);
+  }
+
+  &::part(header-actions){
+	padding: 0;
+  }
+
+  &::part(close-button__base){
+	font-size: 1em;
+	padding: 0 var(--header-spacing);
+  }
+}
 </style>

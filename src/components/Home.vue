@@ -6,15 +6,15 @@
 
 				<div class="header">
 					<div class="logo">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 886.82 1024"><defs><radialGradient id="Unbenannter_Verlauf_10" cx="-195.94" cy="1024.05" fx="-195.94" fy="1024.05" r="1.03" gradientTransform="translate(-353259.2 68187.55) rotate(90) scale(345.39 -345.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fc3832"/><stop offset="1" stop-color="#d46764"/></radialGradient><radialGradient id="Unbenannter_Verlauf_2" cx="-195.96" cy="1024.07" fx="-195.96" fy="1024.07" r="1.03" gradientTransform="translate(118682.34 -339648.66) rotate(-150) scale(345.39 -345.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ea3a3a"/><stop offset="1" stop-color="#8f4c4a"/></radialGradient><radialGradient id="Unbenannter_Verlauf_3" cx="-195.96" cy="1024.04" fx="-195.96" fy="1024.04" r="1.03" gradientTransform="translate(235908.99 272981.98) rotate(-30) scale(345.39 -345.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#c21d1d"/><stop offset="1" stop-color="#662020"/></radialGradient></defs><g><path d="M443.4,0L0,256l34.11,19.69L443.4,39.38l409.3,236.31,34.11-19.69L443.4,0Z" fill="#d46764" fill-rule="evenodd"/><path d="M886.81,255.99l-34.11,19.69v472.61s-409.3,236.31-409.3,236.31v39.39s443.41-256,443.41-256" fill="#8f4c4a" fill-rule="evenodd"/><path d="M443.41,984.61L34.11,748.31V275.69S0,256,0,256V768s443.41,256,443.41,256" fill="#662020" fill-rule="evenodd"/><path d="M34.11,748.31l409.29-236.31,409.3,236.31-409.3,236.31L34.11,748.31Z" fill="url(#Unbenannter_Verlauf_10)" fill-rule="evenodd"/><path d="M443.4,512L34.11,748.31V275.69L443.4,39.38" fill="url(#Unbenannter_Verlauf_2)" fill-rule="evenodd"/><path d="M443.4,39.38l409.3,236.31v472.61l-409.3-236.31V39.38Z" fill="url(#Unbenannter_Verlauf_3)" fill-rule="evenodd"/></g><g><path d="M431.01,827.14h3.7V470.38h-22.23v-61.83h61.83v61.83h-22.23v356.65l-21.06,.23v-.11Z" fill="#572727" fill-rule="evenodd"/><path d="M404.51,274.07h77.78l84.86,199.78-73.53,157.78-20.97,140.1,.16,55.41h-20.73V470.38h22.23v-61.83h-61.83v61.83h22.23v356.76h-19.97l-.09-55.41-21.48-140.1-73.53-157.78,84.86-199.78Z" fill="#d8d8d8" fill-rule="evenodd"/><g><path d="M482.31,274.08l84.86,199.79-73.53,157.75-20.93,140.08,25.94-72.42,113.7-212.86-77.05-212.34h-52.98Z" fill="#fff" fill-rule="evenodd"/><path d="M404.51,274.08l-84.86,199.79,73.53,157.75,20.93,140.08-25.94-72.42-113.7-212.86,77.05-212.34h52.98Z" fill="#fff" fill-rule="evenodd"/></g></g></svg>
+						<img src="@/assets/logo.svg">
 					</div>
 					<h1 class="header">Script0r</h1>
-					
+
 				</div>
-		
 
 
-				
+
+
 
 			<div class="search-wrap">
 				<sl-input @input="searchText" size="small"></sl-input>
@@ -26,7 +26,7 @@
 
 
 
-			
+
 			<sl-tab-group class="tab-group">
 			  <sl-tab slot="nav" panel="files">
 				  {{ t("tab.file.browser") }}
@@ -51,7 +51,7 @@
 									@click="() => openTabDocumentation(module.name)"
 							>
 								<sl-avatar :initials="module.name[0]" slot="prefix"  shape="rounded">
-									
+
 								</sl-avatar>
 								{{ module.name }}
 					</sl-button>
@@ -89,32 +89,56 @@
 	</sl-split-panel>
 
 	<footer class="footer">
-		<sl-button size="small" variant="primary">
-			<a href="https://docs.scriptor.viur.dev/" target="_blank"  style="width: 20% !important; background-color: transparent !important; border: none;">Documentation</a>
+		<sl-button size="small"
+				   variant="primary"
+				   href="https://docs.scriptor.viur.dev/"
+				   target="_blank"
+					title="Documentation">
+			Documentation
 		</sl-button>
 
-		<sl-badge v-show="pythonStore.isExecuting" variant="success" class="is-running" pulse>{{  pythonStore.runningText }}</sl-badge>
-
-
-		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="saveScript" variant="white" >
-			{{ t("safe") }}
-
-		</sl-button>
-		<sl-button v-show="!pythonStore.isExecuting" size="small" :v-show="canShare" @click="shareScript" variant="success" >
-			{{ t("share") }}
-
+		<sl-button v-show="!pythonStore.isExecuting"
+				   size="small" :v-show="canShare"
+				   @click="shareScript"
+				   :title="t('share')"
+				   class="square-btn">
+			<sl-icon name="share" library="bootstrap">
+			</sl-icon>
 		</sl-button>
 
-		<sl-button v-show="!pythonStore.isExecuting" size="small" @click="runScript" variant="primary">
+		<div class="spacer"></div>
+
+
+		<sl-button v-show="!pythonStore.isExecuting"
+				   size="small"
+				   @click="saveScript"
+				   variant="white"
+				   :title="t('safe')"
+				   class="square-btn">
+			<sl-icon name="save" library="bootstrap">
+			</sl-icon>
+		</sl-button>
+
+		<sl-button size="small"
+				   @click="showGeneralLogs"
+				   variant="white"
+				   :title="t('logs')"
+				   class="square-btn">
+			<sl-icon name="list-ul" library="bootstrap">
+			</sl-icon>
+		</sl-button>
+
+		<sl-button v-show="!pythonStore.isExecuting"
+				   size="small"
+				   @click="runScript"
+				   variant="success"
+				   :title="t('run')">
 			{{ t("run") }}
-
-
 		</sl-button>
+
 		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
 
-		<sl-button size="small" @click="showGeneralLogs" variant="primary">
-			{{ t("logs") }}
-		</sl-button>
+
 
 
 	</footer>
@@ -228,17 +252,17 @@ export default {
 
 	function shareScript(){
 		if (!route.query.key) {
-			console.error("Cant share without an opened tab!"); 	
+			console.error("Cant share without an opened tab!");
 			return;
 		}
 
 		// globalStore.modules
 
-		let _url = window.location.origin+"/#"+"/runner/"+route.query.key; 
+		let _url = window.location.origin+"/#"+"/runner/"+route.query.key;
 
 		console.log(import.meta.env.MODE)
 		if (import.meta.env.MODE === "production")
-			_url = window.location.origin+"/scriptor/index.html"+"#"+"/runner/"+route.query.key; 
+			_url = window.location.origin+"/scriptor/index.html"+"#"+"/runner/"+route.query.key;
 
 		messageStore.addMessage("success", "The shared link got copied into the clipboard.", "")
 		navigator.clipboard.writeText(_url);
@@ -252,7 +276,7 @@ export default {
 	}
 
 	function openTabDocumentation(module: string) {
-		const docs = module + " (docs)"; 
+		const docs = module + " (docs)";
 
 		tabStore.addTab(module, docs, "", true);
 	}
@@ -322,7 +346,7 @@ export default {
 	  canShare: computed(function(){
 		return route.query.key;
 	  }),
-	  
+
 		  t,
 		  openTabDocumentation
     }
@@ -336,15 +360,19 @@ export default {
 .footer{
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  background-color: @mainColor;
+  background-color: var(--sl-color-neutral-0);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .25);
   padding: 10px;
   z-index: 1;
   position: relative;
 
   sl-button{
-	margin-left: 10px;
+	&:not(:first-child){
+	  margin-left: 10px;
+	}
 
 	&::part(base){
 	  font-size: .95em;
@@ -353,15 +381,20 @@ export default {
   }
 }
 
+.spacer{
+  flex: 1;
+}
+
 .header{
   width: 100%;
-  background-color: @mainColor;
-  color: #fff;
+  background-color: var(--sl-color-neutral-0);
+  color: var(--sl-color-neutral-950);
   margin: 0 auto 0 0;
   font-weight: 700;
   z-index: 1;
   padding: 10px 15px 15px 15px;
-  display: flex
+  display: flex;
+  align-items: center;
 }
 
 .log-format {
@@ -447,7 +480,7 @@ div.cm-content {
 
   &::part(base){
 	border: none;
-  	background-color: #fff;
+  	background-color: var(--sl-color-neutral-0);
 	display: flex;
 	flex-direction: column;
 	height: 1px;
@@ -455,7 +488,7 @@ div.cm-content {
   }
 
   &::part(nav){
-	background-color: @mainColor;
+	background-color: var(--sl-color-neutral-300);
 	border: none;
   }
 
@@ -476,15 +509,16 @@ div.cm-content {
 
 	&::part(base) {
 	  padding: 10px 15px;
-	  color: #fff;
+	  color: var(--sl-color-neutral-600);
 	  border: none;
 	  overflow-y: hidden;
 	}
 
 	&[aria-selected="true"]{
-	  background-color: #fff;
+	  background-color: var(--sl-color-neutral-0);
+
 	  &::part(base) {
-		color: @mainColor !important;
+		color: var(--sl-color-neutral-900);
 	  }
 	}
   }
@@ -549,7 +583,8 @@ div.cm-content {
 
 .search-wrap{
   width: 100%;
-  background-color: @mainColor;
+  background-color: var(--sl-color-neutral-0);
+  border-bottom: 2px solid var(--sl-color-neutral-300);
   padding: 0 15px 15px 15px;
   display: flex;
   flex-direction: row;
@@ -674,27 +709,48 @@ div.cm-content {
 
 .data-btn{
 
-&:hover{
+  &:hover{
+	&::part(base){
+	  background-color: #f3f3f3;
+	}
+  }
+
   &::part(base){
-	background-color: #f3f3f3;
+	justify-content: flex-start;
+	border: none;
+	height: auto;
+	line-height: 1;
+	padding: 6px 7px;
+	background-color: transparent;
+	transition: all ease .3s;
+  }
+
+  &::part(label){
+	display: flex;
+	align-items: center;
+  }
+
+  sl-avatar{
+	--size: 2em;
+
+	&::part(base){
+	  background-color: var(--sl-color-neutral-700);
+	}
   }
 }
 
-&::part(base){
-  justify-content: flex-start;
-  border: none;
-  height: auto;
-  line-height: 1;
-  padding: 6px 7px;
-  background-color: transparent;
-  transition: all ease .3s;
-}
 
-&::part(label){
-  display: flex;
-  align-items: center;
-}
-}
+.square-btn{
+  &::part(base){
+	aspect-ratio: 1;
+  }
 
+  &::part(label){
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+}
 
 </style>
