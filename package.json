@@ -1,6 +1,6 @@
 {
   "name": "stand-alone-scriptor",
-  "version": "2.0.0-dev",
+  "version": "v2.0.1-rc1",
   "private": true,
   "scripts": {
     "preinstall": "npm install ./src/usepython",
