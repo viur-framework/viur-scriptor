@@ -96,6 +96,7 @@ const usePython = () => {
 			pyDialogs.get().push({
 				type: "alert",
 				text: data.text,
+        image: data.image,
         done: false
 			})
 			pyDialogs.notify();
@@ -107,6 +108,7 @@ const usePython = () => {
 				title: data.title, 
         text: data.text,
         cancel: data.cancel,
+        image: data.image,
         done: false
 			})
 			pyDialogs.notify();
@@ -117,6 +119,8 @@ const usePython = () => {
           type: "diffcmp",
           title: data.title, 
           changes: data.changes,
+          image: data.image,
+
           done: false
         })
         pyDialogs.notify();
@@ -140,6 +144,16 @@ const usePython = () => {
         })
         pyDialogs.notify();
         break;
+
+        case "table":
+          pyDialogs.get().push({
+            type: "table",
+            done: false,
+            ...data
+          })
+          pyDialogs.notify();
+          break;
+  
 
 
         case "showDirectoryPicker":

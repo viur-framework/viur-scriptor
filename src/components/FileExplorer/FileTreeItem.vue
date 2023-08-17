@@ -15,7 +15,7 @@
 				<sl-icon name="chevron-right" v-if="isFolder" class="arrow" @click="toggle" :class="{ isOpen: props.model.state.isOpen }"></sl-icon>
 				<div class="spacer" v-else></div>
 				<sl-icon class="icon" name="folder" v-if="isFolder"></sl-icon>
-				<sl-icon class="icon" name="file" v-else></sl-icon>
+				<sl-icon class="icon" name="file-earmark" v-else></sl-icon>
 
 				<div class="title"
 					 ref="titleElement">
@@ -98,7 +98,7 @@
 
 <script lang="ts">
 import {ref, computed, defineProps, onMounted, watch, onBeforeMount} from 'vue'
-import {Request} from '@viur/viur-vue-utils';
+import {Request} from "@viur/vue-utils";
 import {useDialogStore} from "../../stores/dialogs";
 import {useI18n} from "vue-i18n";
 

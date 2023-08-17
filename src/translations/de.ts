@@ -43,7 +43,8 @@ export default {
 		},
 		database: {
 			fields: "Datenbank-Felder"
-		}
+		},
+		api: "API"
 	},
 	error: {
 		title: {

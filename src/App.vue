@@ -1,4 +1,7 @@
 <template>
+	<Teleport to="head">
+    	<title> {{ 'Scriptor v' + version }}</title>
+	</Teleport>
 
 	<template v-if="isLoggedIn && !isLoading">
 		<DialogDrawer></DialogDrawer>
@@ -20,7 +23,7 @@
 
 <script lang="ts">
 import Home from './components/Home.vue'
-import {Request} from "@viur/viur-vue-utils";
+import {Request} from "@viur/vue-utils";
 import {ref, onBeforeMount, inject} from 'vue';
 import {usePythonStore} from "./stores/PythonStore";
 import {useMessageStore} from "./stores/message";
@@ -42,7 +45,7 @@ export default {
   setup(){
 
 	  const checkLoginInterval = ref();
-
+   	 const version =  __APP_VERSION__;
 	  const globalStore = useGlobalStore();
 	  let isLoggedIn = ref<boolean>(false);
 	  let isLoading = ref<boolean>(true);
@@ -89,7 +92,7 @@ export default {
 		  }, 1000 * 60 * 5)
 	  });
 
-	  return {isLoggedIn, isLoading, globalStore}
+	  return {isLoggedIn, isLoading, globalStore, version}
   }
 }
 </script>

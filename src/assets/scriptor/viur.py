@@ -16,6 +16,8 @@ class viur:
 
             prefix = "/json"
             if renderer:
+                if not type(renderer) is str:
+                    renderer = str(renderer)
                 prefix = "/" + renderer
 
             url = self.build_url(prefix + url)
@@ -49,8 +51,8 @@ class viur:
         async def post(*args, **kwargs):
             _request = viur.request("POST", *args, **kwargs)
             await _request.perform()
-
             return await _request.json()
+
 
         @staticmethod
         async def secure_post(url, params=None, renderer: str = None):

@@ -14,7 +14,7 @@
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 					<pre v-highlightjs><code class="python">{{ "await alert('Das ist eine Nachricht')" }}</code></pre>
-					
+
 				</sl-details>
 			</div>
 
@@ -29,7 +29,7 @@
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 					<pre v-highlightjs><code class="python">{{ "await diffcmp('Änderungen', ['Bezeichnung 1 Links', 'Nebenteil', 'Nebenteilscheibe links'], ['Bezeichnung 2 Links', 'Tür', 'Türschreibe links'])" }}</code></pre>
-					
+
 				</sl-details>
 			</div>
 
@@ -109,7 +109,7 @@
 				<Select :options="['A','B']" :multiple="false" text="Select (not multiple)" title="Select"></Select>
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
-					<pre v-highlightjs><code class="python">{{ 'choices = ["A", "B"]\n' 
+					<pre v-highlightjs><code class="python">{{ 'choices = ["A", "B"]\n'
 		+ 'ret = await select("Select (not multiple)", choices) '}}
 </code></pre>
 
@@ -117,16 +117,6 @@
 			</div>
 			<div class="item">
 				<Select :options="['A', 'B', 'C', 'D', 'E', 'T', 'G']" :multiple="true" text="Select (multiple)" title="Select"></Select>
-				<sl-details summary="Source Code" class="source-code">
-					<sl-icon name="code-slash" slot="prefix"></sl-icon>
-					<pre v-highlightjs><code class="python">{{ "choices = ['A', 'B', 'C', 'D', 'E', 'T', 'G']\n"
-		+ 'ret = await select("Select (multiple)", choices)'}}
-</code></pre>
-				</sl-details>
-			</div>			
-			
-			<div class="item">
-				<Table></Table>
 				<sl-details summary="Source Code" class="source-code">
 					<sl-icon name="code-slash" slot="prefix"></sl-icon>
 					<pre v-highlightjs><code class="python">{{ "choices = ['A', 'B', 'C', 'D', 'E', 'T', 'G']\n"
@@ -145,16 +135,22 @@ import Confirm from "../components/Interaction/Confirm.vue";
 import Input from "../components/Interaction/Input.vue";
 import Select from "../components/Interaction/Select.vue";
 import DiffCompare from "../components/Interaction/DiffCompare.vue";
-import Table from "../components/Interaction/NewTable.vue";
+
 function confirmValue(value: String) {
-	
+
 }
 
 let details = [['Bezeichnung 1 Links', 'Nebenteil', 'Nebenteilscheibe links'], ['Bezeichnung 2 Links', 'Tür', 'Türschreibe links']];
 
+let fake = []; 
+
+for (let i = 0; i<1000; ++i)
+{
+	fake.push([i+1, 'row'+i, i]);
+}
 </script>
 
-<style scoped>
+<style scoped lang="less">
 
 .container {
 	overflow: auto;

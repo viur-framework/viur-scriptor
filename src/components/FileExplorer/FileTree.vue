@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import {computed, onBeforeMount, onMounted, ref, watch, watchEffect} from "vue";
-import {Request} from "@viur/viur-vue-utils";
+import {Request} from "@viur/vue-utils";
 
 import FileTreeItem from "./FileTreeItem.vue";
 import LoadingSpinner from "../common/LoadingSpinner.vue";

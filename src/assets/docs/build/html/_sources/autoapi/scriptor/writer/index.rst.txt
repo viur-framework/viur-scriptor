@@ -1,0 +1,102 @@
+:py:mod:`scriptor.writer`
+=========================
+
+.. py:module:: scriptor.writer
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.writer.WriterBase
+   scriptor.writer.MemoryWriter
+   scriptor.writer.Picker
+
+
+
+
+.. py:class:: WriterBase(line_terminator=LINE_TERMINATOR)
+
+
+   .. py:property:: line_terminator
+      :type: str
+
+
+   .. py:property:: line_count
+      :type: int
+
+
+   .. py:property:: offset
+
+
+   .. py:attribute:: LINE_TERMINATOR
+      :value: '\n'
+
+      
+
+   .. py:method:: increase_line_count()
+
+
+   .. py:method:: __len__() -> int
+
+
+   .. py:method:: write(content: str)
+
+
+   .. py:method:: write_line(content: str)
+
+
+   .. py:method:: write_lines(lines: list[str])
+
+
+
+.. py:class:: MemoryWriter(content: str = '')
+
+
+   Bases: :py:obj:`WriterBase`
+
+   .. py:attribute:: DEFAULT_FILE_NAME
+      :value: 'export.txt'
+
+      
+
+   .. py:method:: write(content: str)
+
+
+   .. py:method:: write_line(content: str)
+
+
+   .. py:method:: __str__() -> str
+
+      Return str(self).
+
+
+   .. py:method:: clear()
+
+
+   .. py:method:: download(name: str = '')
+
+
+
+.. py:class:: Picker
+
+
+   .. py:attribute:: TYPE_NAME
+      :value: ''
+
+      
+
+   .. py:method:: on_startup()
+      :async:
+
+
+   .. py:method:: open()
+      :classmethod:
+      :async:
+
+
+

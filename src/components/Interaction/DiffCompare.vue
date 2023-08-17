@@ -1,142 +1,132 @@
 <template>
-
-    <sl-card class="interaction">
-        <div slot="header">
-            
-            <template v-if="!props.title">{{ t('diff') }}</template>
-            <template v-else>{{props.title}}</template>
-            
+  <sl-card class="interaction">
+    <div v-if="imageURL" class="interaction-img">
+          <img :src="imageURL"
+          class="">
         </div>
 
+    <div slot="header">
+      <template v-if="!props.title">{{ t("diff") }}</template>
+      <template v-else>{{ props.title }}</template>
+    </div>
 
-      <div class="extended-inter">
-
+    <div class="extended-inter">
       <div v-for="(value, index) in props.values" :key="index">
-        <sl-divider v-if="index > 0" style="--width: 4px;"></sl-divider>
-       
         <div class="container">
-          <div class="child child-start">{{ value[0] }}</div>
-          <div class="child child-end">
+          <div class="child-start">{{ value[0] }}</div>
+          <div class="child-end">
             <div class="from">
-              {{ value[1] }} 
+              {{ value[1] }}
             </div>
 
-            ->
+            <span class="arrow">&#8594;</span>
 
             <div class="to">
               {{ value[2] }}
             </div>
-            
           </div>
-
-
-
         </div>
-
       </div>
     </div>
-    </sl-card>
+  </sl-card>
 </template>
 
-
 <script setup lang="ts">
-export interface Props {
-    title: String,
-    values: String[][],
-}
+  export interface Props {
+    title: String;
+    values: String[][];
+    imageURL: String; 
+  }
 
+  import { ref } from "vue";
+  import { useI18n } from "vue-i18n";
 
-import {ref} from 'vue';
-import { useI18n } from 'vue-i18n';
+  const { t } = useI18n();
 
-const render = ref(true);
-
-const {t} = useI18n();
-
-
-
-const props = defineProps<Props>();
-  console.log("values:", props.values)
-
+  const props = defineProps<Props>();
 </script>
 
-
 <style scoped lang="less">
+  .interaction-img {
+    margin: -10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% + 20px);
+    height: 200px;
+    margin-bottom: 20px;
+    background-color: var(--sl-color-neutral-100);
+
+    img {
+      object-fit: contain;
+      height: 100%;
+    }
+  }
+
+  .container {
+    overflow-y: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 80px;
+    align-items: flex-start;
+  }
+
   .extended-inter {
     overflow-y: auto;
     max-height: 400px;
-    margin-right: 2px
-  }
-
-  #scroll {
-    margin-left: 5px;
-  }
-
-  .card-header {
-    max-width: 300px;
-    max-height: 300px;
-  }
-
-  .card-header [slot='header'] {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-header h3 {
-    margin: 0;
-  }
-
-  .card-header sl-icon-button {
-    font-size: var(--sl-font-size-medium);
   }
 
   .diff {
-    flex:1 0 50%;
+    flex: 1 0 50%;
     align-items: flex-start;
   }
 
   .diff-start {
     display: flex;
-    align-self: flex-start; 
+    align-self: flex-start;
   }
   .diff-end {
     display: flex;
-    align-self: flex-end; 
-
+    align-self: flex-end;
   }
 
-.container {
-  overflow-y: auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 80px;
-  align-items: flex-start;
-}
+  .container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    margin-bottom: 10px;
+  }
 
-.child {
-  padding: 5px;
-}
+  .child-start {
+    display: flex;
+    align-items: center;
+    order: 0;
+    width: 20%;
+    padding: 0.4em;
+  }
 
-.child-start {
-  order: 0;
-}
+  .child-end {
+    order: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--sl-color-neutral-100);
+    padding: 0.4em;
+    flex: 1;
+  }
 
-.child-end {
-  order: 1;
+  .from {
+    margin-left: 5px;
+    color: var(--sl-color-danger-600);
+  }
 
-  display: flex;
+  .arrow {
+    color: var(--sl-color-primary-500);
+  }
 
-  justify-content: space-between;
-  gap: 15px;
-}
-
-.from {
-  margin-left: 5px;
-  color: red;
-}
-
-.to {
-  color: green;
-}
+  .to {
+    color: var(--sl-color-success-600);
+  }
 </style>

@@ -45,6 +45,8 @@ export const useLogStore = defineStore("log", () => {
             return true;
       }
 
+    let allocId = 0; 
+
     pythonStore.py.pyLogging.listen((val) => {
         if (!(pythonStore.scriptRunnerTab in logMap.value))
             logMap.value[pythonStore.scriptRunnerTab] = ref([]); 
@@ -56,7 +58,7 @@ export const useLogStore = defineStore("log", () => {
                 if (entry.done)
                     continue;
 
-                logMap.value[pythonStore.scriptRunnerTab].push({
+                /*logMap.value[pythonStore.scriptRunnerTab].push({
                     log: {
                         type: "syslog",
                         level: computed(() => {
@@ -66,7 +68,19 @@ export const useLogStore = defineStore("log", () => {
                         time: Date.now(),
                         json: isJsonString(entry.text),
                     }
-                })
+                })*/
+                logMap.value[pythonStore.scriptRunnerTab].unshift({
+                    log: {
+                        type: "syslog",
+                        level: computed(() => {
+                            return getThemeByLevel(entry.level);
+                        }),
+                        text: formatString(entry.text),
+                        time: Date.now(),
+                        json: isJsonString(entry.text),
+                        key: ++allocId
+                    }
+                });
 
                 entry.done = true;
           }
@@ -85,13 +99,17 @@ export const useLogStore = defineStore("log", () => {
                 
                 if (entry) {
 
-                    logMap.value[pythonStore.scriptRunnerTab].push({
+                    logMap.value[pythonStore.scriptRunnerTab].unshift({
                         log: {
                             type: entry.type,
                             time: Date.now(),
+                            key: ++allocId,
+                            render: true,
                             ...entry,
                         }
                     })
+
+                    console.log("Logs:", logMap.value[pythonStore.scriptRunnerTab])
 
                     entry.done = true;
                 }

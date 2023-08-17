@@ -1,0 +1,494 @@
+:py:mod:`scriptor`
+==================
+
+.. py:module:: scriptor
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   csvwriter/index.rst
+   dialog/index.rst
+   logger/index.rst
+   module/index.rst
+   network/index.rst
+   progressbar/index.rst
+   readers/index.rst
+   renderer/index.rst
+   utils/index.rst
+   viur/index.rst
+   writer/index.rst
+
+
+Package Contents
+----------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.Request
+   scriptor.viur
+   scriptor.MemoryCsvWriter
+   scriptor.FileSystemCsvWriter
+   scriptor.logging
+   scriptor.ListModule
+   scriptor.SingletonModule
+   scriptor.TreeModule
+   scriptor.MemoryWriter
+   scriptor.FilePickerReader
+   scriptor.prototypes
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.get_json_object
+   scriptor.is_pyodide_context
+   scriptor.print
+   scriptor.sleep
+   scriptor.params
+   scriptor.init
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   scriptor.old_print
+
+
+.. py:function:: get_json_object(text: str)
+
+
+.. py:function:: is_pyodide_context()
+
+
+.. py:class:: Request(method: str, url: str, credentials: bool = False, headers: dict = None, data: dict = None)
+
+
+   .. py:attribute:: COOKIES
+
+      
+
+   .. py:method:: perform()
+      :async:
+
+
+   .. py:method:: json()
+      :async:
+
+
+   .. py:method:: text()
+      :async:
+
+
+   .. py:method:: blob()
+      :async:
+
+
+   .. py:method:: get(*args, **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: post(*args, **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: put(*args, **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: delete(*args, **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: patch(*args, **kwargs)
+      :staticmethod:
+      :async:
+
+
+
+.. py:class:: viur
+
+
+   .. py:class:: request(method: str, url: str, params=None, renderer: str = None)
+
+
+      Bases: :py:obj:`scriptor.network.Request`
+
+      .. py:method:: build_url(url)
+         :staticmethod:
+
+
+      .. py:method:: get(*args, **kwargs)
+         :staticmethod:
+         :async:
+
+
+      .. py:method:: post(*args, **kwargs)
+         :staticmethod:
+         :async:
+
+
+      .. py:method:: secure_post(url, params=None, renderer: str = None)
+         :staticmethod:
+         :async:
+
+
+
+   .. py:class:: list(*, url: str = '', module: str = '', params: dict = None, group: str = '', renderer: str = '')
+
+
+      Fetches a list from a VIUR module
+
+      .. py:method:: __aiter__()
+
+
+      .. py:method:: __anext__()
+         :async:
+
+
+
+   .. py:method:: build_url(action: str, url: str, module: str, group: str = '', key: str = '')
+      :staticmethod:
+
+
+   .. py:method:: view(*, url: str = '', module: str = '', key: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: edit(*, url: str = '', module: str = '', key: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: structure(*, url: str = '', module: str = '', group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: preview(*, url: str = '', module: str = '', group: str = '', params: dict = None, **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: add(*, url: str = '', module: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: delete(*, url: str = '', module: str = '', key: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+   .. py:method:: list_root_nodes(*, url: str = '', module: str = '', params: dict = None, group: str = '', **kwargs)
+      :staticmethod:
+      :async:
+
+
+
+.. py:class:: MemoryCsvWriter(*args, delimiter=';', formatter: callable = None)
+
+
+   Bases: :py:obj:`scriptor.writer.MemoryWriter`
+
+   Writer for CSV exports
+
+   .. py:property:: writer
+
+
+   .. py:attribute:: DEFAULT_FILE_NAME
+      :value: 'export.csv'
+
+      
+
+   .. py:method:: fmt(value)
+
+
+   .. py:method:: write(values: object)
+      :async:
+
+
+   .. py:method:: __str__()
+
+      Return str(self).
+
+
+
+.. py:class:: FileSystemCsvWriter(*args, **kwargs)
+
+
+   Bases: :py:obj:`scriptor.writer.FilePickerWriter`
+
+   Writer for CSV exports
+
+   .. py:attribute:: DEFAULT_FILE_NAME
+      :value: 'export.csv'
+
+      
+
+   .. py:method:: set_formatter(formatter: callable)
+
+
+   .. py:method:: set_columns(columns: list[str])
+
+
+   .. py:method:: set_delimiter(delimiter: str)
+
+
+   .. py:method:: flush()
+      :async:
+
+
+   .. py:method:: __aenter__()
+      :async:
+
+
+   .. py:method:: __aexit__(*args)
+      :async:
+
+
+   .. py:method:: write(values: object, should_flush: bool = False)
+      :async:
+
+
+
+.. py:class:: logging
+
+
+   .. py:attribute:: CRITICAL
+      :value: 50
+
+      
+
+   .. py:attribute:: FATAL
+
+      
+
+   .. py:attribute:: ERROR
+      :value: 40
+
+      
+
+   .. py:attribute:: WARNING
+      :value: 30
+
+      
+
+   .. py:attribute:: WARN
+
+      
+
+   .. py:attribute:: INFO
+      :value: 20
+
+      
+
+   .. py:attribute:: DEBUG
+      :value: 10
+
+      
+
+   .. py:attribute:: NOTSET
+      :value: 0
+
+      
+
+   .. py:method:: format_text(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: set_level(level: int)
+      :staticmethod:
+
+
+   .. py:method:: debug(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: info(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: warning(*args, **kwargs)
+      :staticmethod:
+
+
+   .. py:method:: error(*args, **kwargs)
+      :staticmethod:
+
+
+
+.. py:class:: ListModule(name: str)
+
+
+   Bases: :py:obj:`ExtendedModule`
+
+   .. py:method:: for_each(callback: callable, params: dict = None, **kwargs)
+      :async:
+
+
+
+.. py:class:: SingletonModule(name: str)
+
+
+   Bases: :py:obj:`BaseModule`
+
+   .. py:method:: edit(params: dict = None, group: str = '', **kwargs)
+      :async:
+
+
+
+.. py:class:: TreeModule(name: str)
+
+
+   Bases: :py:obj:`ExtendedModule`
+
+   .. py:method:: edit(group: str, key: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: list(group: str, params: dict = None, **kwargs) -> scriptor.viur.viur.list
+
+
+   .. py:method:: add(group: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: view(group: str, key: str, **kwargs) -> dict
+      :async:
+
+
+   .. py:method:: preview(group: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: list_root_nodes(**kwargs)
+      :async:
+
+
+   .. py:method:: delete(group: str, key: str, params: dict = None, **kwargs)
+      :async:
+
+
+   .. py:method:: move(key: str, parentNode: str, **kwargs)
+      :async:
+
+
+   .. py:method:: for_each(callback: callable, root_node_key: str = None, params: dict = None, **kwargs)
+      :async:
+
+
+
+.. py:class:: MemoryWriter(content: str = '')
+
+
+   Bases: :py:obj:`WriterBase`
+
+   .. py:attribute:: DEFAULT_FILE_NAME
+      :value: 'export.txt'
+
+      
+
+   .. py:method:: write(content: str)
+
+
+   .. py:method:: write_line(content: str)
+
+
+   .. py:method:: __str__() -> str
+
+      Return str(self).
+
+
+   .. py:method:: clear()
+
+
+   .. py:method:: download(name: str = '')
+
+
+
+.. py:class:: FilePickerReader(file_object: object)
+
+
+   Bases: :py:obj:`scriptor.writer.Picker`
+
+   .. py:property:: content
+      :type: str
+
+
+   .. py:attribute:: TYPE_NAME
+      :value: 'showOpenFilePicker'
+
+      
+
+   .. py:method:: on_startup()
+      :async:
+
+
+   .. py:method:: close()
+      :async:
+
+
+   .. py:method:: readlines()
+
+
+   .. py:method:: read()
+
+
+   .. py:method:: __str__() -> str
+
+      Return str(self).
+
+
+
+.. py:data:: old_print
+
+   
+
+.. py:function:: print(*args, **kwargs)
+
+
+.. py:function:: sleep(ms: int)
+   :async:
+
+
+.. py:class:: prototypes
+
+
+   .. py:attribute:: list
+
+      
+
+   .. py:attribute:: singleton
+
+      
+
+   .. py:attribute:: tree
+
+      
+
+
+.. py:function:: params()
+
+
+.. py:function:: init()
+   :async:
+
+

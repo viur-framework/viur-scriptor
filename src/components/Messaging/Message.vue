@@ -3,8 +3,16 @@
               open
               :duration="props.duration"
               closable>
-        <sl-icon slot="icon" :name="props.icon" sprite></sl-icon>
-        <div class="bold">{{ headline }} {{ time.toLocaleString() }}</div>
+        <sl-icon slot="icon"
+				 :name="props.icon"
+				 v-if="props.icon"
+		></sl-icon>
+		<sl-icon slot="icon"
+				 name="info-cicle"
+				 v-else
+		></sl-icon>
+		<div>{{ time.toLocaleString() }}</div>
+        <div class="bold">{{ headline }}</div>
         <slot></slot>
     </sl-alert>
 
@@ -13,8 +21,16 @@
               style="margin-bottom: 10px"
               open
               closable>
-        <sl-icon slot="icon" :name="props.icon" sprite></sl-icon>
-        <div class="bold">{{ headline }} {{ time.toLocaleString() }}</div>
+        <sl-icon slot="icon"
+				 :name="props.icon"
+				 v-if="props.icon">
+		</sl-icon>
+		<sl-icon slot="icon"
+				 name="info-cicle"
+				 v-else
+		></sl-icon>
+		<div>{{ time.toLocaleString() }}</div>
+        <div class="bold">{{ headline }}</div>
         <slot></slot>
     </sl-alert>
 </template>

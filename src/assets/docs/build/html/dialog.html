@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dialogues &mdash; Scriptor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" />
+    <link rel="prev" title="Async and await" href="async.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Scriptor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async.html">Async and await</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dialogues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#alert">Alert</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scriptor.dialog.alert"><code class="docutils literal notranslate"><span class="pre">alert()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#confirm">Confirm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scriptor.dialog.confirm"><code class="docutils literal notranslate"><span class="pre">confirm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#input">Input</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scriptor.dialog.input"><code class="docutils literal notranslate"><span class="pre">input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#number">Number</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scriptor.dialog.input.number"><code class="docutils literal notranslate"><span class="pre">number()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#date">Date</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scriptor.dialog.input.date"><code class="docutils literal notranslate"><span class="pre">date()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#strings">Strings</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scriptor.dialog.input.string"><code class="docutils literal notranslate"><span class="pre">string()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#text">Text</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scriptor.dialog.input.text"><code class="docutils literal notranslate"><span class="pre">text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Scriptor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Dialogues</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dialog.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dialogues">
+<h1>Dialogues<a class="headerlink" href="#dialogues" title="Permalink to this heading"></a></h1>
+<p>Dialogues are a crucial component for interacting with the user. The scriptor provides a variety of dialogue types, including alerts, confirm, inputs, select, diffcompare, and table.</p>
+<section id="alert">
+<h2>Alert<a class="headerlink" href="#alert" title="Permalink to this heading"></a></h2>
+<p>When an alert is triggered, a message is displayed, and the script proceeds only after the ‘OK’ button is clicked. This functionality is comparable to an alert in JavaScript.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
+<span class="kn">from</span> <span class="nn">scriptor</span> <span class="kn">import</span> <span class="n">dialog</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">dialog</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An alert is generated in this example, displaying the text “Hello World”.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.alert">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.</span></span><span class="sig-name descname"><span class="pre">alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#scriptor.dialog.alert" title="Permalink to this definition"></a></dt>
+<dd><p>Provide a message and stop program execution until accepted.</p>
+</dd></dl>
+
+</section>
+<section id="confirm">
+<h2>Confirm<a class="headerlink" href="#confirm" title="Permalink to this heading"></a></h2>
+<p>A Confirm element is a component that represents a simple yes/no/cancel dialog. It allows the user to confirm an action or cancel it. After the user interacts with the Confirm element, it returns one of the values: True, False, or None.</p>
+<p>Here is a simple example where the user is prompted using a Confirm element to determine whether the program should continue or be stopped.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
+<span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="n">confirm</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Ask the user if the program should proceed (interaction)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">confirm</span><span class="p">(</span><span class="s2">&quot;Should we proceed?&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ret can be True or False (Yes/No)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stop!&quot;</span><span class="p">)</span> <span class="c1"># We will print an output for debug</span>
+        <span class="k">return</span> <span class="c1"># will stop the whole program</span>
+
+    <span class="c1"># Done!</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.confirm">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.</span></span><span class="sig-name descname"><span class="pre">confirm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Confirm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_cancel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#scriptor.dialog.confirm" title="Permalink to this definition"></a></dt>
+<dd><p>Provide a Yes-No or Yes-No-Cancel-dialog.</p>
+</dd></dl>
+
+</section>
+<section id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this heading"></a></h2>
+<p>An Input is another type that expects user input in the form of numbers, dates, strings, or multi-line strings. It provides a way for users to enter and submit data.
+The inputs in Scriptor are similar to inputs in an HTML context.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.input">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.</span></span><span class="sig-name descname"><span class="pre">input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Input'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'input'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></span><a class="headerlink" href="#scriptor.dialog.input" title="Permalink to this definition"></a></dt>
+<dd><p>Provide a dialog asking for some value.</p>
+</dd></dl>
+
+<section id="number">
+<h3>Number<a class="headerlink" href="#number" title="Permalink to this heading"></a></h3>
+<p>The simplest input type is a number, where the number can be either an integer or a floating-point number. For example, if the value “1.5” is given as an input, the output will be a float variable. However, if the number is an integer, the output type will be returned as ‘int’.</p>
+<p>A simple example that asks for the age.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
+<span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="nb">input</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">input</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">&quot;How old are you?&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are </span><span class="si">{</span><span class="n">age</span><span class="si">}</span><span class="s2"> years old.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Properties</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.input.number">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.input.</span></span><span class="sig-name descname"><span class="pre">number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="headerlink" href="#scriptor.dialog.input.number" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="date">
+<h3>Date<a class="headerlink" href="#date" title="Permalink to this heading"></a></h3>
+<p>Often, documentation requires including information such as dates and times. To facilitate this, the Scriptor provides the ability to input date values. Unlike other input types, the Scriptor returns a datetime object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
+<span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="nb">input</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">input</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="s2">&quot;When were you born?&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You were born on </span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, the ‘date’ variable is of type ‘datetime.datetime’. Therefore, you can utilize all the functions provided by the Python standard library’s ‘datetime’ module.</p>
+<p>Properties</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.input.date">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.input.</span></span><span class="sig-name descname"><span class="pre">date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span></span></span><a class="headerlink" href="#scriptor.dialog.input.date" title="Permalink to this definition"></a></dt>
+<dd><p>Provide a input asking for datetime value.</p>
+</dd></dl>
+
+</section>
+<section id="strings">
+<h3>Strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h3>
+<p>The Scriptor also supports input fields in the form of strings. Input strings allow the receiving of one-line texts. Here is a simple example to ask for a name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
+<span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="nb">input</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">input</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;What is your name?&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.input.string">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.input.</span></span><span class="sig-name descname"><span class="pre">string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#scriptor.dialog.input.string" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="text">
+<h3>Text<a class="headerlink" href="#text" title="Permalink to this heading"></a></h3>
+<p>Not only single-line strings are possible, but also multi-line strings. The designated type for this purpose is the ‘input.text’ type. With this type, it is possible to receive multi-line strings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#### scriptor ####</span>
+<span class="kn">from</span> <span class="nn">scriptor.dialog</span> <span class="kn">import</span> <span class="nb">input</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">story</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">input</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;Tell me a story about you&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">story</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="scriptor.dialog.input.text">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scriptor.dialog.input.</span></span><span class="sig-name descname"><span class="pre">text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#scriptor.dialog.input.text" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="async.html" class="btn btn-neutral float-left" title="Async and await" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autoapi/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Mausbrand Informationssysteme GmbH.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
