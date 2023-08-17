@@ -158,7 +158,7 @@ import {usePythonStore} from "../stores/PythonStore";
 import {useMessageStore} from "../stores/message";
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-import {Request} from "@viur/viur-vue-utils";
+import {Request} from "@viur/vue-utils";
 import ModuleDetails from "./ModuleDetails.vue";
 import CodeEditor from "./CodeEditor.vue";
 import { useTabStore } from '@/stores/TabStore';

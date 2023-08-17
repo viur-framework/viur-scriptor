@@ -19,41 +19,42 @@
           <template #item-log="{ log }">
               <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>
                   <template slot:icon>
-                      <sl-icon class="log-child" name="info-circle"></sl-icon>
+                      <sl-icon class="log-child" name="info-circle" ></sl-icon>
                   </template>
-                  <div v-if="log.json">
+                  <div v-if="log.json" >
                       <vue-json-pretty :data="log.text" :deep="1" :showDoubleQuotes="false" :showIcon="true" :showLine="false" />
                   </div>
 
                   <div v-else>
                         <pre class="alert-child log-child log-child-text">
-                              <code>{{ log.text }}</code>
+                             
+                          {{ log.text }}
                         </pre>
                   </div>
               </sl-alert>
               <div v-else-if="log.type === 'alert'">
-                  <Alert :accept="acceptAlert" :text="log.text" :imageURL="log.image" ></Alert>
+                  <Alert :accept="acceptAlert" :text="log.text" :imageURL="log.image" :key="log.key" :entry="log"></Alert>
               </div>
 
               <div v-else-if="log.type === 'confirm'">
-                <Confirm :select="confirmSelect" :text="log.text" :title="log.title" :cancel="log.cancel" :imageURL="log.image"></Confirm>
+                <Confirm :select="confirmSelect" :text="log.text" :title="log.title" :cancel="log.cancel" :imageURL="log.image" :key="log.key" :entry="log"></Confirm>
               </div>
               <div v-else-if="log.type === 'input'">
-                <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty" :imageURL="log.image"></Input>
+                <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty" :imageURL="log.image" :key="log.key" :entry="log"></Input>
               </div>
               <div v-else-if="log.type === 'select'">
-                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image"></Select>
+                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image" :key="log.key"  :entry="log"></Select>
               </div>
               <div v-else-if="log.type === 'image_select'">
-                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image"></Select>
+                <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image" :key="log.key"  :entry="log"></Select>
               </div>
               <div v-else-if="log.type === 'diffcmp'">
-                <DiffCompare  :title="log.title" :values="log.changes" :imageURL="log.image"></DiffCompare>
+                <DiffCompare  :title="log.title" :values="log.changes" :imageURL="log.image" :key="log.key"></DiffCompare>
               </div>            
 
               
               <div v-else-if="log.type === 'table'">
-                <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image"></MyTable>
+                <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image" :key="log.key" :entry="log"></MyTable>
               </div>
 <!-- 			pyDialogs.get().push({
       type: "confirm",

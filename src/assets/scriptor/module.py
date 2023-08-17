@@ -193,8 +193,9 @@ def __getattr__(attr):
 			if not ("instance" in details):	
 				details["instance"] = details["type"](attr)
 				try:
-					if "functions" in details:
-						for f in details["functions"]:
+					if "functions" in details or "methods" in details:
+						_methods = details.get("functions", details.get("methods"))
+						for f in _methods:
 							code = f"""
 	route = f"/{attr}/{f['name']}"
 	result = None

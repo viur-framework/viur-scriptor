@@ -19,7 +19,7 @@
 import CodeTab from '@/components/CodeTab.vue';
 import { useGlobalStore } from '@/stores/global';
 import { usePythonStore } from '@/stores/PythonStore';
-import { Request } from '@viur/viur-vue-utils';
+import { Request } from '@viur/vue-utils';
 import { onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';

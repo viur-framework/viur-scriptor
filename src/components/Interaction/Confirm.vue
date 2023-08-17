@@ -4,8 +4,8 @@
       {{ props.title }}
     </div>
 
-    <div v-if="imageURL" class="interaction-img">
-			<img :src="imageURL"
+    <div v-if="props.imageURL" class="interaction-img">
+			<img :src="props.imageURL"
 			class="">
 		</div>
     
@@ -15,7 +15,7 @@
 
     <div slot="footer" class="container">
       <sl-button
-        :disabled="!render"
+        :disabled="!props.entry.render"
         size="small"
         variant="danger"
         :class="
@@ -28,7 +28,7 @@
         >{{ t("no") }}</sl-button
       >
       <sl-button
-        :disabled="!render"
+        :disabled="!props.entry.render"
         size="small"
         v-if="props.cancel"
         variant="neutral"
@@ -42,7 +42,7 @@
         >{{ t("cancel") }}
       </sl-button>
       <sl-button
-        :disabled="!render"
+        :disabled="!props.entry.render"
         size="small"
         variant="success"
         :class="
@@ -65,24 +65,33 @@
     select: Function;
     cancel: Boolean;
     imageURL: String; 
+    entry: {},
   }
 
   import { ref } from "vue";
   import { useI18n } from "vue-i18n";
 
-  const render = ref(true);
   const { t } = useI18n();
-  const selectedValue = ref<number>(undefined);
+
+  if (!props.entry.selectedValue)
+    props.entry.selectedValue = 0;
+
+  const selectedValue = ref<number>(props.entry.selectedValue);
 
   const props = defineProps<Props>();
 
   function confirm(state: number) {
-    if (!render.value) return;
+    if (!props.entry.render) return;
 
-    render.value = false;
+    props.entry.render = false;
     selectedValue.value = state;
+    props.entry.selectedValue = state;
+
     if (props.select) props.select(state);
   }
+
+  console.log(props)
+
 </script>
 
 <style scoped lang="less">

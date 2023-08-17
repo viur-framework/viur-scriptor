@@ -98,7 +98,7 @@
 
 <script lang="ts">
 import {ref, computed, defineProps, onMounted, watch, onBeforeMount} from 'vue'
-import {Request} from '@viur/viur-vue-utils';
+import {Request} from "@viur/vue-utils";
 import {useDialogStore} from "../../stores/dialogs";
 import {useI18n} from "vue-i18n";
 

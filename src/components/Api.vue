@@ -115,7 +115,7 @@
   </template>
 
   <script setup lang="ts">
-  import { Request } from "@viur/viur-vue-utils";
+import {Request} from "@viur/vue-utils";
   import {defineComponent, onMounted, ref, computed, onBeforeMount} from "vue";
 import { useGlobalStore } from "../stores/global";
 import VueJsonPretty from 'vue-json-pretty';

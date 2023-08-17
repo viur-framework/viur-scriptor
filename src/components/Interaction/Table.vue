@@ -11,7 +11,7 @@
               <thead>
                   <tr class="table-row">
                       <th v-if="selectable">
-                          <sl-checkbox @sl-change="(ev) => selectEntry(ev, -1)" :checked="mainSelected" :disabled="!render" v-if="multiple"></sl-checkbox>
+                          <sl-checkbox @sl-change="(ev) => selectEntry(ev, -1)" :checked="props.entry.mainSelected" :disabled="!props.entry.render" v-if="multiple"></sl-checkbox>
  
                       </th>
                       <th v-for="(column, index) in props.header" :key="index">
@@ -25,7 +25,7 @@
                   <tr class="table-row" v-for="(row, index) in visibleRows" :key="index">
                       
                       <td v-if="selectable">
-                        <sl-checkbox @sl-change="(ev) => selectEntry(ev, index)" :checked="row.selected" :disabled="!render"></sl-checkbox>
+                        <sl-checkbox @sl-change="(ev) => selectEntry(ev, index)" :checked="row.selected" :disabled="!props.entry.render"></sl-checkbox>
                       </td>
 
                       <td v-for="(value, index) in row" :key="index">{{ value }}
@@ -38,12 +38,12 @@
         
         </div>
 
-    <sl-page-btn @sl-page-change="changePage" :total='selectedEntries.length ' :page-size='perPageCount' :value='selectedPage'></sl-page-btn>
+    <sl-page-btn @sl-page-change="changePage" :total='selectedEntries.length ' :page-size='perPageCount' :value='props.entry.selectedPage'></sl-page-btn>
 
     
 
     <div slot="footer" v-if="props.selectable">
-      <sl-button size="small" v-show="render" variant="success" @click="send">
+      <sl-button size="small" v-show="props.entry.render" variant="success" @click="send">
         {{ t("send") }}
       </sl-button>
     </div>
@@ -57,7 +57,8 @@
     header: String[],
     rows: String[],
     selectable: Boolean,
-    sendEvent: Function
+    sendEvent: Function,
+    entry: {};
   }
 
   function deepClone(obj) {
@@ -68,60 +69,55 @@
   import { ref, computed } from "vue";
   import { useI18n } from "vue-i18n";
 
-  const render = ref(true);
+  //const render = ref(true);
   const { t } = useI18n();
-  const selectedValue = ref<number>(undefined);
   const props = defineProps<Props>();
 
-  const selectedEntries = ref(deepClone(props.rows));
-  for (let i = 0; i<props.rows.length; ++i) {
-      selectedEntries.value[i].selected = false;
-  }
+  if (props.entry.selectedEntries === undefined)
+ {
+      props.entry.selectedEntries = deepClone(props.rows);
+      for (let i = 0; i<props.rows.length; ++i) {
+        props.entry.selectedEntries[i].selected = false;
+    }
+    props.entry.selectedPage = 1;
+    props.entry.mainSelected = false;
+ }
+  let selectedEntries = props.entry.selectedEntries;
+
 
   const changePage = function(ev){
-    selectedPage.value = ev.detail.value ; 
+    props.entry.selectedPage = ev.detail.value ; 
   };
 
 
-  function confirm(state: number) {
-    if (!render.value) return;
-
-    render.value = false;
-    selectedValue.value = state;
-    if (props.select) props.select(state);
-  }
-
-  let mainSelected = ref(false);
-
-  let selectedPage = ref(1);
   const perPageCount = 100; 
 
   const pageCount = computed(function(){
-    return Math.ceil(selectedEntries.value.length / perPageCount);
+    return Math.ceil(selectedEntries.length / perPageCount);
   });
 
   const visibleRows = computed(function(){
-    const offset = (selectedPage.value-1) * perPageCount; 
-    console.log("offset", offset, selectedPage.value);
-    console.log("Min Value", Math.min(selectedEntries.value.length - offset, perPageCount));
+    const offset = (props.entry.selectedPage-1) * perPageCount; 
+    console.log("offset", offset, props.entry.selectedPage);
+    console.log("Min Value", Math.min(selectedEntries.length - offset, perPageCount));
 
-    const delta = selectedEntries.value.length - offset; 
+    const delta = selectedEntries.length - offset; 
     
-    return selectedEntries.value.slice(offset, offset+Math.min(delta, perPageCount))
+    return selectedEntries.slice(offset, offset+Math.min(delta, perPageCount))
   })
 
 
   function selectEntry(ev, index: number) {
-    index = (selectedPage.value-1)*perPageCount + index; 
+    index = (props.entry.selectedPage-1)*perPageCount + index; 
 
     if (index === -1)
     {
-      mainSelected.value = ev.target.checked;
+      props.entry.mainSelected = ev.target.checked;
 
       if (props.multiple)
       {
         for (let i = 0; i<props.rows.length; ++i) {
-          selectedEntries.value[i].selected = ev.target.checked;
+          selectedEntries[i].selected = ev.target.checked;
         }
       }
     }
@@ -129,13 +125,13 @@
     {
       if (ev.target.checked)
       {
-        selectedEntries.value[index].selected = true;
+        selectedEntries[index].selected = true;
 
         if (props.multiple)
         {
           let selectAll = true;
           for (let i = 0; i<props.rows.length; ++i) {
-            if (!selectedEntries.value[i].selected)
+            if (!selectedEntries[i].selected)
             {
               selectAll = false;
               break;
@@ -145,8 +141,8 @@
 
           if (selectAll)
           {
-          if (!mainSelected.value)
-            mainSelected.value = true;
+          if (!props.entry.mainSelected)
+          props.entry.mainSelected = true;
           }
         }
         else
@@ -154,19 +150,19 @@
           for (let i = 0; i<props.rows.length; ++i) {
             if (i != index)
             {
-             selectedEntries.value[i].selected = false;
+             selectedEntries[i].selected = false;
             }
           }
         }
       }
       else
       {
-        selectedEntries.value[index].selected = false;
+        selectedEntries[index].selected = false;
 
         if (props.multiple)
         {
-          if (mainSelected.value)
-            mainSelected.value = false;
+          if (props.entry.mainSelected)
+          props.entry.mainSelected = false;
         }
       }
     }
@@ -174,13 +170,16 @@
 
   function send()
   {
+    if (!props.entry.render)
+      return;
+
     // send selected data
     let selectIndexes = []; 
     if (props.selectable)
     {
 
       for (let i = 0; i<props.rows.length; ++i) {
-        if (selectedEntries.value[i].selected)
+        if (selectedEntries[i].selected)
         {
           selectIndexes.push(i);
         }
@@ -190,7 +189,7 @@
     if (props.sendEvent)
       props.sendEvent(selectIndexes); 
 
-      render.value = false;
+      props.entry.render = false;
   }
 
   if (!props.selectable)

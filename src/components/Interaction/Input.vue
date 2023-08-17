@@ -27,18 +27,18 @@
       v-if="props.type !== 'text'"
       :type="props.type + (props.useTime ? 'time-local' : '')"
       v-model="value"
-      :readonly="!render"
+      :readonly="!props.entry.render"
       @keypress.enter="send"
     ></sl-input>
     <sl-textarea
       v-else
       class="label-on-left"
       v-model="value"
-      :readonly="!render"
+      :readonly="!props.entry.render"
     ></sl-textarea>
 
     <div slot="footer">
-      <sl-button size="small" v-show="render" variant="success" @click="send">
+      <sl-button size="small" v-show="props.entry.render" variant="success" @click="send">
         {{ t("send") }}
       </sl-button>
     </div>
@@ -54,29 +54,34 @@
     empty: Boolean;
     useTime: Boolean;
     imageURL: String; 
+    entry: {},
 
   }
 
-  import { ref, watch } from "vue";
+  import { onMounted, ref, watch } from "vue";
   import { useI18n } from "vue-i18n";
 
-  const render = ref(true);
   const { t } = useI18n();
-  const selectedValue = ref<boolean>(undefined);
-  const value = ref<String>("");
 
   const error = ref<String>("");
 
   const props = defineProps<Props>();
+  const value = ref<String>(props.entry.saveValue);
 
   watch(value, (oldValue, newValue) => {
     if (value.value) {
       error.value = "";
     }
+
+    props.entry.saveValue = value.value;
+  });
+  onMounted(function(){
+    if (value.value != props.entry.saveValue)
+      value.value = props.entry.saveValue;
   });
 
   function send() {
-    if (!render.value) return;
+    if (!props.entry.render) return;
 
     if (!props.empty) {
       if (!value.value) {
@@ -90,8 +95,9 @@
       tmpValue = new Date(value.value).valueOf();
     }
 
+    props.entry.saveValue = value.value;
     props.select(tmpValue);
-    render.value = false;
+    props.entry.render = false;
   }
 </script>
 

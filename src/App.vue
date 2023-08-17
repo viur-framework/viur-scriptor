@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import Home from './components/Home.vue'
-import {Request} from "@viur/viur-vue-utils";
+import {Request} from "@viur/vue-utils";
 import {ref, onBeforeMount, inject} from 'vue';
 import {usePythonStore} from "./stores/PythonStore";
 import {useMessageStore} from "./stores/message";

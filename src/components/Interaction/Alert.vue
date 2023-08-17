@@ -15,7 +15,7 @@
     </p>
 
     <sl-button
-      :disabled="!render"
+      :disabled="!props.entry.render"
       variant="success"
       size="small"
       class="accept-button"
@@ -32,6 +32,7 @@
     text: String;
     accept: Function;
     imageURL: String; 
+    entry: {},
   }
 
 
@@ -47,9 +48,9 @@
 
 
   function hide() {
-    if (!render.value) return;
+    if (!props.entry.render) return;
 
-    render.value = false;
+    props.entry.render = false;
     if (props.accept) props.accept();
   }
 </script>

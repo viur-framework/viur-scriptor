@@ -15,11 +15,12 @@
 		    </p>
 
         <div v-if="!props.multiple" class="data-grid" label="Alignment">
-            <sl-button  :variant="selectedOption === index ? 'success' : 'default'" :disabled="!render"
+            <sl-button  :variant="selectedOption === index ? 'success' : 'default'" :disabled="!props.entry.render"
 						size="medium"
 						class="data-btn"
 						v-for="(option, index) in Object.keys(props.options)"
-						:key="option" @click="() => selectOption(option, index)">
+						:key="option" @click="() => selectOption(option, index)"
+            >
 				    <img v-if="props.options[option].image !== undefined" :src="props.options[option].image"
 						  class="data-btn-img"
 						  slot="prefix">
@@ -37,8 +38,9 @@
 		<div class="checkbox-container" v-else>
 			<template v-if="!isImageSelct">
         <sl-checkbox class="checkbox"
-						 :disabled="!render"
+						 :disabled="!props.entry.render"
 						 v-for="option in Object.keys(props.options)"
+             :checked="props.entry.entries.includes(option)"
 						 :key="option" @sl-change="(event) => selectRadioButton(event, option)">
 
                {{ option }}
@@ -54,7 +56,12 @@
             <figure>
               <img :src="props.options[option].image" alt="Bild 1">
               <figcaption>{{ props.options[option].text }}</figcaption>
-              <sl-checkbox class="checkbox" @sl-change="(event) => selectRadioButton(event, props.options[option].text)"></sl-checkbox>
+              <sl-checkbox 
+              :disabled="!props.entry.render" 
+              class="checkbox" 
+              @sl-change="(event) => selectRadioButton(event, props.options[option].text)" 
+              :checked="props.entry.entries.includes(props.options[option].text)">
+              </sl-checkbox>
             </figure>
 
 
@@ -73,7 +80,7 @@
 		  <sl-button
 				 size="small"
 				 variant="success"
-				 v-show="render"
+				 v-show="props.entry.render"
 				 @click="send">
 			  {{ t("send") }}
 		  </sl-button>
@@ -94,7 +101,7 @@ export interface Props {
     title: String,
     select: Function,
     imageURL: String; 
-
+    entry: {};
 }
 
 
@@ -114,19 +121,23 @@ const render = ref(true);
 const props = defineProps<Props>();
 const {t} = useI18n();
 
-const entries = [];
+if (props.entry.entries === undefined)
+  props.entry.entries = [];
 
-const selectedOption = ref(-1);
+if (props.entry.selectedOption === undefined)
+  props.entry.selectedOption = -1;
+
+const selectedOption = ref(props.entry.selectedOption);
 
 function selectOption(index: number, _index: number) {
 
-  if (!render.value)
+  if (!props.entry.render)
     return;
 
 
-  render.value = false;
+  props.entry.render = false;
   props.select(index);
-
+  props.entry.selectedOption = _index;
   selectedOption.value = _index;
 }
 
@@ -138,11 +149,11 @@ function selectRadioButton(event: UIEvent, index: string) {
     return;
 
   if (event.target.checked)
-    entries.push(index);
+    props.entry.entries.push(index);
   else {
-    const _index = entries.indexOf(index);
+    const _index = props.entry.entries.indexOf(index);
     if (_index !== -1) {
-      entries.splice(_index, 1);
+      props.entry.entries.splice(_index, 1);
     }
   }
 }
@@ -151,11 +162,11 @@ function send() {
   if (!props.multiple)
     return;
 
-  if (!render.value)
+  if (!props.entry.render)
     return;
 
-  render.value = false;
-  props.select(entries);
+  props.entry.render = false;
+  props.select([...props.entry.entries]);
 }
 
 
