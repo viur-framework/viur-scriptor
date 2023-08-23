@@ -169,6 +169,7 @@ import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import Api from './Api.vue';
 import { useGlobalStore } from '../stores/global';
+import {} from "@viur/vue-utils/utils/handlers"
 
 export default {
   name: 'Home',
