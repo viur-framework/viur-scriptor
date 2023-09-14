@@ -4,7 +4,7 @@
       {{ props.title }}
     </div>
 
-    
+
         <div ref="tableWrapper" class="wrap" @scroll="handleScroll">
         <sl-table-wrapper>
           <table>
@@ -12,18 +12,18 @@
                   <tr class="table-row">
                       <th v-if="selectable">
                           <sl-checkbox @sl-change="(ev) => selectEntry(ev, -1)" :checked="props.entry.mainSelected" :disabled="!props.entry.render" v-if="multiple"></sl-checkbox>
- 
+
                       </th>
                       <th v-for="(column, index) in props.header" :key="index">
                           {{ column }}
                       </th>
                   </tr>
               </thead>
-          
+
               <tbody>
-                
+
                   <tr class="table-row" v-for="(row, index) in visibleRows" :key="index">
-                      
+
                       <td v-if="selectable">
                         <sl-checkbox @sl-change="(ev) => selectEntry(ev, index)" :checked="row.selected" :disabled="!props.entry.render"></sl-checkbox>
                       </td>
@@ -35,12 +35,12 @@
           </table>
         </sl-table-wrapper>
 
-        
+
         </div>
 
     <sl-page-btn @sl-page-change="changePage" :total='selectedEntries.length ' :page-size='perPageCount' :value='props.entry.selectedPage'></sl-page-btn>
 
-    
+
 
     <div slot="footer" v-if="props.selectable">
       <sl-button size="small" v-show="props.entry.render" variant="success" @click="send">
@@ -86,29 +86,29 @@
 
 
   const changePage = function(ev){
-    props.entry.selectedPage = ev.detail.value ; 
+    props.entry.selectedPage = ev.detail.value ;
   };
 
 
-  const perPageCount = 100; 
+  const perPageCount = 100;
 
   const pageCount = computed(function(){
     return Math.ceil(selectedEntries.length / perPageCount);
   });
 
   const visibleRows = computed(function(){
-    const offset = (props.entry.selectedPage-1) * perPageCount; 
+    const offset = (props.entry.selectedPage-1) * perPageCount;
     console.log("offset", offset, props.entry.selectedPage);
     console.log("Min Value", Math.min(selectedEntries.length - offset, perPageCount));
 
-    const delta = selectedEntries.length - offset; 
-    
+    const delta = selectedEntries.length - offset;
+
     return selectedEntries.slice(offset, offset+Math.min(delta, perPageCount))
   })
 
 
   function selectEntry(ev, index: number) {
-    index = (props.entry.selectedPage-1)*perPageCount + index; 
+    index = (props.entry.selectedPage-1)*perPageCount + index;
 
     if (index === -1)
     {
@@ -174,7 +174,7 @@
       return;
 
     // send selected data
-    let selectIndexes = []; 
+    let selectIndexes = [];
     if (props.selectable)
     {
 
@@ -187,13 +187,13 @@
     }
 
     if (props.sendEvent)
-      props.sendEvent(selectIndexes); 
+      props.sendEvent(selectIndexes);
 
       props.entry.render = false;
   }
 
-  if (!props.selectable)
-    props.sendEvent([]); 
+  //if (!props.selectable)
+    //props.sendEvent([]);
 </script>
 
 <style scoped lang="less">
@@ -231,10 +231,10 @@ sl-table-wrapper {
   max-height: auto;
 }
 sl-table {
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 table {
-  overflow-y: auto; 
+  overflow-y: auto;
   max-height: auto;
   border-collapse: collapse;
   width: 100%;
