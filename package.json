@@ -25,7 +25,7 @@
     "core-js": "^3.8.3",
     "highlight.js": "^11.8.0",
     "pinia": "^2.0.23",
-    "pyodide": "^0.21.2",
+    "pyodide": "^0.24.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-visualizer": "^5.8.3",
