@@ -1,6 +1,6 @@
 <template>
 	<Teleport to="head">
-    	<title> {{ 'Scriptor v' + version }}</title>
+    	<title> {{ 'Scriptor ' + version }}</title>
 	</Teleport>
 
 	<template v-if="isLoggedIn && !isLoading">

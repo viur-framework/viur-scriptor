@@ -1,5 +1,5 @@
 
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.22.0/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.24.0/full/pyodide.js");
 
 let isPyLoaded = false;
 
@@ -34,17 +34,17 @@ function run_end(id, res) {
 }
 
 let manager = {
-	allocId: 0, 
-	currentProcessId: 0, 
+	allocId: 0,
+	currentProcessId: 0,
 	tasks: {},
 	params: {},
 	resultValue: null,
 	copyResult: function() {
-		return structuredClone(this.resultValue); 
+		return structuredClone(this.resultValue);
 	},
 
 	reset: function() {
-		this.resultValue = undefined; 
+		this.resultValue = undefined;
 	},
 
 	intervalEvent: null,
@@ -109,25 +109,25 @@ async function runScript(python, id) {
 	//let results = await self.pyodide.globals.get("pyeval")(python, empty_dict)
 	//empty_dict.destroy();
 
-	manager.currentProcessId = ++manager.allocId; 
+	manager.currentProcessId = ++manager.allocId;
 	manager.tasks[manager.currentProcessId] = {
 		"promise": self.pyodide.globals.get("pyeval")(python, empty_dict),
 		"dict": empty_dict,
 		"done": false,
 	}
 
-	let processId = manager.currentProcessId; 
+	let processId = manager.currentProcessId;
 
 	manager.tasks[processId]["promise"].then(() => {
 		manager.tasks[processId]["done"] = true;
 		manager.tasks[processId]["dict"].destroy();
-		run_end(id); 
+		run_end(id);
 
 	}).catch((error) => {
 		manager.tasks[processId]["done"] = true;
 		manager.tasks[processId]["dict"].destroy();
 		console.log("PY RUN ERR", error)
-		delete manager.tasks[processId]; 
+		delete manager.tasks[processId];
 
 		err(id, error.message)
 	})
@@ -248,22 +248,22 @@ self.onmessage = async (event) => {
 		end(id);
 	}
 	else if (id === "_setDirectoryHandle") {
-		manager.resultValue = context.handle; 
+		manager.resultValue = context.handle;
 	}
 	else if (id === "_setFileHandle") {
-		manager.resultValue = context.handle; 
-	}	
-	else if (id === "_setOpenFilePickerHandle") 
+		manager.resultValue = context.handle;
+	}
+	else if (id === "_setOpenFilePickerHandle")
 	{
-		manager.resultValue = context.handle; 
+		manager.resultValue = context.handle;
 	}
   	else if (id === "_sendDialogSignal") {
-		manager.resultValue = context.data; 
-		end(id); 
+		manager.resultValue = context.data;
+		end(id);
 	}
 	else if (id === "setParams") {
-		manager.params = context.params; 
-		end(id); 
+		manager.params = context.params;
+		end(id);
 	}
   else {
 
@@ -278,11 +278,11 @@ self.onmessage = async (event) => {
       throw new Error("Python is not loaded")
     }
 
-		manager.resultValue = null; 
+		manager.resultValue = null;
 
 		await self.pyodide.registerJsModule("manager", manager);
 
-		//end(id); 
+		//end(id);
 		await runScript(python, id)
   }
 

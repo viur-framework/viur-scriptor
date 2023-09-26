@@ -5,7 +5,7 @@
         <img :src="imageURL"
         class="">
       </div>
-    
+
     <div slot="header">
       {{ props.title }}
     </div>
@@ -53,7 +53,7 @@
     select: Function;
     empty: Boolean;
     useTime: Boolean;
-    imageURL: String; 
+    imageURL: String;
     entry: {},
 
   }
@@ -66,6 +66,9 @@
   const error = ref<String>("");
 
   const props = defineProps<Props>();
+  if (props.entry.saveValue === undefined)
+	  props.entry.saveValue = "";
+
   const value = ref<String>(props.entry.saveValue);
 
   watch(value, (oldValue, newValue) => {
