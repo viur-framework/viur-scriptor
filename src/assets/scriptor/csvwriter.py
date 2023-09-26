@@ -94,13 +94,13 @@ class FileSystemCsvWriter(FilePickerWriter):
 		self._writer: MemoryWriter = None
 		self._delimiter = ";"
 		self._formatter = None
-	
+
 	def set_formatter(self, formatter: callable):
 		self._formatter = formatter
 
 	def set_columns(self, columns: list[str]):
 		self._columns = columns
-	
+
 	def set_delimiter(self, delimiter: str):
 		self._delimiter = delimiter
 
@@ -113,7 +113,7 @@ class FileSystemCsvWriter(FilePickerWriter):
 			## Flushing the header
 			await super().write(content)
 
-	
+
 		self._writer.clear()
 
 	async def __aenter__(self):
