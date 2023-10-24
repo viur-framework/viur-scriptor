@@ -76,16 +76,21 @@ const previewText = computed(function() {
     if (!props.data.showInputText)
         return props.data.prefix;
 
-    return props.data.prefix + inputText.value;
+
+    return props.data.prefix + inputText.value + (props.data.suffixText ? props.data.suffixText : "");
 });
 
 if (props.data.regexStringExpression) {
     const regex = new RegExp(props.data.regexStringExpression);
     watch(previewText, () => {
 
-        const text = props.data.prefix + inputText.value;
+        let text = props.data.prefix + inputText.value;
 
-        if (regex.test(inputText.value)) {
+		if (props.data.suffixText)
+			text = inputText.value + props.data.suffixText;
+
+        //if (regex.test(inputText.value)) {
+        if (regex.test(text)) {
             //dialog.value.
             inputTextColorClass.value = "valid-text";
         }
@@ -105,7 +110,7 @@ function accept() {
 
     if (props.data.acceptEvent) {
 		try {
-			props.data.acceptEvent(inputText.value);
+			props.data.acceptEvent(inputText.value + (props.data.suffixText ? props.data.suffixText : ""));
 		}
 		catch (e) {
 			props.data.acceptEvent();

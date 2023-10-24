@@ -275,6 +275,7 @@ export default {
 					buttonText: t("create"),
 					showCancelButton: false,
 					regexStringExpression: "^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$",
+					suffixText: ".py"
 				});
 			}
 			else if (item.value === "add-directory") {
