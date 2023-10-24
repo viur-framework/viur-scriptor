@@ -124,7 +124,7 @@ class TreeModule(ExtendedModule):
 
 	async def preview(self, group: str, params: dict = None, **kwargs):
 		return await super().preview(params=params, group=group, **kwargs)
-	
+
 
 	async def list_root_nodes(self, **kwargs):
 		return await viur.request.get(f"/{self.name}/listRootNodes", **kwargs)
@@ -145,7 +145,7 @@ class TreeModule(ExtendedModule):
 				for grp in group:
 					await download(key, grp)
 				return
-			
+
 			_params = {"parententry": key}
 			if params:
 				_params.update(params)
@@ -161,15 +161,16 @@ class TreeModule(ExtendedModule):
 			root_nodes = [root_node_key]
 		else:
 			root_nodes = await self.list_root_nodes(**kwargs)
-	
+
 		for root_node in root_nodes:
 			await download(root_node["key"])
 
 
-def __getattr__(attr):
+def __getattr__(attr: str):
 	#console.log("Calling __getattr__")
 	modules_resolver = {
-		"tree": TreeModule, 
+		"tree": TreeModule,
+		"hierarchy": TreeModule,
 		"list": ListModule,
 		"singleton": SingletonModule
 	}
@@ -182,7 +183,7 @@ def __getattr__(attr):
 				module_type = value
 				break
 
-		
+
 		# If the module has a registered type
 		if module_type:
 
@@ -190,7 +191,7 @@ def __getattr__(attr):
 			if not ("type" in details):
 				details["type"] = module_type
 
-			if not ("instance" in details):	
+			if not ("instance" in details):
 				details["instance"] = details["type"](attr)
 				try:
 					if "functions" in details or "methods" in details:
@@ -211,7 +212,7 @@ def __getattr__(attr):
 	if "scriptor_request_method" in kwargs:
 		kwargs.pop("scriptor_request_method")
 	if "scriptor_request_secure" in kwargs:
-		kwargs.pop("scriptor_request_secure")	
+		kwargs.pop("scriptor_request_secure")
 	if "scriptor_request_renderer" in kwargs:
 		kwargs.pop("scriptor_request_renderer")
 	#console.log("route callback", route)
