@@ -31,6 +31,8 @@ import router from "./router/index"
 
 import en from "./translations/en"
 import de from "./translations/de"
+import nl from "./translations/nl"
+import fr from "./translations/fr"
 
 const app = createApp(App);
 app.config.compilerOptions.isCustomElement = tag => tag.startsWith('sl-');
@@ -42,7 +44,7 @@ const i18n = createI18n({
 	legacy: false,
     locale: 'de', // set locale
     fallbackLocale: 'en', // set fallback locale
-	messages: {"en": en, "de": de}
+	messages: {"en": en, "de": de, "nl": nl, "fr": fr}
 })
 
 app.use(VueHighlightJS);

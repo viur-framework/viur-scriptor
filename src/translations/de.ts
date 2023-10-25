@@ -126,6 +126,19 @@ export default {
 	alert: "Alert",
 	send: "Abschicken",
 	share: "Teilen",
-	diff: "Änderungen"
+	diff: "Änderungen",
+	settings: {
+		title: "Einstellungen",
+		autosave: "Automatisches Speichern",
+		language: "Sprache",
+		interval: "Interval (in Minuten)"
+
+	},
+	docs: "Dokumentation",
+	step: "Schritt",
+	from: "von",
+	link: {
+		"copy": "Die URL wurde in die Zwischenablage kopiert."
+	}
 }
 

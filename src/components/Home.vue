@@ -93,8 +93,8 @@
 				   variant="primary"
 				   href="https://docs.scriptor.viur.dev/"
 				   target="_blank"
-					title="Documentation">
-			Documentation
+					:title="t('docs')">
+			{{ t('docs') }}
 		</sl-button>
 
 		<sl-button v-show="!pythonStore.isExecuting"
@@ -108,6 +108,7 @@
 
 		<div class="spacer"></div>
 
+		<Settings ref="settingsRef" />
 
 		<sl-button v-show="!pythonStore.isExecuting"
 				   size="small"
@@ -136,12 +137,13 @@
 			{{ t("run") }}
 		</sl-button>
 
-		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">Cancel</sl-button>
+		<sl-button v-show="pythonStore.isExecuting" size="small" @click="interruptCode" variant="primary">{{ t('cancel')}}</sl-button>
 
 
 
 
 	</footer>
+
 
 </template>
 
@@ -170,10 +172,11 @@ import { useRouter } from 'vue-router';
 import Api from './Api.vue';
 import { useGlobalStore } from '../stores/global';
 import {} from "@viur/vue-utils/utils/handlers"
+import Settings from "./Settings.vue"
 
 export default {
   name: 'Home',
-  components: {CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, Api},
+  components: {Settings, CodeTab, CodeEditor, FileTree, LoadingSpinner, VueJsonPretty, ModuleDetails, Api},
   setup() {
 	const executor = ref();
 	const log = ref([]);
@@ -185,8 +188,9 @@ export default {
 	const messageStore = useMessageStore();
 	const tabStore = useTabStore();
 	const route = useRoute();
+	const settingsRef = ref<Settings>();
 
-
+	const showSetting = ref<boolean>(false);
 
 	const { t } = useI18n() // call `useI18n`, and spread `t` from  `useI18n` returning
 
@@ -238,6 +242,7 @@ export default {
 		tabStore.tabGroup = tabGroup.value;
 	});
 
+
 	function saveScript(){
 		//if (!unsaved.value)
 		//	return;
@@ -246,10 +251,13 @@ export default {
 			if (tabStore.selectedTab in tabStore.tabMap) {
 				tree.value.helper.saveCode(tabStore.selectedTab, tabStore.getTabCode(tabStore.selectedTab), function(){
 					//unsaved.value = false;
+					tabStore.tabMap[tabStore.selectedTab].needSave = false;
 				});
 			}
 		}
 	}
+	tabStore.setSaveCallback(() => saveScript());
+
 
 	function shareScript(){
 		if (!route.query.key) {
@@ -265,7 +273,7 @@ export default {
 		if (import.meta.env.MODE === "production")
 			_url = window.location.origin+"/scriptor/index.html"+"#"+"/runner/"+route.query.key;
 
-		messageStore.addMessage("success", "The shared link got copied into the clipboard.", "")
+		messageStore.addMessage("success", t('link.copy'), "")
 		navigator.clipboard.writeText(_url);
 	}
 
@@ -291,10 +299,22 @@ export default {
 		messageStore.state.opened = !messageStore.state.opened;
 	}
 
+	function showSettings() {
+		showSetting.value = !showSetting.value;
+		console.log(settingsRef.value)
+		if (showSetting.value)
+			settingsRef.value.show()
+		else
+			settingsRef.value.hide()
+	}
+
 
     let modules = ref([]);
 
 	let globalStore = useGlobalStore();
+    globalStore.setCancelAutoSaveEvent(tabStore.cancelSaveEvent)
+    globalStore.setStartAutoSaveEvent(tabStore.startSaveEvent)
+
     onBeforeMount(async function(){
       let answ = await Request.get(`/vi/config`);
       let data = await answ.json();
@@ -344,6 +364,9 @@ export default {
 	  interruptCode,
 	  showGeneralLogs,
 	  pythonStore,
+		  showSettings,
+		  showSetting,
+		  settingsRef,
 	  canShare: computed(function(){
 		return route.query.key;
 	  }),
