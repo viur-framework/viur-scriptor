@@ -34,8 +34,8 @@ export default {
 		rename: "Renommer",
 		download: "Télécharger",
 		duplicate: "Duplicata",
-		delete: "Supprimer"
-
+		delete: "Supprimer",
+		reformat: "Format (Tabulations -> Espaces)"
 	},
 	tab: {
 		file: {
@@ -139,6 +139,10 @@ export default {
 	from: "de",
 	link: {
 		"copy": "Le lien partagé a été copié dans le presse-papiers."
+	},
+	close: "Fermer",
+	network: {
+		error: "Erreur de réseau"
 	}
 }
 

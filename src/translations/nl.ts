@@ -34,8 +34,8 @@ export default {
 		rename: "Hernoem",
 		download: "Downloaden",
 		duplicate: "Dubbele",
-		delete: "Verwijder"
-
+		delete: "Verwijder",
+		reformat: "Formatteren (Tabs -> Spaties)"
 	},
 	tab: {
 		file: {
@@ -138,6 +138,10 @@ export default {
 	from: "van",
 	link: {
 		"copy": "De gedeelde link werd gekopieerd naar het klembord."
+	},
+	close: "Sluiten",
+	network: {
+		error: "Netwerkfout"
 	}
 }
 

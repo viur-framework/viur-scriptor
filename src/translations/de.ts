@@ -34,8 +34,8 @@ export default {
 		rename: "Umbenennen",
 		download: "Herunterladen",
 		duplicate: "Duplizieren",
-		delete: "Löschen"
-
+		delete: "Löschen",
+		reformat: "Formatieren (Tabs -> Spaces)"
 	},
 	tab: {
 		file: {
@@ -139,6 +139,10 @@ export default {
 	from: "von",
 	link: {
 		"copy": "Die URL wurde in die Zwischenablage kopiert."
+	},
+	close: "Schließen",
+	network: {
+		error: "Netzwerkfehler"
 	}
 }
 

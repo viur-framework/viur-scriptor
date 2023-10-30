@@ -34,7 +34,8 @@ export default {
 		rename: "Rename",
 		download: "Download",
 		duplicate: "Duplicate",
-		delete: "Delete"
+		delete: "Delete",
+		reformat: "Format (Tabs -> Spaces)"
 
 	},
 	tab: {
@@ -139,6 +140,10 @@ export default {
 	from: "from",
 	link: {
 		"copy": "The shared link got copied into the clipboard."
+	},
+	close: "Close",
+	network: {
+		error: "Network error"
 	}
 }
 

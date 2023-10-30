@@ -514,7 +514,7 @@ export default {
 									let entry = res["skellist"][index];
 
 									let resolveChildrenLeaf = async function (parents = [], parentkey) {
-										let resp_leaf = await Request.list("script2", {
+										let resp_leaf = await Request.list("script", {
 											group: "leaf",
 											dataObj: {
 												parententry: parentkey,

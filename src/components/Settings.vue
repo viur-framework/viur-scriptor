@@ -45,7 +45,7 @@
 	<sl-button size="small"
 				   @click="() => show()"
 				   variant="white"
-				   :title="t('logs')"
+				   :title="t('settings.title')"
 				   class="square-btn">
 		<sl-icon name="system">
 		</sl-icon>
@@ -57,7 +57,7 @@
         <sl-radio-button v-for="(lang, index) in supportedLocales" :value="lang" style="margin-right: 5px" @click="() => store.setLanguage(lang)">{{ lang.toUpperCase() }}</sl-radio-button>
       </sl-radio-group>
 
-		<sl-button slot="footer" variant="primary" @click="dialogRef.hide()">Close</sl-button>
+		<sl-button slot="footer" variant="primary" @click="dialogRef.hide()">{{ t('close') }}</sl-button>
 	</sl-dialog>
 </template>
 
