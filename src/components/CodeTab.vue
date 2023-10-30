@@ -4,7 +4,7 @@
   <div class="header" v-if="progressBarDetails.step > 0">
     <sl-progress-bar :value="progressBarDetails.total"></sl-progress-bar>
     <div class="steps">
-      {{  "Schritt " + progressBarDetails.step + " von " + progressBarDetails.maxStep }}
+      {{  t('step') + " " + progressBarDetails.step + " " + t('') + " " + progressBarDetails.maxStep }}
     </div>
     <div class="current-info">
       {{ progressBarDetails.txt }}
@@ -27,7 +27,7 @@
 
                   <div v-else>
                         <pre class="alert-child log-child log-child-text">
-                             
+
                           {{ log.text }}
                         </pre>
                   </div>
@@ -50,9 +50,9 @@
               </div>
               <div v-else-if="log.type === 'diffcmp'">
                 <DiffCompare  :title="log.title" :values="log.changes" :imageURL="log.image" :key="log.key"></DiffCompare>
-              </div>            
+              </div>
 
-              
+
               <div v-else-if="log.type === 'table'">
                 <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image" :key="log.key" :entry="log"></MyTable>
               </div>
@@ -89,6 +89,7 @@ import DiffCompare from "../components/Interaction/DiffCompare.vue";
 import MyTable from "../components/Interaction/Table.vue";
 
 import { ProgressbarDetails } from '@/usepython/dist/interfaces';
+import {useI18n} from "vue-i18n";
     const pythonStore = usePythonStore();
 
     interface Props {
@@ -98,6 +99,8 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
     const props = withDefaults(defineProps<Props>(), {
         keyValue: ''
     })
+
+  const {t} = useI18n();
 
     let tabStore = useTabStore();
 
@@ -125,7 +128,7 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
       pythonStore.py.sendDialogResult("select", value).then(() => {
       });
     }
-  
+
     function sendTable(value: any) {
       pythonStore.py.sendDialogResult("table", value).then(() => {
       });
@@ -170,8 +173,8 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
 		return str;
 	}
 
-  const logStore = useLogStore(); 
- 
+  const logStore = useLogStore();
+
 
   const clearLog = function(){
 		  logItems.value = [];
@@ -198,8 +201,8 @@ import { ProgressbarDetails } from '@/usepython/dist/interfaces';
       total: 100,
       step: -1,
       maxStep: -1,
-      txt: "" 
-    }; 
+      txt: ""
+    };
   })
 
 </script>

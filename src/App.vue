@@ -2,7 +2,9 @@
 	<Teleport to="head">
     	<title> {{ 'Scriptor ' + version }}</title>
 	</Teleport>
-
+	<Teleport to="body">
+		<NetworkError v-show="canShow" :content="globalStore.getError()" :title="globalStore.getErrorTitle()"></NetworkError>
+	</Teleport>
 	<template v-if="isLoggedIn && !isLoading">
 		<DialogDrawer></DialogDrawer>
 		<MessageDrawer/>
@@ -24,7 +26,7 @@
 <script lang="ts">
 import Home from './components/Home.vue'
 import {Request} from "@viur/vue-utils";
-import {ref, onBeforeMount, inject} from 'vue';
+import {ref, onBeforeMount, inject, computed} from 'vue';
 import {usePythonStore} from "./stores/PythonStore";
 import {useMessageStore} from "./stores/message";
 import LoadingSpinner from "./components/common/LoadingSpinner.vue";
@@ -33,9 +35,11 @@ import DialogDrawer from './components/Dialogs/DialogDrawer.vue';
 import { useDialogStore } from './stores/dialogs';
 import {useI18n} from "vue-i18n";
 import {useGlobalStore} from "./stores/global";
+import NetworkError from "@/components/NetworkError.vue";
 export default {
   name: 'App',
   components: {
+	  NetworkError,
 	  Home,
 	  LoadingSpinner,
 	  MessageDrawer,
@@ -54,6 +58,11 @@ export default {
 
 	  const x = useDialogStore();
 
+	  const canShow = computed(function (){
+		  return globalStore.getError() !== "";
+	  });
+
+
 	  const {t} = useI18n();
 
 	  let pythonStore = usePythonStore();
@@ -66,8 +75,10 @@ export default {
 	  }
 
 	  async function checkLogin(allowInit = false) {
+			  const route = "/vi/user/view/self";
+
 		try {
-			  let resp = await Request.get("/vi/user/view/self");
+			  let resp = await Request.get(route);
 			  let data = await resp.json();
 			  isLoggedIn.value = true;
 			  global.user = data.values;
@@ -82,6 +93,12 @@ export default {
 		  catch (error) {
 			  isLoggedIn.value = false;
 			  messageStore.addMessage("error", t("error.title.login"), t("error.text.login"));
+
+			  console.log(error.statusText)
+
+			  globalStore.setErrorText(await error.response.json())
+			  globalStore.setErrorStatus(error.statusCode)
+			  globalStore.setErrorTitle("" + error.statusCode + " " + error.statusText)
 		  }
 	  }
 
@@ -92,7 +109,7 @@ export default {
 		  }, 1000 * 60 * 5)
 	  });
 
-	  return {isLoggedIn, isLoading, globalStore, version}
+	  return {isLoggedIn, isLoading, globalStore, version, canShow}
   }
 }
 </script>

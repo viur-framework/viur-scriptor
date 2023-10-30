@@ -17,7 +17,7 @@ export interface DialogInterface {
     regexStringExpression?: string;
     closeOnAccept?: boolean;
 	initialText: string;
-
+	suffixText: string;
 }
 
 export const useDialogStore = defineStore("dialogStore", () => {

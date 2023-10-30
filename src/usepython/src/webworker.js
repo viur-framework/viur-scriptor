@@ -38,6 +38,7 @@ let manager = {
 	currentProcessId: 0,
 	tasks: {},
 	params: {},
+	language: "en",
 	resultValue: null,
 	copyResult: function() {
 		return structuredClone(this.resultValue);
@@ -50,7 +51,7 @@ let manager = {
 	intervalEvent: null,
 	sleep: async function sleep(time) {
 		return new Promise((resolve, _) => setTimeout(resolve, time))
-	  }
+	}
 }
 
 async function loadPyodideAndPackages(id, pyoPackages, packages, initCode, transformCode) {
@@ -263,6 +264,10 @@ self.onmessage = async (event) => {
 	}
 	else if (id === "setParams") {
 		manager.params = context.params;
+		end(id);
+	}
+	else if (id === "setLanguage") {
+		manager.language = context.language;
 		end(id);
 	}
   else {

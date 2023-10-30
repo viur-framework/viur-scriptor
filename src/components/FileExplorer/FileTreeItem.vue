@@ -75,6 +75,13 @@
 
 					</sl-menu-item>
 
+					<sl-menu-item v-if="!props.model.rootNode && !isFolder" class="dropdown-item-new" value="reformat">
+						<sl-icon slot="prefix" library="bootstrap" name="trash"></sl-icon>
+
+						{{ t('actions.reformat') }}
+
+					</sl-menu-item>
+
 
 				</sl-menu>
 			  </sl-dropdown>
@@ -100,6 +107,7 @@
 import {ref, computed, defineProps, onMounted, watch, onBeforeMount} from 'vue'
 import {Request} from "@viur/vue-utils";
 import {useDialogStore} from "../../stores/dialogs";
+import {useMessageStore} from "../../stores/message";
 import {useI18n} from "vue-i18n";
 
 export default {
@@ -116,6 +124,7 @@ export default {
 		const isFolder = computed(() => {
 			return props.model.parent
 		})
+		const messageStore = useMessageStore();
 
     const canRender = computed(() => {
       return props.model.renderElement
@@ -163,6 +172,34 @@ export default {
 				props.helper.move(props.model.key, key);
 			}
 		}
+
+function reformatPythonCode(inputCode) {
+  const lines = inputCode.split('\n');
+
+  let formattedScript = '';
+
+  let indentationLevel = 0;
+
+  for (const line of lines) {
+    const trimmedLine = line.trimLeft();
+
+    if (line.startsWith('\t')) {
+      const tabsCount = trimmedLine.length / 4;
+
+      for (let i = 0; i < tabsCount; i++) {
+        formattedScript += '    ';
+      }
+
+      formattedScript += trimmedLine.slice(tabsCount * 4);
+
+      formattedScript += '\n';
+    } else {
+      formattedScript += line + '\n';
+    }
+  }
+
+  return formattedScript;
+}
 
 		function update() {
 			if (props.model.parent) {
@@ -227,7 +264,7 @@ export default {
 					a.click();
 					window.URL.revokeObjectURL(url);
 				}).catch((e) => {
-
+					messageStore.addMessage("error", t("tree.action.download.failed.title"), "")
 				})
 
 			}
@@ -249,8 +286,30 @@ export default {
 					initialText: props.model.label,
 					regexStringExpression: isFolder.value ? "^[a-zA-Z0-9äöüÄÖÜ_-]*$" : "^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$",
 				});
+			}
+			else if (item.value === "reformat") {
+				Request.view("script", props.model.key, {group:"leaf"}).then(async function(response) {
+					const data = (await response.json()).values;
+					let code: String = reformatPythonCode(data["script"]);
 
-
+					Request.edit("script", props.model.key,  {
+						dataObj: {
+							__mode__: "edit",
+							script: code
+						},
+						group: "leaf"
+					}).then(async function(resp) {
+						let data = (await resp.json());
+						console.log(data);
+						if (data["action"] === "editSuccess") {
+							messageStore.addMessage("success", t("tree.action.reformat.success.title"), "")
+						}
+					}).catch((e) => {
+						messageStore.addMessage("error", t("tree.action.reformat.failed.title"), "")
+					})
+				}).catch((e) => {
+					messageStore.addMessage("error", t("tree.action.download.failed.title"), "")
+				})
 			}
 			else if (item.value === "delete") {
 				dialogStore.open({
@@ -259,7 +318,7 @@ export default {
 					type:isFolder.value ? "directory" : "file",
 					acceptEvent: (text) => props.helper.remove(props.model.key),
 					showInputText: false,
-					prefix: props.helper.getPath(props.model.key, true),
+					prefix: props.helper.getPath(props.model.key, !isFolder.value),
 					buttonText: t("delete"),
 					showCancelButton: false,
 				});
@@ -275,6 +334,7 @@ export default {
 					buttonText: t("create"),
 					showCancelButton: false,
 					regexStringExpression: "^[a-zA-Z0-9äöüÄÖÜ_-]+?.py$",
+					suffixText: ".py"
 				});
 			}
 			else if (item.value === "add-directory") {

@@ -4,6 +4,8 @@ import { usePython} from "usepython";
 import { SlTabGroup } from '@viur/viur-shoelace';
 import { usePythonStore } from './PythonStore';
 import { useRouter, useRoute } from 'vue-router';
+import { useGlobalStore} from "./global";
+import {glob} from "typedoc/dist/lib/utils/fs";
 
 
 interface Tab
@@ -17,15 +19,16 @@ interface Tab
     error?: string,
     leftNode?: Tab,
     rightNode?: Tab,
-    
+	previousCode?: string,
+	needSave?: boolean
 };
 
 
 export const useTabStore = defineStore('tab', () => {
 
     const pythonStore = usePythonStore();
-    const router = useRouter(); 
-    const route = useRoute(); 
+    const router = useRouter();
+    const route = useRoute();
 
 	const tabMap = ref<Record<string, Tab>>({});
     const tabList = ref([]);
@@ -34,9 +37,67 @@ export const useTabStore = defineStore('tab', () => {
 
     const selectedTab = ref<string>();
     const timeoutEvent = ref<NodeJS.Timeout>();
+    const saveEvent = ref<NodeJS.Timeout>();
+	const globalStore = useGlobalStore();
+	let callback = ref<Function>(null);
+	function cancelSaveEvent() {
+		if (saveEvent.value) {
+			clearTimeout(saveEvent.value);
+			saveEvent.value = undefined;
+		}
+	}
+
+	function startSaveEvent() {
+		if (!tabMap.value[selectedTab.value])
+			return
+
+		if (tabMap.value[selectedTab.value].needSave && !saveEvent.value) {
+			saveCurrentTabCode();
+		}
+	}
+
+	function saveCurrentTabCode() {
+		console.log("starting event");
+		saveEvent.value = setTimeout(function () {
+			console.log("save timeout")
+			callback.value();
+			saveEvent.value = undefined;
+			}, globalStore.getAutoSaveInterval() * 1000);
+	}
 
     function updateCode(key: string, code: string) {
-        tabMap.value[key].code = code;
+		if (tabMap.value[key].code !== code) {
+			tabMap.value[key].previousCode = tabMap.value[key].code;
+			tabMap.value[key].code = code;
+			tabMap.value[key].needSave = true;
+			console.debug("need save ", key, tabMap.value[key].needSave)
+			//console.debug(tabMap.value[key].needSave)
+		}
+
+
+		if (tabMap.value[key].needSave  // require save
+			&& key === selectedTab.value)
+		{
+			if (globalStore.shouldAutoSave) {
+                if (callback.value) {
+                    if (!tabMap.value[selectedTab.value].documentation) {
+                        if (tabMap.value[key].needSave) {
+                            if (!saveEvent.value) {
+                                saveCurrentTabCode();
+                            }
+                        }
+                    }
+                }
+            }
+			else {
+                if (saveEvent.value) {
+                    clearTimeout(saveEvent.value);
+					saveEvent.value = undefined;
+                   	console.debug("clear save event 1")
+				}
+			}
+        }
+
     }
 
     function updateName(key: string, name: string) {
@@ -46,6 +107,10 @@ export const useTabStore = defineStore('tab', () => {
     let getTabName = computed((key: string) => {
         return tabMap.value[key].name;
     })
+
+	function setSaveCallback(f: Function) {
+		callback.value = f;
+	}
 
     let getTabCode = (key: string) => {
         let code = tabMap.value[key].code;
@@ -87,6 +152,7 @@ export const useTabStore = defineStore('tab', () => {
             render: false,
             key: key,
             documentation: documentation,
+			needSave: false
         }
 
 
@@ -112,6 +178,15 @@ export const useTabStore = defineStore('tab', () => {
         if (key in tabMap.value) {
             if (selectedTab.value != key) {
                 selectedTab.value = key;
+
+			if (saveEvent.value) {
+                cancelSaveEvent();
+				if (globalStore.shouldAutoSave) {
+					startSaveEvent();
+				}
+            }
+
+
                 router.push(
                     {
                         query: {...route.query, key: key}
@@ -210,5 +285,5 @@ export const useTabStore = defineStore('tab', () => {
     });
 
 
-	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab, getTabCode, getTab, openTab }
+	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab, getTabCode, getTab, openTab, setSaveCallback, cancelSaveEvent, startSaveEvent }
 })

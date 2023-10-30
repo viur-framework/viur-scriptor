@@ -410,7 +410,7 @@ export default {
 			},
 
 			create: async function () {
-				
+
 				const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 				async function perform() {
 
@@ -470,8 +470,8 @@ export default {
 						let res = await answer.json();
 						let rootNode = res[0];
 						if (route.query.rkey)
-							rootNode = {key: route.query.rkey} 
-						
+							rootNode = {key: route.query.rkey}
+
 						tree.data.value.key = rootNode.key;
 
 						async function create() {
@@ -636,7 +636,13 @@ export default {
 
 
 
-				});
+				}).catch(
+						async (error) => {
+							  globalStore.setErrorText(await error.response.json())
+							  globalStore.setErrorStatus(error.statusCode)
+							  globalStore.setErrorTitle("" + error.statusCode + "  " + error.statusText)
+						}
+					);
 
 
 				}

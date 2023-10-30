@@ -3,7 +3,7 @@ import { pyLog, progressBar, pyLogging, pyDialogs, pyExecState, pyInstallLog, is
 
 /** The main composable */
 const usePython = () => {
-  let _pyodideWorker = new worker(); 
+  let _pyodideWorker = new worker();
   //let interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
 
   let _callback: (value: {
@@ -15,11 +15,11 @@ const usePython = () => {
   }>) => void = (v) => null;
 
   let _callback_map = new Map();
-  
+
 
   async function _dispatchEvent(id: string, data: Record<string, any>) {
     switch (data.type) {
-      case "end":  
+      case "end":
       {
         _callback({ results: data.res, error: null })
         _callback = (v) => null
@@ -28,17 +28,17 @@ const usePython = () => {
       // PYTHO NSCRIPT
       case "run_end":  {
 
-        let _cb = _callback_map.get(id); 
+        let _cb = _callback_map.get(id);
 
         if (_cb) {
           _cb({ results: data.res, error: null })
           pyExecState.set(0);
-          _callback_map.delete(id); 
+          _callback_map.delete(id);
         }
 
         break;
       }
-      
+
       case "err": {
         _callback = (v) => null
         pyExecState.set(0);
@@ -66,8 +66,8 @@ const usePython = () => {
       case "progressbar":
         progressBar.set({
           total: data.total,
-          step: data.step, 
-          maxStep: data.max_step, 
+          step: data.step,
+          maxStep: data.max_step,
           txt: data.txt
         });
         break;
@@ -105,7 +105,7 @@ const usePython = () => {
     case "confirm":
 			pyDialogs.get().push({
 				type: "confirm",
-				title: data.title, 
+				title: data.title,
         text: data.text,
         cancel: data.cancel,
         image: data.image,
@@ -117,7 +117,7 @@ const usePython = () => {
       case "diffcmp":
         pyDialogs.get().push({
           type: "diffcmp",
-          title: data.title, 
+          title: data.title,
           changes: data.changes,
           image: data.image,
 
@@ -135,7 +135,7 @@ const usePython = () => {
 			pyDialogs.notify();
       break;
 
-  
+
       case "select":
         pyDialogs.get().push({
           type: "select",
@@ -153,7 +153,7 @@ const usePython = () => {
           })
           pyDialogs.notify();
           break;
-  
+
 
 
         case "showDirectoryPicker":
@@ -177,7 +177,7 @@ const usePython = () => {
           }
 
         case "showSaveFilePicker":
-            let handle = -1; 
+            let handle = -1;
             try {
               handle = await window.showSaveFilePicker()
             }
@@ -190,10 +190,10 @@ const usePython = () => {
             });
 
 
-            break;        
-            
+            break;
+
           case "showOpenFilePicker": {
-            let handle = -1; 
+            let handle = -1;
             try {
               handle = await window.showOpenFilePicker({
                 multiple: false
@@ -227,7 +227,7 @@ const usePython = () => {
     });
     return buf.join("\n")
   }
-  
+
   /** Load the Python runtime */
   async function load(pyoPackages: Array<string> = [], packages: Array<string> = [], initCode = "", transformCode = ""): Promise<{ results: any, error: any }> {
     let res: { results: any; error: any };
@@ -274,7 +274,7 @@ const usePython = () => {
     // exec
     return new Promise((onSuccess) => {
       //_callback = onSuccess;
-      _callback_map.set(_id, onSuccess); 
+      _callback_map.set(_id, onSuccess);
 
       _pyodideWorker.postMessage({
         id: _id,
@@ -284,9 +284,9 @@ const usePython = () => {
     });
   }
 
-  let restore = false; 
+  let restore = false;
 
-  let restoreWriteList: Record<string, string>[] = []; 
+  let restoreWriteList: Record<string, string>[] = [];
 
   async function write(path: string, name: string, python: string): Promise<{ results: any, error: any }> {
 	  let context = {
@@ -294,13 +294,13 @@ const usePython = () => {
 		  path: path,
 
 	  }
-    
+
     if (!restore)
       restoreWriteList.push({path, name, python})
 
     return new Promise((onSuccess) => {
-      //_callback_map.set("_write", onSuccess); 
-      _callback = onSuccess; 
+      //_callback_map.set("_write", onSuccess);
+      _callback = onSuccess;
       _pyodideWorker.postMessage({
         id: "_write",
         python: python,
@@ -309,7 +309,7 @@ const usePython = () => {
     });
   }
 
-  let removeFileList: Record<string, string>[] = []; 
+  let removeFileList: Record<string, string>[] = [];
 
 
   async function removeFile(path: string, name: string): Promise<{ results: any, error: any }> {
@@ -331,7 +331,7 @@ const usePython = () => {
     });
   }
 
-  let removeDirList: Record<string, string>[] = []; 
+  let removeDirList: Record<string, string>[] = [];
 
   async function removeDir(path: string,): Promise<{ results: any, error: any }> {
 	  let context = {
@@ -351,7 +351,7 @@ const usePython = () => {
     });
   }
 
-  let renameFileList: Record<string, string>[] = []; 
+  let renameFileList: Record<string, string>[] = [];
 
 	async function renameFile(srcPath: string, srcName: string, dstPath: string, dstName: string): Promise<{ results: any, error: any }> {
 		let context = {
@@ -379,7 +379,7 @@ const usePython = () => {
 		});
 	}
 
-  let renameDirList: Record<string, string>[] = []; 
+  let renameDirList: Record<string, string>[] = [];
 
 	async function renameDir(srcPath: string, dstPath: string,): Promise<{ results: any, error: any }> {
 		let context = {
@@ -397,7 +397,7 @@ const usePython = () => {
 		});
 	}
 
-  
+
   function interruptExecution() {
     // 2 stands for SIGINT.
     _pyodideWorker.postMessage({
@@ -413,7 +413,7 @@ const usePython = () => {
     };
 
     _pyodideWorker.onmessageerror = async (error) => {
-      console.log(error); 
+      console.log(error);
     }
   }
 
@@ -427,11 +427,11 @@ const usePython = () => {
     isPyReadyState.set(0);
     pyExecState.set(0);
 
-//    let _pyodideWorker2 = new worker(); 
+//    let _pyodideWorker2 = new worker();
 
-    _pyodideWorker = new worker(); 
+    _pyodideWorker = new worker();
     bindEventWorker();
-    
+
     //_pyodideWorker.postMessage({id: "setFS",
     //fs: pyodide_fs})
 
@@ -442,7 +442,7 @@ const usePython = () => {
     restore = true;
 
     for (let index in restoreWriteList) {
-      let entry = restoreWriteList[index]; 
+      let entry = restoreWriteList[index];
       await write(entry.path, entry.name, entry.python);
     }
 
@@ -450,14 +450,14 @@ const usePython = () => {
 
 
     for (let index in renameDirList) {
-      let entry = renameDirList[index]; 
+      let entry = renameDirList[index];
       await renameDir(entry.srcPath, entry.dstPath);
     }
 
     //renameDirList = [];
 
     for (let index in renameFileList) {
-      let entry = renameDirList[index]; 
+      let entry = renameDirList[index];
       await renameFile(entry.srcPath, entry.srcName, entry.dstPath, entry.dstName);
     }
 
@@ -465,14 +465,14 @@ const usePython = () => {
 
 
     for (let index in removeDirList) {
-      let entry = removeDirList[index]; 
+      let entry = removeDirList[index];
       await removeDir(entry.path);
     }
 
     //removeDirList = [];
 
     for (let index in removeFileList) {
-      let entry = removeFileList[index]; 
+      let entry = removeFileList[index];
       await removeFile(entry.path, entry.name);
     }
 
@@ -505,7 +505,18 @@ const usePython = () => {
       });
 		});
   }
-  
+
+  function sendLanguage(language: String) {
+      console.log("sendLanguage ", language)
+    return new Promise((onSuccess) => {
+			_callback = onSuccess;
+      _pyodideWorker.postMessage({
+        id: "setLanguage",
+        language: language
+      });
+    });
+  }
+
 
 
 
@@ -532,7 +543,8 @@ const usePython = () => {
     destroyAndCreateWorker,
     restoreFS,
     sendDialogResult,
-    sendParams
+    sendParams,
+      sendLanguage
 
   }
 }

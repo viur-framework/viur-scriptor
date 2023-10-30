@@ -10,12 +10,12 @@
 
           <br>
 
-        <h2 class="headline coloured-headline underline-headline" v-if="moduleConfig['functions']">Funktionen</h2>
-          <div class="box" v-for="(item, key) in moduleConfig['functions']" :key="key">
+        <h2 class="headline coloured-headline underline-headline" v-if="moduleConfig['methods']">Funktionen</h2>
+          <div class="box" v-for="(item, key) in moduleConfig['methods']" :key="key">
 
 			<div style="display: flex; align-items: center;">
 			  <sl-badge variant="danger" pill style="margin-bottom: 17px;" pulse>async</sl-badge>
-			  <h3 class="headline" style="margin-left: 10px;">{{ item.name }}</h3>
+			  <h3 class="headline" style="margin-left: 10px;">{{ key }}</h3>
 			</div>
 
             <p class="paragraph">
@@ -127,6 +127,7 @@ const props = defineProps({
 const globalStore = useGlobalStore();
 const structure = ref({});
 const moduleConfig = computed(function(){
+	console.log(globalStore.modules.value[props.moduleName]);
     return globalStore.modules.value[props.moduleName];
 });
 
@@ -136,7 +137,7 @@ const isObject = computed(function(){
 
 onBeforeMount(async function(){
     console.log("moduleConfig.value ", moduleConfig.value)
-    if (!moduleConfig.value.handler.startsWith("tree"))
+    if (!moduleConfig.value.handler.startsWith("tree") && !moduleConfig.value.handler.startsWith("hierarchy") )
     {
       let url = `/vi/${props.moduleName.toLowerCase()}/structure`;
 
