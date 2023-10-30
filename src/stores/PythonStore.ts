@@ -87,7 +87,7 @@ export const usePythonStore = defineStore('python', () => {
 	}
 
 	const timer = ref<NodeJS.Timer>();
-	const defaultCode = "#### scriptor ####\nfrom scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
+	const defaultCode = "#### scriptor ####\nfrom viur.scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
 
 	let runScript = function (code: string, name: string = undefined, key: string = undefined){
 		let extraCode = "from scriptor import message\nmessage.called=False\nimport traceback\nfrom viur.scriptor import print,logging, init as __scriptor__init\nawait __scriptor__init()\n";
@@ -150,7 +150,7 @@ export const usePythonStore = defineStore('python', () => {
 
 	async function loadPython() {
 		isLoading.value = true;
-		const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.6-py3-none-any.whl", import.meta.url).href
+		const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.1-py3-none-any.whl", import.meta.url).href
 
 		await py.load([zipUrl2]);
 
