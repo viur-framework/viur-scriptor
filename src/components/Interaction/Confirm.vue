@@ -8,7 +8,7 @@
 			<img :src="props.imageURL"
 			class="">
 		</div>
-    
+
     <p class="paragraph">
       {{ props.text }}
     </p>
@@ -64,7 +64,7 @@
     text: String;
     select: Function;
     cancel: Boolean;
-    imageURL: String; 
+    imageURL: String;
     entry: {},
   }
 
@@ -73,13 +73,15 @@
 
   const { t } = useI18n();
 
-  if (!props.entry.selectedValue)
-    props.entry.selectedValue = 0;
-
-  const selectedValue = ref<number>(props.entry.selectedValue);
 
   const props = defineProps<Props>();
 
+  const selectedValue = ref<number>(props.entry.selectedValue);
+
+
+  if (!props.entry.selectedValue) {
+	  props.entry.selectedValue = 0;
+  }
   function confirm(state: number) {
     if (!props.entry.render) return;
 
@@ -90,7 +92,6 @@
     if (props.select) props.select(state);
   }
 
-  console.log(props)
 
 </script>
 
