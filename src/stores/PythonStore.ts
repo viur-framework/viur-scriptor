@@ -1,229 +1,232 @@
-import { useGlobalStore } from './global';
-import { ref } from 'vue';
-import { defineStore } from 'pinia'
-import { usePython} from "usepython";
-import { useTabStore } from './TabStore';
-import { useRoute } from 'vue-router';
+import {useGlobalStore} from './global';
+import {ref} from 'vue';
+import {defineStore} from 'pinia'
+import {usePython} from "usepython";
+import {useTabStore} from './TabStore';
+import {useRoute} from 'vue-router';
 
 
-interface PyEvents
-{
-	logCallback: Function,
-	errorCallback: Function,
-	runCallback: Function
+interface PyEvents {
+    logCallback: Function,
+    errorCallback: Function,
+    runCallback: Function
 }
 
 export const usePythonStore = defineStore('python', () => {
-	const tabStore = useTabStore();
-	const global = useGlobalStore();
-	const py = usePython();
+    const tabStore = useTabStore();
+    const global = useGlobalStore();
+    const py = usePython();
 
 
-
-	py.log.listen((val) => {
-		if (val.exception.length == 0)
-		{
-			for (let entry in val.stdOut) {
-				if (scriptRunnerTab.value) {
-					let onLog = eventMap.value[scriptRunnerTab.value].logCallback;
-					if (onLog)
-						onLog(val.stdOut[entry]);
-				}
-			}
-			// val.stdErr is also available
-		}
-		else
-		{
+    py.log.listen((val) => {
+        if (val.exception.length == 0) {
+            for (let entry in val.stdOut) {
+                if (scriptRunnerTab.value) {
+                    let onLog = eventMap.value[scriptRunnerTab.value].logCallback;
+                    if (onLog)
+                        onLog(val.stdOut[entry]);
+                }
+            }
+            // val.stdErr is also available
+        } else {
 
 
-			if (scriptRunnerTab.value) {
-				let onError = eventMap.value[scriptRunnerTab.value].errorCallback;
-				if (onError)
-					onError(val.exception);
-				scriptRunnerTab.value = "";
-			}
+            if (scriptRunnerTab.value) {
+                let onError = eventMap.value[scriptRunnerTab.value].errorCallback;
+                if (onError)
+                    onError(val.exception);
+                scriptRunnerTab.value = "";
+            }
 
-			isExecuting.value = false;
-		}
-	});
-
-
-	const isLoading = ref<boolean>(true);
-	const isExecuting = ref<boolean>(false);
-	const eventMap = ref<Record<string, PyEvents>>({});
-
-	const runningText = ref<String>("");
+            isExecuting.value = false;
+        }
+    });
 
 
+    const isLoading = ref<boolean>(true);
+    const isExecuting = ref<boolean>(false);
+    const eventMap = ref<Record<string, PyEvents>>({});
 
-	const code = ref<string>('');
-	const scriptRunnerTab = ref<string>('');
-
-	function setCode(_code: string) {
-		code.value = _code;
-	}
-
-	function getCode() {
-		if (code.value)
-			return code.value.substring(0, code.value.length - 1);
-
-		return code.value;
-	}
+    const runningText = ref<String>("");
 
 
+    const code = ref<string>('');
+    const scriptRunnerTab = ref<string>('');
 
-	async function init(key: string, onLogCallback: Function, onErrorCallback: Function, onRunCallback: Function) {
-		eventMap.value[key] = {
-			logCallback: onLogCallback,
-			errorCallback: onErrorCallback,
-			runCallback: onRunCallback,
-		}
+    function setCode(_code: string) {
+        code.value = _code;
+    }
 
-		//isLoading.value = false;
-	}
+    function getCode() {
+        if (code.value)
+            return code.value.substring(0, code.value.length - 1);
 
-	async function run(code: string) {
-		await py.run(code);
-	}
+        return code.value;
+    }
 
-	const timer = ref<NodeJS.Timer>();
-	const defaultCode = "#### scriptor ####\nfrom viur.scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
 
-	let runScript = function (code: string, name: string = undefined, key: string = undefined){
-		let extraCode = "from scriptor import message\nmessage.called=False\nimport traceback\nfrom viur.scriptor import print,logging, init as __scriptor__init\nawait __scriptor__init()\n";
-		if (code.includes("async def main():"))
-			code += "\ntry:\tawait main()\nexcept:\n\tlogging.error(traceback.format_exc())"
+    async function init(key: string, onLogCallback: Function, onErrorCallback: Function, onRunCallback: Function) {
+        eventMap.value[key] = {
+            logCallback: onLogCallback,
+            errorCallback: onErrorCallback,
+            runCallback: onRunCallback,
+        }
 
-		if (py.isExecuting.get() === true)
-			return;
+        //isLoading.value = false;
+    }
 
-		py.sendLanguage(global.language)
+    async function run(code: string) {
+        await py.run(code);
+    }
 
-		let tabName = "";
+    const timer = ref<NodeJS.Timer>();
+    const defaultCode = "#### scriptor ####\nfrom viur.scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
 
-		if (name)
-			tabName = name;
-		else
-			tabName = tabStore.tabMap[tabStore.selectedTab].name;
+    let runScript = function (code: string, name: string = undefined, key: string = undefined) {
+        let extraCode = "from scriptor import message\nmessage.called=False\nimport traceback\nfrom viur.scriptor import print,logging, init as __scriptor__init\nawait __scriptor__init()\n";
+        if (code.includes("async def main():"))
+            code += "\ntry:\tawait main()\nexcept:\n\tlogging.error(traceback.format_exc())"
 
-		runningText.value = "Running " + tabName + " ";
+        if (py.isExecuting.get() === true)
+            return;
 
-		if (timer.value)
-			clearInterval(timer.value);
+        py.sendLanguage(global.language)
 
-		timer.value = setInterval(() => {
-			runningText.value += "..";
+        let tabName = "";
 
-			let _count = runningText.value.split(".").length - 1 - 1;
-			if (_count >= 30) {
-				runningText.value = runningText.value.replace(".", ",");
-				runningText.value = runningText.value.replaceAll(".", "");
-				runningText.value = runningText.value.replace(",", ".");
+        if (name)
+            tabName = name;
+        else
+            tabName = tabStore.tabMap[tabStore.selectedTab].name;
 
-			}
-		}, 150)
+        runningText.value = "Running " + tabName + " ";
 
-		if (key)
-			scriptRunnerTab.value = key;
-		else
-			scriptRunnerTab.value = tabStore.selectedTab;
+        if (timer.value)
+            clearInterval(timer.value);
 
-		isExecuting.value = true;
+        timer.value = setInterval(() => {
+            runningText.value += "..";
 
-		if (scriptRunnerTab.value) {
-			let onRun = eventMap.value[scriptRunnerTab.value].runCallback;
-			if (onRun)
-				onRun();
-		}
+            let _count = runningText.value.split(".").length - 1 - 1;
+            if (_count >= 30) {
+                runningText.value = runningText.value.replace(".", ",");
+                runningText.value = runningText.value.replaceAll(".", "");
+                runningText.value = runningText.value.replace(",", ".");
 
-		py.pyLogging.set([]);
-		py.pyDialogs.set([]);
+            }
+        }, 150)
 
-		py.run(extraCode + code).then(() => {
-			scriptRunnerTab.value = "";
+        if (key)
+            scriptRunnerTab.value = key;
+        else
+            scriptRunnerTab.value = tabStore.selectedTab;
 
-			isExecuting.value = false;
-		});
-	};
+        isExecuting.value = true;
 
-	const route = useRoute();
+        if (scriptRunnerTab.value) {
+            let onRun = eventMap.value[scriptRunnerTab.value].runCallback;
+            if (onRun)
+                onRun();
+        }
 
-	async function loadPython() {
-		isLoading.value = true;
-		const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.2-py3-none-any.whl", import.meta.url).href
+        py.pyLogging.set([]);
+        py.pyDialogs.set([]);
 
-		await py.load([zipUrl2]);
+        py.run(extraCode + code).then(() => {
+            scriptRunnerTab.value = "";
 
-		let baseUrl: string = "";
-		if (import.meta.env.VITE_API_URL)
-			baseUrl = `${import.meta.env.VITE_API_URL}`;
-		else
-			baseUrl = `${window.location.origin}`;
+            isExecuting.value = false;
+        });
+    };
 
-		await py.run(`with open("config.py", "w") as f:\n\tf.write("BASE_URL='${baseUrl}'")`)
+    const route = useRoute();
 
-		const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
+    async function loadPython() {
+        isLoading.value = true;
+        const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.2-py3-none-any.whl", import.meta.url).href
 
-		// Loading scriptor library
-		await py.run(`
+        await py.load([zipUrl2]);
+
+        let baseUrl: string = "";
+        if (import.meta.env.VITE_API_URL)
+            baseUrl = `${import.meta.env.VITE_API_URL}`;
+        else
+            baseUrl = `${window.location.origin}`;
+
+        await py.run(`with open("config.py", "w") as f:\n\tf.write("BASE_URL='${baseUrl}'")`)
+
+        const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
+
+        // Loading scriptor library
+        await py.run(`
 		  from pyodide.http import pyfetch
 		  response = await pyfetch("${zipUrl}")
 		  await response.unpack_archive()
 	   `)
 
 
-
-		let object = {};
-
-
-		if (route.query["scriptor_params"]) {
-			console.log("script params", route.query.scriptor_params);
-
-			if (typeof route.query.scriptor_params === 'string')
-			{
-				try {
-					let _string = route.query.scriptor_params.replace(/'/g, '"');;
-					object = JSON.parse(_string)
-				}
-				catch(error) {
-					console.error(error)
-				}
-			}
-			else
-			{
-				object = route.query.scriptor_params;
-			}
-		}
-
-	   await py.sendParams(object)
-	   await py.sendLanguage(global.language);
-
-	   isLoading.value = false;
-
-	}
-
-	async function reloadPyodide() {
-		isExecuting.value = false;
-
-		const global = useGlobalStore();
-
-		global.setLoading(true);
-		if (timer.value)
-			clearInterval(timer.value);
-
-		scriptRunnerTab.value = "";
-
-		py.destroyAndCreateWorker();
-
-		await loadPython();
-
-		await py.restoreFS();
-	   	await py.sendLanguage(global.language);
-
-		global.setLoading(false);
-
-	}
+        let object = {};
 
 
-	return { py, run, setCode, getCode, init, runScript, loadPython, reloadPyodide, isLoading, scriptRunnerTab, isExecuting, runningText, defaultCode }
+        if (route.query["scriptor_params"]) {
+            console.log("script params", route.query.scriptor_params);
+
+            if (typeof route.query.scriptor_params === 'string') {
+                try {
+                    let _string = route.query.scriptor_params.replace(/'/g, '"');
+                    ;
+                    object = JSON.parse(_string)
+                } catch (error) {
+                    console.error(error)
+                }
+            } else {
+                object = route.query.scriptor_params;
+            }
+        }
+
+        await py.sendParams(object)
+        await py.sendLanguage(global.language);
+
+        isLoading.value = false;
+
+    }
+
+    async function reloadPyodide() {
+        isExecuting.value = false;
+
+        const global = useGlobalStore();
+
+        global.setLoading(true);
+        if (timer.value)
+            clearInterval(timer.value);
+
+        scriptRunnerTab.value = "";
+
+        py.destroyAndCreateWorker();
+
+        await loadPython();
+
+        await py.restoreFS();
+        await py.sendLanguage(global.language);
+
+        global.setLoading(false);
+
+    }
+
+
+    return {
+        py,
+        run,
+        setCode,
+        getCode,
+        init,
+        runScript,
+        loadPython,
+        reloadPyodide,
+        isLoading,
+        scriptRunnerTab,
+        isExecuting,
+        runningText,
+        defaultCode
+    }
 })

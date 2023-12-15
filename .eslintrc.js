@@ -1,6 +1,6 @@
 module.exports = {
     root: true,
-	env: {
+    env: {
         node: true,
     },
 
@@ -18,8 +18,8 @@ module.exports = {
         'no-empty': 'off',
         'vue/no-unused-components': 'off',
         'vue/no-deprecated-slot-attribute': 'off', //Webcomponents use slot attribute
-        "no-unreachable":"off",
-		"no-mixed-spaces-and-tabs": "off"
+        "no-unreachable": "off",
+        "no-mixed-spaces-and-tabs": "off"
 
     }
 }
