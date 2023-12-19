@@ -38,6 +38,7 @@
 	})
 
 	watch(store.shouldAutoSave, (value, oldValue, onCleanup)=> { console.log(value)});
+   	 const version =  __APP_VERSION__;
 
 </script>
 
@@ -58,7 +59,12 @@
       </sl-radio-group>
 
 		<sl-button slot="footer" variant="primary" @click="dialogRef.hide()">{{ t('close') }}</sl-button>
+		<br> <div class="input--large"> Scriptor Version: {{version}}</div>
+
 	</sl-dialog>
+
+
+
 </template>
 
 <style scoped lang="less">
