@@ -14,7 +14,7 @@
 					invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
 				</p>
 
-				<sl-input v-if="props.type !== 'text'" :type="props.type + (props.useTime ? 'time-local' : '')" v-model="value" :readonly="!render"></sl-input>
+				<sl-input v-if="props.type !== 'text'" :type="props.type + (props.useTime ? 'time-local' : '')" :placeholder="props.placeholder" v-model="value" :readonly="!render"></sl-input>
 				<sl-textarea v-else
 						resize="none"
 						class="label-on-left" v-model="value" ></sl-textarea>
@@ -38,7 +38,8 @@ export interface Props {
     type: String,
     select: Function,
     empty: Boolean,
-    useTime: Boolean
+    useTime: Boolean,
+    placeholder: String,
 }
 
 
