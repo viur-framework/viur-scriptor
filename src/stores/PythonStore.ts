@@ -150,7 +150,7 @@ export const usePythonStore = defineStore('python', () => {
 
 	async function loadPython() {
 		isLoading.value = true;
-		const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.2-py3-none-any.whl", import.meta.url).href
+		const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.3-py3-none-any", import.meta.url).href
 
 		await py.load([zipUrl2]);
 
