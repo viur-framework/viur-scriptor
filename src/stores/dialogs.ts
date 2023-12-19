@@ -1,7 +1,7 @@
 // @ts-nocheck
 import {ref} from "vue";
 import {defineStore} from "pinia";
-import { dialog } from "electron";
+import {dialog} from "electron";
 
 export interface DialogInterface {
     title: string;
@@ -16,8 +16,8 @@ export interface DialogInterface {
     prefix: string;
     regexStringExpression?: string;
     closeOnAccept?: boolean;
-	initialText: string;
-	suffixText: string;
+    initialText: string;
+    suffixText: string;
 }
 
 export const useDialogStore = defineStore("dialogStore", () => {
@@ -25,7 +25,7 @@ export const useDialogStore = defineStore("dialogStore", () => {
     const dialogContainer = ref<Record<number, DialogInterface>>({});
     const idGen = ref<number>(0);
 
-    function open(data:DialogInterface) {
+    function open(data: DialogInterface) {
         data.id = ++idGen.value;
         dialogContainer.value[data.id] = data;
     }

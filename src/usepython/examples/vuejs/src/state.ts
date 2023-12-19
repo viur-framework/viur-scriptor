@@ -1,5 +1,5 @@
-import { usePython } from "usepython";
+import {usePython} from "usepython";
 
 const py = usePython()
 
-export { py }
+export {py}
