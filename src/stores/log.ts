@@ -1,61 +1,62 @@
 // @ts-nocheck
 import {ref, computed} from "vue";
 import {defineStore} from "pinia";
-import { usePythonStore } from "./PythonStore";
-import { ProgressbarDetails } from "@/usepython/dist/interfaces";
+import {usePythonStore} from "./PythonStore";
+import {ProgressbarDetails} from "@/usepython/dist/interfaces";
 
 export const useLogStore = defineStore("log", () => {
-    const pythonStore = usePythonStore(); 
-	const logMap = ref<Record<string, any>>({});
-	function formatString(str: string) {
-        if (isJsonString(str))
-      {
-          let obj = JSON.parse(str);
-                  return obj;
-          }
-  
-          return str;
-      }
+    const pythonStore = usePythonStore();
+    const logMap = ref<Record<string, any>>({});
 
-      function getThemeByLevel(level: string)
-      {
-          console.log("level", level);
-          switch (level)
-          {
-              case "debug": return "neutral";
-              case "error": return "danger";
-              case "warning": return "warning";
-              case "info": return "info";
-          }
-          return "";
-      }
-  
-      function isJsonString(str: string)
-      {
+    function formatString(str: string) {
+        if (isJsonString(str)) {
+            let obj = JSON.parse(str);
+            return obj;
+        }
+
+        return str;
+    }
+
+    function getThemeByLevel(level: string) {
+        console.log("level", level);
+        switch (level) {
+            case "debug":
+                return "neutral";
+            case "error":
+                return "danger";
+            case "warning":
+                return "warning";
+            case "info":
+                return "info";
+        }
+        return "";
+    }
+
+    function isJsonString(str: string) {
         try {
             let obj = JSON.parse(str);
             if (obj.constructor === Object || obj.constructor === Array)
-              return true;
+                return true;
             else
-              return false;
-  
+                return false;
+
         } catch (e) {
             return false;
         }
-  
-            return true;
-      }
+
+        return true;
+    }
 
     pythonStore.py.pyLogging.listen((val) => {
         if (!(pythonStore.scriptRunnerTab in logMap.value))
-            logMap.value[pythonStore.scriptRunnerTab] = ref([]); 
-         
-        //console.log("Notify: python logging", val)
-        //console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue); 
-        {
-          console.error("pythonStore.py.pyLogging"); 
+            logMap.value[pythonStore.scriptRunnerTab] = ref([]);
 
-            for (let i = 0; i<val.length; ++i) {
+        //console.log("Notify: python logging", val)
+        //console.log("pythonStore.scriptRunnerTab:", pythonStore.scriptRunnerTab, " props.keyValue: ", props.keyValue);
+        {
+            console.error("pythonStore.py.pyLogging");
+
+            for (let i = 0; i < val.length; ++i) {
                 let entry = val[i];
                 if (entry.done)
                     continue;
@@ -66,7 +67,7 @@ export const useLogStore = defineStore("log", () => {
                     log: {
                         type: "syslog",
                         level: computed(() => {
-                        return getThemeByLevel(entry.level);
+                            return getThemeByLevel(entry.level);
                         }),
                         text: formatString(entry.text),
                         time: Date.now(),
@@ -75,20 +76,20 @@ export const useLogStore = defineStore("log", () => {
                 })
 
                 entry.done = true;
-          }
+            }
         }
-  })
+    })
 
-  pythonStore.py.pyDialogs.listen((val) => {
+    pythonStore.py.pyDialogs.listen((val) => {
         if (!(pythonStore.scriptRunnerTab in logMap.value))
-            logMap.value[pythonStore.scriptRunnerTab] = ref([]);  
+            logMap.value[pythonStore.scriptRunnerTab] = ref([]);
 
         {
-            for (let i = 0; i<val.length; ++i) {
+            for (let i = 0; i < val.length; ++i) {
                 let entry = val[i];
                 if (entry.done)
                     continue;
-                
+
                 if (entry) {
 
                     logMap.value[pythonStore.scriptRunnerTab].push({
@@ -103,16 +104,16 @@ export const useLogStore = defineStore("log", () => {
                 }
             }
         }
-}); 
+    });
     const progessBarMap = ref<Record<string, ProgressbarDetails>>({});
 
 
     pythonStore.py.progressBar.listen((val) => {
-        progessBarMap.value[pythonStore.scriptRunnerTab] = val; 
+        progessBarMap.value[pythonStore.scriptRunnerTab] = val;
     })
 
     function clear(key: String) {
-        logMap.value[key] = ref([]); 
+        logMap.value[key] = ref([]);
     }
 
 

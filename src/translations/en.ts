@@ -1,5 +1,5 @@
 export default {
-	safe: "Save",
-	run: "Run",
-	logs: "Logs"
+    safe: "Save",
+    run: "Run",
+    logs: "Logs"
 }

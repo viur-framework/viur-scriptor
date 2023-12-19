@@ -1,13 +1,12 @@
-import { ref, computed } from 'vue';
-import { defineStore } from 'pinia'
-import { usePython} from "usepython";
-import { SlTabGroup } from '@viur/viur-shoelace';
-import { usePythonStore } from './PythonStore';
-import { useRouter, useRoute } from 'vue-router';
+import {ref, computed} from 'vue';
+import {defineStore} from 'pinia'
+import {usePython} from "usepython";
+import {SlTabGroup} from '@viur/viur-shoelace';
+import {usePythonStore} from './PythonStore';
+import {useRouter, useRoute} from 'vue-router';
 
 
-interface Tab
-{
+interface Tab {
     name: string,
     code: string,
     key: string,
@@ -22,10 +21,10 @@ interface Tab
 export const useTabStore = defineStore('tab', () => {
 
     const pythonStore = usePythonStore();
-    const router = useRouter(); 
-    const route = useRoute(); 
+    const router = useRouter();
+    const route = useRoute();
 
-	const tabMap = ref<Record<string, Tab>>({});
+    const tabMap = ref<Record<string, Tab>>({});
     const tabList = ref([]);
 
     const tabGroup = ref<SlTabGroup>(null);
@@ -53,8 +52,8 @@ export const useTabStore = defineStore('tab', () => {
         return code;
     }
 
-    let update = function() {
-        tabList.value.forEach(function(item: Tab) {
+    let update = function () {
+        tabList.value.forEach(function (item: Tab) {
             if (item.leftNode)
                 item.leftNode = undefined;
 
@@ -62,23 +61,23 @@ export const useTabStore = defineStore('tab', () => {
                 item.rightNode = undefined;
 
             let index = tabList.value.indexOf(item);
-            if (index-1>=0) {
-                item.leftNode = tabList.value[index-1];
-                console.log("Adding index ", index, " leftNode ", index-1);
+            if (index - 1 >= 0) {
+                item.leftNode = tabList.value[index - 1];
+                console.log("Adding index ", index, " leftNode ", index - 1);
 
             }
-            if (index + 1 < tabList.value.length){
-                item.rightNode = tabList.value[index+1];
-                console.log("Adding index ", index, " rightNode ", index+1);
+            if (index + 1 < tabList.value.length) {
+                item.rightNode = tabList.value[index + 1];
+                console.log("Adding index ", index, " rightNode ", index + 1);
                 console.log("Right node = ", item.rightNode);
             }
         });
     }
 
-    let addTab = function(key: string, name: string, code: string) {
+    let addTab = function (key: string, name: string, code: string) {
 
         if (tabList.value.includes(tabMap.value[key]))
-            tabList.value = tabList.value.filter(function(item){
+            tabList.value = tabList.value.filter(function (item) {
                 return item.key !== key;
             });
 
@@ -89,7 +88,6 @@ export const useTabStore = defineStore('tab', () => {
             render: false,
             key: key,
         }
-
 
 
         tabList.value.push(tabMap.value[key]);
@@ -126,33 +124,33 @@ export const useTabStore = defineStore('tab', () => {
         }
     }
 
-	function openTab(key: string) {
-		if (tabMap.value[key]) {
-			//const tab = tabMap.value[key];
-			if (tabGroup.value) {
-				if (timeoutEvent.value)
-					clearTimeout(timeoutEvent.value);
+    function openTab(key: string) {
+        if (tabMap.value[key]) {
+            //const tab = tabMap.value[key];
+            if (tabGroup.value) {
+                if (timeoutEvent.value)
+                    clearTimeout(timeoutEvent.value);
 
-				timeoutEvent.value = setTimeout(() => {
-					tabGroup.value.show(key);
+                timeoutEvent.value = setTimeout(() => {
+                    tabGroup.value.show(key);
 
-					selectTab(key);
+                    selectTab(key);
 
-				}, 200);
+                }, 200);
 
-				console.log("TabGroup SHow: ", key)
-			}
+                console.log("TabGroup SHow: ", key)
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
     function removeTab(key: string) {
 
         let tabInstance: Tab = tabMap.value[key];
-        tabList.value = tabList.value.filter(function(item){
+        tabList.value = tabList.value.filter(function (item) {
             return item.key !== key;
         });
 
@@ -163,8 +161,7 @@ export const useTabStore = defineStore('tab', () => {
         let nextIndex = -1;
 
         let isSelectedTab = false;
-        if (_keys.indexOf(selectedTab.value) === _keys.indexOf(key))
-        {
+        if (_keys.indexOf(selectedTab.value) === _keys.indexOf(key)) {
             isSelectedTab = true;
         }
 
@@ -202,7 +199,7 @@ export const useTabStore = defineStore('tab', () => {
             if (timeoutEvent.value)
                 clearTimeout(timeoutEvent.value);
 
-            timeoutEvent.value  = setTimeout(() => {
+            timeoutEvent.value = setTimeout(() => {
                 if (tabGroup.value) {
                     tabGroup.value.show(_key);
                     selectTab(_key);
@@ -217,5 +214,18 @@ export const useTabStore = defineStore('tab', () => {
     });
 
 
-	return { updateCode, updateName, getTabName, tabMap, addTab, selectTab, tabGroup, removeTab, selectedTab, getTabCode, getTab, openTab }
+    return {
+        updateCode,
+        updateName,
+        getTabName,
+        tabMap,
+        addTab,
+        selectTab,
+        tabGroup,
+        removeTab,
+        selectedTab,
+        getTabCode,
+        getTab,
+        openTab
+    }
 })

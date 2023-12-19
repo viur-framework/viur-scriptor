@@ -1,6 +1,7 @@
 import {reactive, computed} from "vue";
+
 const state = reactive({
-	user: null,
+    user: null,
 });
 
 export default {state: state};

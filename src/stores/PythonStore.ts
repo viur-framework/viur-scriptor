@@ -1,190 +1,197 @@
-import { useGlobalStore } from './global';
-import { ref } from 'vue'; 
-import { defineStore } from 'pinia'
-import { usePython} from "usepython";
-import { useTabStore } from './TabStore';
+import {useGlobalStore} from './global';
+import {ref} from 'vue';
+import {defineStore} from 'pinia'
+import {usePython} from "usepython";
+import {useTabStore} from './TabStore';
 
 
-interface PyEvents
-{
-	logCallback: Function,
-	errorCallback: Function,
-	runCallback: Function
+interface PyEvents {
+    logCallback: Function,
+    errorCallback: Function,
+    runCallback: Function
 }
 
 export const usePythonStore = defineStore('python', () => {
-	const tabStore = useTabStore(); 
+    const tabStore = useTabStore();
 
-	const py = usePython();
-
-	
-	py.log.listen((val) => {
-		if (val.exception.length == 0)
-		{
-			for (let entry in val.stdOut) {
-				if (scriptRunnerTab.value) {
-					let onLog = eventMap.value[scriptRunnerTab.value].logCallback; 
-					if (onLog)
-						onLog(val.stdOut[entry]);
-				}
-			}
-			console.log("LOG", val.stdOut);
-			// val.stdErr is also available
-		}
-		else
-		{
-			console.log("Exception:", val.exception)
-
-			
-			if (scriptRunnerTab.value) {
-				let onError = eventMap.value[scriptRunnerTab.value].errorCallback; 
-				if (onError)
-					onError(val.exception);
-				scriptRunnerTab.value = "";
-			}
-
-			isExecuting.value = false;
-		}
-	});
+    const py = usePython();
 
 
-	const isLoading = ref<boolean>(true);
-	const isExecuting = ref<boolean>(false);
-	const eventMap = ref<Record<string, PyEvents>>({}); 
-
-	const runningText = ref<String>(""); 
-
-
-
-	const code = ref<string>(''); 
-	const scriptRunnerTab = ref<string>(''); 
-
-	function setCode(_code: string) {
-		code.value = _code; 
-	}
-
-	function getCode() {
-		if (code.value)
-			return code.value.substring(0, code.value.length - 1);
-
-		return code.value;
-	}
+    py.log.listen((val) => {
+        if (val.exception.length == 0) {
+            for (let entry in val.stdOut) {
+                if (scriptRunnerTab.value) {
+                    let onLog = eventMap.value[scriptRunnerTab.value].logCallback;
+                    if (onLog)
+                        onLog(val.stdOut[entry]);
+                }
+            }
+            console.log("LOG", val.stdOut);
+            // val.stdErr is also available
+        } else {
+            console.log("Exception:", val.exception)
 
 
+            if (scriptRunnerTab.value) {
+                let onError = eventMap.value[scriptRunnerTab.value].errorCallback;
+                if (onError)
+                    onError(val.exception);
+                scriptRunnerTab.value = "";
+            }
 
-	async function init(key: string, onLogCallback: Function, onErrorCallback: Function, onRunCallback: Function) {
-		console.log("on init!")
-		eventMap.value[key] = {
-			logCallback: onLogCallback,
-			errorCallback: onErrorCallback,
-			runCallback: onRunCallback,
-		}
+            isExecuting.value = false;
+        }
+    });
 
-		//isLoading.value = false;
-	}
 
-	async function run(code: string) {
-		await py.run(code);
-	}
+    const isLoading = ref<boolean>(true);
+    const isExecuting = ref<boolean>(false);
+    const eventMap = ref<Record<string, PyEvents>>({});
 
-	const timer = ref<NodeJS.Timer>(); 
+    const runningText = ref<String>("");
 
-	let runScript = function (code: string){
-		let extraCode = "from scriptor import print, init as __scriptor__init\nawait __scriptor__init()\n";
-		if (code.includes("async def main():"))
-			code += "\nawait main()"
 
-		if (py.isExecuting.get() === true)
-			return;
+    const code = ref<string>('');
+    const scriptRunnerTab = ref<string>('');
 
-		let tabName = tabStore.tabMap[tabStore.selectedTab].name;
+    function setCode(_code: string) {
+        code.value = _code;
+    }
 
-		runningText.value = "Running " + tabName + " ";
+    function getCode() {
+        if (code.value)
+            return code.value.substring(0, code.value.length - 1);
 
-		if (timer.value)
-			clearInterval(timer.value);
+        return code.value;
+    }
 
-		timer.value = setInterval(() => {
-			runningText.value += ".."; 
 
-			let _count = runningText.value.split(".").length - 1 - 1;
-			if (_count >= 30) {
-				runningText.value = runningText.value.replace(".", ",");
-				runningText.value = runningText.value.replaceAll(".", "");
-				runningText.value = runningText.value.replace(",", ".");
+    async function init(key: string, onLogCallback: Function, onErrorCallback: Function, onRunCallback: Function) {
+        console.log("on init!")
+        eventMap.value[key] = {
+            logCallback: onLogCallback,
+            errorCallback: onErrorCallback,
+            runCallback: onRunCallback,
+        }
 
-			}
-		}, 150)
+        //isLoading.value = false;
+    }
 
-		scriptRunnerTab.value = tabStore.selectedTab;
-		isExecuting.value = true;
+    async function run(code: string) {
+        await py.run(code);
+    }
 
-		if (scriptRunnerTab.value) {
-			console.log(eventMap.value, scriptRunnerTab.value)
-			let onRun = eventMap.value[scriptRunnerTab.value].runCallback; 
-			if (onRun)
-				onRun();
-		}
+    const timer = ref<NodeJS.Timer>();
 
-		py.pyLogging.set([]); 
-		py.pyDialogs.set([]); 
+    let runScript = function (code: string) {
+        let extraCode = "from scriptor import print, init as __scriptor__init\nawait __scriptor__init()\n";
+        if (code.includes("async def main():"))
+            code += "\nawait main()"
 
-		py.run(extraCode + code).then(() => {
-			scriptRunnerTab.value = ""; 
+        if (py.isExecuting.get() === true)
+            return;
 
-			isExecuting.value = false;
-		});
-	};
+        let tabName = tabStore.tabMap[tabStore.selectedTab].name;
 
-	async function loadPython() {
-		isLoading.value = true;
+        runningText.value = "Running " + tabName + " ";
 
-		await py.load();
+        if (timer.value)
+            clearInterval(timer.value);
 
-		let baseUrl: string = "";
-		if (import.meta.env.VITE_API_URL)
-			baseUrl = `${import.meta.env.VITE_API_URL}`;
-		else
-			baseUrl = `${window.location.origin}`;
+        timer.value = setInterval(() => {
+            runningText.value += "..";
 
-		await py.run(`with open("config.py", "w") as f:\n\tf.write("BASE_URL='${baseUrl}'")`)
+            let _count = runningText.value.split(".").length - 1 - 1;
+            if (_count >= 30) {
+                runningText.value = runningText.value.replace(".", ",");
+                runningText.value = runningText.value.replaceAll(".", "");
+                runningText.value = runningText.value.replace(",", ".");
 
-		const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
+            }
+        }, 150)
 
-		console.log("zipUrl:", zipUrl);
+        scriptRunnerTab.value = tabStore.selectedTab;
+        isExecuting.value = true;
 
-		// Loading scriptor library
-		await py.run(`
+        if (scriptRunnerTab.value) {
+            console.log(eventMap.value, scriptRunnerTab.value)
+            let onRun = eventMap.value[scriptRunnerTab.value].runCallback;
+            if (onRun)
+                onRun();
+        }
+
+        py.pyLogging.set([]);
+        py.pyDialogs.set([]);
+
+        py.run(extraCode + code).then(() => {
+            scriptRunnerTab.value = "";
+
+            isExecuting.value = false;
+        });
+    };
+
+    async function loadPython() {
+        isLoading.value = true;
+
+        await py.load();
+
+        let baseUrl: string = "";
+        if (import.meta.env.VITE_API_URL)
+            baseUrl = `${import.meta.env.VITE_API_URL}`;
+        else
+            baseUrl = `${window.location.origin}`;
+
+        await py.run(`with open("config.py", "w") as f:\n\tf.write("BASE_URL='${baseUrl}'")`)
+
+        const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
+
+        console.log("zipUrl:", zipUrl);
+
+        // Loading scriptor library
+        await py.run(`
 		  from pyodide.http import pyfetch
 		  response = await pyfetch("${zipUrl}")
 		  await response.unpack_archive()
 	   `)
 
-	   isLoading.value = false;
+        isLoading.value = false;
 
-	}
+    }
 
-	async function reloadPyodide() {
-		isExecuting.value = false;
-		
-		const global = useGlobalStore(); 
+    async function reloadPyodide() {
+        isExecuting.value = false;
 
-		global.setLoading(true); 
-		if (timer.value)
-			clearInterval(timer.value);
+        const global = useGlobalStore();
 
-		scriptRunnerTab.value = ""; 
+        global.setLoading(true);
+        if (timer.value)
+            clearInterval(timer.value);
 
-		py.destroyAndCreateWorker();
+        scriptRunnerTab.value = "";
 
-		await loadPython(); 
+        py.destroyAndCreateWorker();
 
-		await py.restoreFS();
+        await loadPython();
 
-		global.setLoading(false); 
+        await py.restoreFS();
 
-	}
+        global.setLoading(false);
+
+    }
 
 
-	return { py, run, setCode, getCode, init, runScript, loadPython, reloadPyodide, isLoading, scriptRunnerTab, isExecuting, runningText }
+    return {
+        py,
+        run,
+        setCode,
+        getCode,
+        init,
+        runScript,
+        loadPython,
+        reloadPyodide,
+        isLoading,
+        scriptRunnerTab,
+        isExecuting,
+        runningText
+    }
 })
