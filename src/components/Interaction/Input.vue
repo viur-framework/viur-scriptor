@@ -29,12 +29,15 @@
       v-model="value"
       :readonly="!props.entry.render"
       @keypress.enter="send"
+	  :placeholder="props.placeholder"
     ></sl-input>
     <sl-textarea
       v-else
       class="label-on-left"
       v-model="value"
       :readonly="!props.entry.render"
+	  :placeholder="props.placeholder"
+
     ></sl-textarea>
 
     <div slot="footer">
@@ -55,7 +58,7 @@
     useTime: Boolean;
     imageURL: String;
     entry: {},
-
+	placeholder: String
   }
 
   import { onMounted, ref, watch } from "vue";

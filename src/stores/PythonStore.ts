@@ -153,7 +153,11 @@ export const usePythonStore = defineStore('python', () => {
         else
             baseUrl = `${window.location.origin}`;
 
-        await py.run(`with open("config.py", "w") as f:\n\tf.write("BASE_URL='${baseUrl}'")`)
+
+	  async function loadPython() {
+		   isLoading.value = true;
+		   const zipUrl2 = new URL("../assets/viur_scriptor_api-0.0.3-py3-none-any", import.meta.url).href
+
 
         const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
 

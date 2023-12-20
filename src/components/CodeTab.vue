@@ -40,7 +40,7 @@
                 <Confirm :select="confirmSelect" :text="log.text" :title="log.title" :cancel="log.cancel" :imageURL="log.image" :key="log.key" :entry="log"></Confirm>
               </div>
               <div v-else-if="log.type === 'input'">
-                <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty" :imageURL="log.image" :key="log.key" :entry="log"></Input>
+                <Input :useTime="log.use_time" :type="log.input_type" :select="sendInput" :text="log.text" :title="log.title" :empty="log.empty" :imageURL="log.image" :key="log.key" :placeholder="log.placeholder" :entry="log"></Input>
               </div>
               <div v-else-if="log.type === 'select'">
                 <Select :select="sendSelect" :text="log.text" :title="log.title" :multiple="log.multiple" :options="log.choices" :imageURL="log.image" :key="log.key"  :entry="log"></Select>
