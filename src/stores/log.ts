@@ -69,7 +69,7 @@ export const useLogStore = defineStore("log", () => {
                         json: isJsonString(entry.text),
                     }
                 })*/
-                logMap.value[pythonStore.scriptRunnerTab].unshift({
+                logMap.value[pythonStore.scriptRunnerTab].push({
                     log: {
                         type: "syslog",
                         level: computed(() => {

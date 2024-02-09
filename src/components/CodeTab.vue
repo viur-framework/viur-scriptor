@@ -10,14 +10,9 @@
       {{ progressBarDetails.txt }}
     </div>
   </div>
-      <EasyDataTable
-    :headers="[{ text: 'Log', value: 'log' }]"
-    :items="logItemsNew"
-    :buttons-pagination="true"
-    class="log-data-table logging"
-      >
-          <template #item-log="{ log }">
-              <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>
+
+    <template v-for="log in logItemsNew">
+              <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>aa
                   <template slot:icon>
                       <sl-icon class="log-child" name="info-circle" ></sl-icon>
                   </template>
@@ -56,6 +51,17 @@
               <div v-else-if="log.type === 'table'">
                 <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image" :key="log.key" :entry="log"></MyTable>
               </div>
+    </template>
+
+
+      <EasyDataTable
+    :headers="[{ text: 'Log', value: 'log' }]"
+    :items="logItemsNew"
+    :buttons-pagination="true"
+    class="log-data-table logging"
+      >
+          <template #item-log="{ log }">
+
 <!-- 			pyDialogs.get().push({
       type: "confirm",
       title: data.title,

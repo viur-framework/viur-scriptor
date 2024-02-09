@@ -466,7 +466,7 @@ export default {
 						return iter;
 					}
 
-					await Request.get("/json/script/listRootNodes").then(async (answer: Response) => {
+					await Request.get("/vi/script/listRootNodes").then(async (answer: Response) => {
 						let res = await answer.json();
 						let rootNode = res[0];
 						if (route.query.rkey)

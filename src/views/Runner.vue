@@ -38,7 +38,7 @@ onBeforeMount(async function(){
     let rootNodeKey = route.query.rkey;
 
     if (!rootNodeKey) {
-        let ret = await Request.get("/json/script/listRootNodes");
+        let ret = await Request.get("/vi/script/listRootNodes");
         let data = await ret.json();
         rootNodeKey = data[0];
     }
