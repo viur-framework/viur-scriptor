@@ -10,13 +10,9 @@
       {{ progressBarDetails.txt }}
     </div>
   </div>
-      <EasyDataTable
-    :headers="[{ text: 'Log', value: 'log' }]"
-    :items="logItemsNew"
-    :buttons-pagination="true"
-    class="log-data-table logging"
-      >
-          <template #item-log="{ log }">
+
+	    <div ref="logContainer" class="log-container">
+    <div v-for="(log, index) in logItemsNew" :key="index" class="log-entry">
               <sl-alert v-if="log.type === 'syslog'" :variant="log.level" open>
                   <template slot:icon>
                       <sl-icon class="log-child" name="info-circle" ></sl-icon>
@@ -56,16 +52,8 @@
               <div v-else-if="log.type === 'table'">
                 <MyTable :header="log.header" :rows="log.rows" :selectable="log.select" :sendEvent="sendTable" :multiple="log.multiple" :imageURL="log.image" :key="log.key" :entry="log"></MyTable>
               </div>
-<!-- 			pyDialogs.get().push({
-      type: "confirm",
-      title: data.title,
-      text: data.text,
-      cancel: data.cancel,
-      done: false
-    })-->
-
-        </template>
-  </EasyDataTable>
+    </div>
+  </div>
 </div>
   <div v-else class="logging">
       <sl-alert class="danger-print" variant="danger" open>
@@ -75,9 +63,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onBeforeMount } from 'vue';
+import {computed, ref, onBeforeMount, nextTick, watch} from 'vue';
 import { useTabStore } from "@/stores/TabStore";
 import { useLogStore } from "@/stores/log";
+import { useGlobalStore } from "@/stores/global";
 
 import VueJsonPretty from 'vue-json-pretty';
 import { usePythonStore } from '@/stores/PythonStore';
@@ -91,6 +80,7 @@ import MyTable from "../components/Interaction/Table.vue";
 import { ProgressbarDetails } from '@/usepython/dist/interfaces';
 import {useI18n} from "vue-i18n";
     const pythonStore = usePythonStore();
+	const globalStore = useGlobalStore();
 
     interface Props {
         keyValue?: string
@@ -205,9 +195,50 @@ import {useI18n} from "vue-i18n";
     };
   })
 
+const logs = ref([]);
+const logContainer = ref(null);
+
+console.log(logStore.updateLogMap)
+
+watch(() => logStore.updateLogMap, (value, newValue, blabla) => {
+	if (value) {
+		if (tabStore.selectedTab == props.keyValue) {
+
+			console.log("globalStore.shouldAutoscroll", globalStore.shouldAutoscroll)
+			if (globalStore.shouldAutoscroll) {
+				nextTick(() => {
+					const container = logContainer.value;
+					if (container) {
+						container.scrollTop = container.scrollHeight;
+
+					}
+				})
+			}
+
+			logStore.reset()
+		}
+	}
+});
+
+function addLog(newLog) {
+  if (logs.value.length >= 200) {
+    logs.value.shift(); // Entfernt den ersten Log-Eintrag
+  }
+  logs.value.push(newLog); // Fügt den neuen Log am Ende hinzu
+
+  // Scrollt zum neuesten Log-Eintrag
+}
+
 </script>
 
 <style lang="less" scoped>
+.log-container {
+	display: flex;
+  flex-direction: column;
+  max-height: 1000px;
+  overflow-y: scroll;
+}
+
 .error-format {
   margin-left: 10px;
   height: 80%;

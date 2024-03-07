@@ -14,6 +14,7 @@ interface NetworkError
 export const useGlobalStore = defineStore("globalStore", () => {
 	const isLoading = ref<Boolean>(false);
 	const shouldAutoSave = ref<Boolean>(false);
+	const shouldAutoscroll = ref<Boolean>(true);
 	const autoSaveInterval = ref<Number>(60 * 10);
 	const cancelAutoSaveEvent = ref<Function>();
 	const startAutoSaveEvent = ref<Function>();
@@ -62,6 +63,11 @@ export const useGlobalStore = defineStore("globalStore", () => {
 		localStorage.setItem("SCRIPTOR_AUTO_SAVE", shouldAutoSave.value ? 1 : 0);
 	}
 
+	function setAutoscroll(value: Boolean) {
+		shouldAutoscroll.value = value;
+		localStorage.setItem("SCRIPTOR_AUTO_SCROLL", shouldAutoSave.value ? 1 : 0);
+	}
+
 	function setAutoSaveInterval(value: number) {
 		console.log("Interval: ", value)
 		autoSaveInterval.value = value;
@@ -82,6 +88,15 @@ export const useGlobalStore = defineStore("globalStore", () => {
 			if (v) {
 
 				shouldAutoSave.value = Number.parseInt(v) ? true : false
+			}
+		} catch (e) {
+			console.log("failed to load parse scriptor auto save", e)
+		}
+
+		try {
+			let v = localStorage.getItem("SCRIPTOR_AUTO_SCROLL");
+			if (v) {
+				shouldAutoscroll.value = Number.parseInt(v) ? true : false
 			}
 		} catch (e) {
 			console.log("failed to load parse scriptor auto save", e)
@@ -131,5 +146,5 @@ export const useGlobalStore = defineStore("globalStore", () => {
 
 	load()
 
-	return {getError, getErrorTitle, setErrorText, setErrorTitle, setErrorStatus, isLoading, setLoading, getLoadingState, modules, shouldAutoSave, load, setAutoSave, setCancelAutoSaveEvent, setStartAutoSaveEvent, setLanguage, language, autoSaveInterval, setAutoSaveInterval, getAutoSaveInterval}
+	return {getError, getErrorTitle, setErrorText, setErrorTitle, setErrorStatus, isLoading, setLoading, getLoadingState, modules, shouldAutoSave, shouldAutoscroll, load, setAutoSave, setCancelAutoSaveEvent, setStartAutoSaveEvent, setLanguage, language, autoSaveInterval, setAutoSaveInterval, getAutoSaveInterval, setAutoscroll}
 })

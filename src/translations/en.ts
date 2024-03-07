@@ -132,7 +132,8 @@ export default {
 		title: "Settings",
 		autosave: "Auto save",
 		language: "Language",
-		interval: "Interval (in minutes)"
+		interval: "Interval (in minutes)",
+		autoscroll: "Auto scroll"
 
 	},
 	docs: "Documentation",

@@ -131,7 +131,8 @@ export default {
 		title: "Paramètres",
 		autosave: "Sauvegarde automatique",
 		language: "Langue",
-		interval: "Intervalle (en minutes)"
+		interval: "Intervalle (en minutes)",
+		autoscroll: "Défilement automatique"
 
 	},
 	docs: "Documentation",

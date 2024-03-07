@@ -131,7 +131,8 @@ export default {
 		title: "Instellingen",
 		autosave: "Automatisch opslaan",
 		language: "Taal",
-		interval: "Interval (in minuten)"
+		interval: "Interval (in minuten)",
+		autoscroll: "Automatisch scrollen"
 	},
 	docs: "Documentatie",
 	step: "Stap",

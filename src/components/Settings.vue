@@ -24,12 +24,21 @@
 		store.setAutoSave(!store.shouldAutoSave); // toggle state here
 	}
 
+	function autoScroll() {
+		store.setAutoscroll(!store.shouldAutoscroll); // toggle state here
+	}
+
 	const shouldAutoSave = computed(function() {
 		return store.shouldAutoSave;
 	})
 
   const autoSaveInterval = computed(function() {
 		return store.autoSaveInterval / 60;
+	})
+
+
+	const shouldAutoscroll = computed(function() {
+		return store.shouldAutoscroll;
 	})
 
 
@@ -53,6 +62,10 @@
 	</sl-button>
 	<sl-dialog ref="dialogRef" :label="t('settings.title')" class="dialog-focus">
 		<sl-checkbox :checked="shouldAutoSave" @sl-change="autoSave">{{ t('settings.autosave') }}</sl-checkbox>
+		<br>
+		<br>
+		<sl-checkbox :checked="shouldAutoscroll" @sl-change="autoScroll">{{ t('settings.autoscroll') }}</sl-checkbox>
+
     <sl-input :label="t('settings.interval')" type="text" @input="(v) => store.setAutoSaveInterval(v.target.value * 60)" style="margin-top: 10px;margin-bottom:10px" :value=autoSaveInterval></sl-input>
       <sl-radio-group :label="t('settings.language')" :value="language" style="margin-top: 10px">
         <sl-radio-button v-for="(lang, index) in supportedLocales" :value="lang" style="margin-right: 5px" @click="() => store.setLanguage(lang)">{{ lang.toUpperCase() }}</sl-radio-button>

@@ -25,19 +25,23 @@
 
     <sl-input
       v-if="props.type !== 'text'"
+	  ref="inputElement"
       :type="props.type + (props.useTime ? 'time-local' : '')"
       v-model="value"
       :readonly="!props.entry.render"
       @keypress.enter="send"
 	  :placeholder="props.placeholder"
+	  :autofocus='true'
     ></sl-input>
     <sl-textarea
       v-else
       class="label-on-left"
+	  ref="inputElement"
       v-model="value"
       :readonly="!props.entry.render"
 	  :placeholder="props.placeholder"
-
+	  @keydown="handleKeyDown"
+	  :autofocus='true'
     ></sl-textarea>
 
     <div slot="footer">
@@ -66,7 +70,14 @@
 
   const { t } = useI18n();
 
+  function handleKeyDown(event) {
+      if (event.ctrlKey && event.key === 'Enter') {
+		  send();
+	  }
+  }
+
   const error = ref<String>("");
+  const inputElement = ref(null);
 
   const props = defineProps<Props>();
   if (props.entry.saveValue === undefined)
@@ -84,6 +95,13 @@
   onMounted(function(){
     if (value.value != props.entry.saveValue)
       value.value = props.entry.saveValue;
+
+
+	setTimeout(() => {
+		if (inputElement.value) {
+			inputElement.value.focus() // Handle
+		}
+	}, 100)
   });
 
   function send() {

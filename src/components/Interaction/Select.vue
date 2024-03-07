@@ -9,7 +9,7 @@
         <div slot="header">
             {{ props.title }}
         </div>
-    
+
         <p class="paragraph">
 			    {{  props.text }}
 		    </p>
@@ -44,22 +44,22 @@
 						 :key="option" @sl-change="(event) => selectRadioButton(event, option)">
 
                {{ option }}
-           
+
 
             </sl-checkbox>
       </template>
       <template v-else>
-          
+
         <div class="image-container">
           <template v-for="option in Object.keys(props.options)"  :key="option">
 
             <figure>
               <img :src="props.options[option].image" alt="Bild 1">
               <figcaption>{{ props.options[option].text }}</figcaption>
-              <sl-checkbox 
-              :disabled="!props.entry.render" 
-              class="checkbox" 
-              @sl-change="(event) => selectRadioButton(event, props.options[option].text)" 
+              <sl-checkbox
+              :disabled="!props.entry.render"
+              class="checkbox"
+              @sl-change="(event) => selectRadioButton(event, props.options[option].text)"
               :checked="props.entry.entries.includes(props.options[option].text)">
               </sl-checkbox>
             </figure>
@@ -67,7 +67,7 @@
 
           </template>
 
-          
+
           <!-- Weitere Bilder und Texte hier einfügen -->
         </div>
 
@@ -86,7 +86,7 @@
 		  </sl-button>
 		</div>
 
-	
+
 
     </sl-card>
 </template>
@@ -100,13 +100,13 @@ export interface Props {
     text: String,
     title: String,
     select: Function,
-    imageURL: String; 
+    imageURL: String;
     entry: {};
 }
 
 
 const isImageSelct = computed(function(){
-  let arr = Object.keys(props.options); 
+  let arr = Object.keys(props.options);
 
   for (let i = 0; i<arr.length; ++i)
   {
@@ -134,6 +134,8 @@ function selectOption(index: number, _index: number) {
   if (!props.entry.render)
     return;
 
+  console.log("index", index);
+
 
   props.entry.render = false;
   props.select(index);
@@ -147,6 +149,8 @@ function selectRadioButton(event: UIEvent, index: string) {
 
   if (!render.value)
     return;
+
+  console.log("selectRadioButton", index);
 
   if (event.target.checked)
     props.entry.entries.push(index);
@@ -166,6 +170,7 @@ function send() {
     return;
 
   props.entry.render = false;
+  console.log("Sending", [...props.entry.entries]);
   props.select([...props.entry.entries]);
 }
 
