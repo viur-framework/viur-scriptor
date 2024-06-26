@@ -1,5 +1,5 @@
 
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.22.0/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js");
 
 let isPyLoaded = false;
 
