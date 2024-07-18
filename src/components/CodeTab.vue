@@ -22,10 +22,7 @@
                   </div>
 
                   <div v-else>
-                        <pre class="alert-child log-child log-child-text">
-
-                          {{ log.text }}
-                        </pre>
+                        <pre class="alert-child log-child log-child-text" v-html="log.text" />
                   </div>
               </sl-alert>
               <div v-else-if="log.type === 'alert'">

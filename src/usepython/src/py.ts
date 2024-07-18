@@ -83,14 +83,18 @@ const usePython = () => {
 		break;
 		case "log":
 			pyLogging.get().push({
-				text: data.text,
-				level: data.level,
-        done: false
-			})
-			pyLogging.notify();
-
-
-			break;
+        text: data.text.replace(/&/g, "&amp;")
+                       .replace(/</g, "&lt;")
+                       .replace(/>/g, "&gt;")
+                       .replace(/"/g, "&quot;")
+                       .replace(/'/g, "&#039;")
+                       .replace(/\ /g, " ")
+                       .replace(/\n/g, "<br />"),
+        level: data.level,
+       done: false
+      })
+      pyLogging.notify();
+		  break;
 
     case "alert":
 			pyDialogs.get().push({

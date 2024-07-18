@@ -87,12 +87,17 @@ export const usePythonStore = defineStore('python', () => {
 	}
 
 	const timer = ref<NodeJS.Timer>();
-	const defaultCode = "#### scriptor ####\nfrom viur.scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
+// 	const defaultCode = "#### scriptor ####\nfrom viur.scriptor import dialog\n\nasync def main():\n    await dialog.alert(\"Hello World\")";
+	const defaultCode = "#### scriptor ####\n\nasync def main():\n    print(\"Hello World\")";
 
 	let runScript = function (code: string, name: string = undefined, key: string = undefined){
-		let extraCode = "from scriptor import message\nmessage.called=False\nimport traceback\nfrom viur.scriptor import print,logging, init as __scriptor__init\nawait __scriptor__init()\n";
 		if (code.includes("async def main():"))
-			code += "\ntry:\tawait main()\nexcept:\n\tlogging.error(traceback.format_exc())"
+			// code += "\nfrom viur.Scriptor4alpha import *\nimport traceback\ntry:\tawait main()\nexcept:\n\tLogger.error(traceback.format_exc())"
+			// code += "\nfrom viur.Scriptor4alpha import *\nimport traceback\ntry:\n    await main()\nexcept:\n    Logger.error(traceback.format_exc())\n"
+			// code += "\nfrom viur.Scriptor4alpha import *\nimport traceback\nimport config\nviur.Scriptor4alpha.modules = viur.Scriptor4alpha.module.Modules(config.BASE_URL, None, None)\ntry:\n    await main()\nexcept:\n    Logger.error(traceback.format_exc())\n"
+			code += "\nimport traceback\nimport viur.scriptor4alpha\nawait viur.scriptor4alpha._init_modules()\nfrom viur.scriptor4alpha import *\ntry:\n    await main()\nexcept:\n    logger.error(traceback.format_exc())\n"
+            // FUNKTIONIERT: "\nimport traceback\nimport config\nimport viur.Scriptor4alpha\nviur.Scriptor4alpha.modules = viur.Scriptor4alpha.module.Modules(config.BASE_URL, None, None)\nfrom viur.Scriptor4alpha import *\ntry:\n    await main()\nexcept:\n    Logger.error(traceback.format_exc())\n"
+
 
 		if (py.isExecuting.get() === true)
 			return;
@@ -139,7 +144,7 @@ export const usePythonStore = defineStore('python', () => {
 		py.pyLogging.set([]);
 		py.pyDialogs.set([]);
 
-		py.run(extraCode + code).then(() => {
+		py.run(code).then(() => {
 			scriptRunnerTab.value = "";
 
 			isExecuting.value = false;
@@ -166,11 +171,42 @@ export const usePythonStore = defineStore('python', () => {
 
 		// Loading scriptor library
 		await py.run(`
-		  from pyodide.http import pyfetch
-		  response = await pyfetch("${zipUrl}")
-		  await response.unpack_archive()
+            from pyodide.http import pyfetch
+            response = await pyfetch("${zipUrl}")
+            await response.unpack_archive()
 	   `)
 
+	   await py.run(`
+            from scriptor import message
+            message.called=False
+            #import traceback
+            from viur.scriptor import print,logging, init as __scriptor__init
+            await __scriptor__init()
+	   `)
+
+	   await py.run(`
+            import micropip
+            try:
+                import requests
+            except ModuleNotFoundError:
+                await micropip.install('requests')
+                import requests
+            try:
+                import chardet
+            except ModuleNotFoundError:
+                await micropip.install('chardet')
+                import chardet
+            try:
+                import magic
+            except ModuleNotFoundError:
+                await micropip.install('python-magic')
+                import magic
+            try:
+                import openpyxl
+            except ModuleNotFoundError:
+                await micropip.install('openpyxl')
+                import openpyxl
+	   `)
 
 
 		let object = {};
