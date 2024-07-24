@@ -95,7 +95,7 @@ export const usePythonStore = defineStore('python', () => {
 			// code += "\nfrom viur.Scriptor4alpha import *\nimport traceback\ntry:\tawait main()\nexcept:\n\tLogger.error(traceback.format_exc())"
 			// code += "\nfrom viur.Scriptor4alpha import *\nimport traceback\ntry:\n    await main()\nexcept:\n    Logger.error(traceback.format_exc())\n"
 			// code += "\nfrom viur.Scriptor4alpha import *\nimport traceback\nimport config\nviur.Scriptor4alpha.modules = viur.Scriptor4alpha.module.Modules(config.BASE_URL, None, None)\ntry:\n    await main()\nexcept:\n    Logger.error(traceback.format_exc())\n"
-			code += "\nimport traceback\nimport viur.scriptor4alpha\nawait viur.scriptor4alpha._init_modules()\nfrom viur.scriptor4alpha import *\ntry:\n    await main()\nexcept:\n    logger.error(traceback.format_exc())\n"
+			code += "\nimport traceback\nimport viur.scriptor\nawait viur.scriptor._init_modules()\nfrom viur.scriptor import *\ntry:\n    await main()\nexcept:\n    logger.error(traceback.format_exc())\n"
             // FUNKTIONIERT: "\nimport traceback\nimport config\nimport viur.Scriptor4alpha\nviur.Scriptor4alpha.modules = viur.Scriptor4alpha.module.Modules(config.BASE_URL, None, None)\nfrom viur.Scriptor4alpha import *\ntry:\n    await main()\nexcept:\n    Logger.error(traceback.format_exc())\n"
 
 
@@ -166,23 +166,16 @@ export const usePythonStore = defineStore('python', () => {
 			baseUrl = `${window.location.origin}`;
 
 		await py.run(`with open("config.py", "w") as f:\n\tf.write("BASE_URL='${baseUrl}'")`)
-
+		/*
 		const zipUrl = new URL('../assets/scriptor.zip', import.meta.url).href
+
 
 		// Loading scriptor library
 		await py.run(`
             from pyodide.http import pyfetch
             response = await pyfetch("${zipUrl}")
             await response.unpack_archive()
-	   `)
-
-	   await py.run(`
-            from scriptor import message
-            message.called=False
-            #import traceback
-            from viur.scriptor import print,logging, init as __scriptor__init
-            await __scriptor__init()
-	   `)
+	   `)*/
 
 	   await py.run(`
             import micropip
@@ -207,7 +200,11 @@ export const usePythonStore = defineStore('python', () => {
                 await micropip.install('openpyxl')
                 import openpyxl
 	   `)
-
+		await py.run(`
+            #import traceback
+            from viur.scriptor import print,logger, _init_modules
+            await _init_modules()
+	   `)
 
 		let object = {};
 

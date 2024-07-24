@@ -1,4 +1,4 @@
-from viur.scriptor import logging
+from viur.scriptor import logger
 
 warning = "the 'scriptor' module is deprecated instead use 'viur.scriptor'"
 called = False
@@ -6,5 +6,5 @@ called = False
 def print_warning():
     global called
     if not called:
-        logging.warning(warning)
+        logger.warning(warning)
         called = True

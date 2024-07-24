@@ -1,4 +1,4 @@
-from viur.scriptor import logging
+from viur.scriptor import logger
 from .message import print_warning
 
 def __getattr__(attr: str):

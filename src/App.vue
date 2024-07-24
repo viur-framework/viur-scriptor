@@ -105,7 +105,7 @@ export default {
 	  onBeforeMount(async () => {
 		  await checkLogin(true);
 		  setInterval(async () => {
-			await checkLogin();
+			//await checkLogin();
 		  }, 1000 * 60 * 5)
 	  });
 
